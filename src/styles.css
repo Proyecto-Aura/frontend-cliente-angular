@@ -1,0 +1,16 @@
+/* Estilos globales. Tailwind v4: la paleta y las fuentes se definen aquí con @theme,
+   sin tailwind.config.js. El estilo de cada componente va con clases utilitarias
+   en el HTML, nunca en un .css por componente. */
+
+@import 'tailwindcss';
+
+@theme {
+  /* Marca — placeholder, ajustar cuando esté el branding del ecommerce. */
+  --color-brand-50: oklch(0.971 0.013 17.38);
+  --color-brand-500: oklch(0.637 0.237 25.331);
+  --color-brand-600: oklch(0.577 0.245 27.325);
+  --color-brand-700: oklch(0.505 0.213 27.518);
+
+  /* Tipografía */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
