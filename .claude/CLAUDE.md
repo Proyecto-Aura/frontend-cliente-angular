@@ -61,32 +61,44 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 Follows the "Franco's ERP — Guía Rápida" conventions (this is the **ecommerce** front; `frontend-francos` is the company/ERP portal).
 
 ```
-src/app/
-├── layouts/
-│   └── module-layout/        # shell: sidebar + header + <router-outlet>, reusado por varios módulos
-├── shared/
-│   └── ui/                   # 100% reutilizable, sin rutas ni servicios
-│       ├── sidebar/
-│       └── header/
-└── modules/
-    └── <modulo>/
-        ├── components/       # sin URL propia
-        ├── layout/           # solo si lo usa ESE módulo (si lo usan varios → sube a layouts/)
-        ├── pages/            # tiene URL propia
-        └── <modulo>.route.ts # export const <MODULO>_ROUTES: Routes
+src/
+├── environments/            # environment.ts (dev) · environment.prod.ts (swap en build vía fileReplacements)
+└── app/
+    ├── layouts/
+    │   └── store-layout/    # header + footer + <router-outlet> · shell público (varios módulos)
+    ├── shared/
+    │   ├── ui/              # 100% reutilizable, sin rutas ni servicios: header/ footer/ + primitivas
+    │   ├── data-access/     # api-client + interceptors/ (base-url · error · auth-token)   [ext. a la Guía]
+    │   ├── auth/            # session (signals) · auth-guard · guest-guard                 [ext. a la Guía]
+    │   ├── models/          # tipos transversales (Usuario, Rol)                            [ext. a la Guía]
+    │   └── utils/           # constants · validators/                                       [ext. a la Guía]
+    └── modules/
+        └── <modulo>/
+            ├── components/       # sin URL propia · carpetas con prefijo: <modulo>-<qué-es>/
+            ├── layout/           # solo si lo usa ESE módulo → <modulo>-layout/
+            ├── pages/            # tiene URL propia · listado = accion-sustantivo (listar-productos)
+            ├── services/         # <algo>-api.ts · <algo>-store.ts                          [ext. a la Guía]
+            ├── models/           # <algo>.model.ts                                          [ext. a la Guía]
+            └── <modulo>.route.ts # export const <MODULO>_ROUTES: Routes
 ```
+
+Módulos: `auth` · `catalogo` · `carrito` · `checkout` · `cuenta` · `nosotros` · `contacto`.
+El sidebar solo existe en `cuenta` (`modules/cuenta/components/cuenta-sidebar/` + `layout/cuenta-layout/`).
 
 ### Reglas para ubicar algo nuevo
 
 - ¿Tiene URL propia? → `pages/`. Si no → `components/`.
-- ¿Un layout lo usa 1 sola feature? → vive dentro de ella. ¿Varias? → `layouts/`.
+- ¿Un layout lo usa 1 sola feature? → vive dentro de ella (`<modulo>-layout/`). ¿Varias? → `layouts/`.
 - ¿Es 100% reutilizable, sin rutas ni servicios? → `shared/ui/`.
+- Carpeta de componente = `<modulo>-<qué-es>/` (prefijo del módulo). Ej: `auth-input/`, `catalogo-product-card/`, `cuenta-pago-badge/`.
+- Página chica sin sub-partes → un solo archivo `pages/<algo>.ts` (sin carpeta).
 
 ### Rutas
 
 - Cada módulo expone `<modulo>.route.ts` con `export const <MODULO>_ROUTES: Routes`.
 - `app.routes.ts` (raíz) usa `loadChildren` para módulos con hijos y `loadComponent` para páginas sueltas.
-- Las secciones internas se montan como `children` de `module-layout` (que trae sidebar + header).
+- Las secciones internas se montan como `children` del layout del módulo (`store-layout` para lo público, `cuenta-layout` para cuenta).
+- `''` → redirige a `catalogo`.
 
 ### Estilos
 
