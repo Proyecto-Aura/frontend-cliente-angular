@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 
 /**
@@ -8,7 +9,7 @@ import { RouterOutlet } from '@angular/router';
  */
 @Component({
   selector: 'app-auth-layout',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, NgOptimizedImage],
   host: { class: 'block min-h-screen' },
   templateUrl: './auth-layout.html',
 })
