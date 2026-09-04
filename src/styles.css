@@ -2,15 +2,48 @@
    sin tailwind.config.js. El estilo de cada componente va con clases utilitarias
    en el HTML, nunca en un .css por componente. */
 
+/* Fuente provisional. Coincide visualmente con el Figma; reemplazar por la
+   familia real cuando el diseño la confirme (los PDF la traen vectorizada). */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss';
 
 @theme {
-  /* Marca — placeholder, ajustar cuando esté el branding del ecommerce. */
-  --color-brand-50: oklch(0.971 0.013 17.38);
-  --color-brand-500: oklch(0.637 0.237 25.331);
-  --color-brand-600: oklch(0.577 0.245 27.325);
-  --color-brand-700: oklch(0.505 0.213 27.518);
+  /* --- Marca (rojo) — valores extraídos del Figma "Login" --- */
+  --color-brand-50: #fff1f1;
+  --color-brand-100: #ffe2e2;
+  --color-brand-400: #ee5656;
+  --color-brand-500: #e13939;
+  --color-brand-600: #d12a2a; /* primario: botones, links, nav activo */
+  --color-brand-700: #b91c1c; /* hover / fondo del degradado */
+  --color-brand-800: #991b1b;
 
-  /* Tipografía */
+  /* --- Neutros --- */
+  --color-ink: #1a1a1a; /* títulos */
+  --color-ink-soft: #4b5563; /* texto secundario */
+  --color-muted: #9ca3af; /* placeholders / texto tenue */
+  --color-line: #e5e7eb; /* bordes de inputs y tarjetas */
+  --color-surface: #ffffff;
+  --color-canvas: #f5f5f5; /* fondo de la app */
+
+  /* --- Semánticos --- */
+  --color-success-600: #2e7d32;
+  --color-success-50: #e8f5e9;
+  --color-warning-600: #f57f17;
+  --color-info-600: #1565c0;
+  --color-info-50: #e3f2fd;
+
+  /* --- Tipografía --- */
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background: var(--color-canvas);
 }

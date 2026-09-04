@@ -1,0 +1,37 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-6">
+  <app-auth-input
+    label="Usuario"
+    [control]="usuario"
+    placeholder="admin"
+    autocomplete="username"
+  />
+
+  <app-auth-input
+    label="Contraseña"
+    type="password"
+    [control]="password"
+    placeholder="admin123"
+    autocomplete="current-password"
+  >
+    <a slot="action" routerLink="/auth/recuperar" class="text-xs font-bold text-brand-600 hover:underline">
+      ¿Has olvidado tu contraseña?
+    </a>
+  </app-auth-input>
+
+  <label class="flex items-center gap-2.5 pt-2 text-sm text-ink-soft">
+    <input
+      type="checkbox"
+      formControlName="recordar"
+      class="size-5 rounded-md border-line text-brand-600 accent-brand-600 focus:ring-brand-500/30"
+    />
+    Recordar sesión por 30 días
+  </label>
+
+  <button
+    type="submit"
+    [disabled]="enviando()"
+    class="mt-2 w-full rounded-[10px] bg-brand-600 py-3.5 text-[15px] font-semibold text-white transition hover:bg-brand-700 focus:ring-2 focus:ring-brand-500/40 focus:outline-none disabled:opacity-60"
+  >
+    Iniciar sesión
+  </button>
+</form>

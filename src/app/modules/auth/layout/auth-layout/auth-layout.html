@@ -1,0 +1,72 @@
+<div class="flex min-h-screen bg-surface">
+  <!-- Panel de marca -->
+  <aside
+    class="relative hidden w-[48%] shrink-0 flex-col justify-between overflow-hidden px-12 py-12 text-white lg:flex"
+    style="background: linear-gradient(135deg, #ee5656 0%, #e13939 45%, #b91c1c 100%)"
+  >
+    <!-- Círculos decorativos -->
+    <span class="pointer-events-none absolute -left-24 -top-20 size-80 rounded-full bg-white/10"></span>
+    <span class="pointer-events-none absolute right-12 top-6 size-32 rounded-full bg-white/10"></span>
+    <span class="pointer-events-none absolute bottom-28 left-1/3 size-52 rounded-full bg-white/[0.07]"></span>
+    <span class="pointer-events-none absolute -bottom-20 right-0 size-96 rounded-full bg-white/[0.08]"></span>
+
+    <!-- Logo -->
+    <div class="relative flex items-center gap-3">
+      <span class="grid size-14 place-items-center rounded-2xl bg-white text-xl font-extrabold text-brand-600">
+        F
+      </span>
+      <span class="text-3xl font-bold tracking-tight">Franco's</span>
+    </div>
+
+    <!-- Claim + features (bloque central) -->
+    <div class="relative">
+      <h1 class="max-w-md text-[64px] font-extrabold leading-[0.95] tracking-tight">
+        Bienvenido de vuelta.
+      </h1>
+
+      <ul class="mt-14 space-y-6 text-[15px]">
+      <li class="flex items-center gap-3">
+        <span class="grid size-8 place-items-center rounded-lg bg-white/15">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
+            <path d="m9 12 2 2 4-4" />
+          </svg>
+        </span>
+        Acceso seguro y encriptado
+      </li>
+      <li class="flex items-center gap-3">
+        <span class="grid size-8 place-items-center rounded-lg bg-white/15">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="7" height="7" x="3" y="3" rx="1" />
+            <rect width="7" height="7" x="14" y="3" rx="1" />
+            <rect width="7" height="7" x="14" y="14" rx="1" />
+            <rect width="7" height="7" x="3" y="14" rx="1" />
+          </svg>
+        </span>
+        Panel de productos
+      </li>
+      <li class="flex items-center gap-3">
+        <span class="grid size-8 place-items-center rounded-lg bg-white/15">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+        </span>
+        Atención personalizada
+      </li>
+      </ul>
+    </div>
+
+    <p class="relative text-xs text-white/60">© 2026 Franco's · Todos los derechos reservados</p>
+  </aside>
+
+  <!-- Zona de formulario -->
+  <main class="flex flex-1 flex-col items-center justify-center px-6 py-12">
+    <router-outlet />
+  </main>
+</div>
