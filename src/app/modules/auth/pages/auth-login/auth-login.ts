@@ -9,7 +9,7 @@ import {
 @Component({
   selector: 'app-auth-login',
   imports: [AuthLoginForm],
-  host: { class: 'block w-full max-w-[564px]' },
+  host: { class: 'block w-full max-w-[564px] my-auto' },
   template: `
     <section
       class="w-full rounded-3xl bg-surface p-10 shadow-[0_30px_80px_-24px_rgba(17,24,39,0.22)] sm:px-14 sm:py-14"

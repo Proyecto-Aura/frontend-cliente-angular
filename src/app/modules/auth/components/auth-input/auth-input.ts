@@ -4,7 +4,8 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 /**
  * Campo de formulario reutilizable para el módulo auth: etiqueta + input.
  * Recibe un `FormControl` ya creado por el formulario padre. Si `type` es
- * `password` añade el botón mostrar/ocultar.
+ * `password` añade el botón mostrar/ocultar. Muestra `error` cuando el control
+ * está `touched` e inválido.
  */
 @Component({
   selector: 'app-auth-input',
@@ -23,8 +24,12 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
           [formControl]="control()"
           [placeholder]="placeholder()"
           [attr.autocomplete]="autocomplete()"
+          [attr.inputmode]="inputMode()"
+          [attr.maxlength]="maxLength()"
           [class.pr-11]="type() === 'password'"
-          class="w-full rounded-[10px] border border-line bg-surface px-4 py-3.5 text-[15px] text-ink outline-none transition placeholder:text-muted focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+          [class.border-line]="!showError()"
+          [class.border-brand-600]="showError()"
+          class="w-full rounded-[10px] border bg-surface px-4 py-3.5 text-[15px] text-ink outline-none transition placeholder:text-muted focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
         />
 
         @if (type() === 'password') {
@@ -50,18 +55,35 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
           </button>
         }
       </span>
+
+      @if (showError()) {
+        <span class="mt-1.5 block text-xs text-brand-600">{{ error() }}</span>
+      } @else if (hint()) {
+        <span class="mt-1.5 block text-xs text-muted">{{ hint() }}</span>
+      }
     </label>
   `,
 })
 export class AuthInput {
   readonly label = input.required<string>();
   readonly control = input.required<FormControl>();
-  readonly type = input<'text' | 'email' | 'password'>('text');
+  readonly type = input<'text' | 'email' | 'password' | 'tel'>('text');
   readonly placeholder = input('');
   readonly autocomplete = input<string | null>(null);
+  readonly inputMode = input<string | null>(null);
+  readonly maxLength = input<number | null>(null);
+  readonly hint = input<string | null>(null);
+  /** Mensaje a mostrar cuando el control esté `touched` e inválido. */
+  readonly error = input<string | null>(null);
 
   protected readonly show = signal(false);
   protected readonly resolvedType = computed(() =>
     this.type() === 'password' ? (this.show() ? 'text' : 'password') : this.type(),
   );
+
+  /** Método (no computed): depende de `touched`/`invalid`, que no son señales. */
+  protected showError(): boolean {
+    const c = this.control();
+    return !!this.error() && c.touched && c.invalid;
+  }
 }

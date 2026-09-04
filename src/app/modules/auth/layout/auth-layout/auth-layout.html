@@ -12,8 +12,8 @@
 
     <!-- Logo -->
     <div class="relative flex items-center gap-3">
-      <span class="relative block size-14 rounded-2xl bg-white">
-        <img ngSrc="/francos-mark.png" fill alt="Franco's" class="object-contain p-2.5" priority />
+      <span class="grid size-14 place-items-center rounded-2xl bg-white">
+        <img ngSrc="/francos-mark.png" width="36" height="34" alt="Franco's" class="h-auto w-9" priority />
       </span>
       <span class="text-3xl font-bold tracking-tight">Franco's</span>
     </div>
@@ -65,8 +65,8 @@
     <p class="relative text-xs text-white/60">© 2026 Franco's · Todos los derechos reservados</p>
   </aside>
 
-  <!-- Zona de formulario -->
-  <main class="flex flex-1 flex-col items-center justify-center px-6 py-12">
+  <!-- Zona de formulario (scrollea si el contenido es más alto que la pantalla) -->
+  <main class="flex flex-1 flex-col items-center overflow-y-auto px-6 py-12">
     <router-outlet />
   </main>
 </div>
