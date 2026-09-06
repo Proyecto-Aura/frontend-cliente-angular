@@ -1,8 +1,14 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-6">
+  @if (error()) {
+    <p class="rounded-[10px] bg-brand-50 px-4 py-3 text-sm text-brand-700" role="alert">
+      {{ error() }}
+    </p>
+  }
+
   <app-auth-input
     label="Usuario"
-    [control]="usuario"
-    placeholder="admin"
+    [control]="identificador"
+    placeholder="Correo o nombre de usuario"
     autocomplete="username"
   />
 
@@ -10,7 +16,7 @@
     label="Contraseña"
     type="password"
     [control]="password"
-    placeholder="admin123"
+    placeholder="••••••••"
     autocomplete="current-password"
   >
     <a slot="action" routerLink="/auth/recuperar" class="text-xs font-bold text-brand-600 hover:underline">
@@ -32,7 +38,7 @@
     [disabled]="enviando()"
     class="mt-2 w-full rounded-[10px] bg-brand-600 py-3.5 text-[15px] font-semibold text-white transition hover:bg-brand-700 focus:ring-2 focus:ring-brand-500/40 focus:outline-none disabled:opacity-60"
   >
-    Iniciar sesión
+    {{ enviando() ? 'Ingresando…' : 'Iniciar sesión' }}
   </button>
 
   <p class="text-center text-sm text-ink-soft">

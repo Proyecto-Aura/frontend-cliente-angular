@@ -2,22 +2,30 @@
   <!-- Resumen del paso 1 -->
   <div class="flex items-center justify-between rounded-[10px] bg-canvas px-4 py-3 text-sm">
     <span class="text-ink-soft">
-      <span class="font-semibold text-ink">{{ tipo === 'empresa' ? 'Empresa' : 'Persona' }}</span>
-      · {{ tipo === 'empresa' ? 'RUC' : 'DNI' }} {{ documento }}
+      <span class="font-semibold text-ink">{{ esEmpresa ? 'Empresa' : 'Persona' }}</span>
+      · {{ esEmpresa ? 'RUC' : 'DNI' }} {{ doc.numeroDocumento }}
     </span>
     <a routerLink="/auth/registro/documento" class="font-semibold text-brand-600 hover:underline">
       Editar
     </a>
   </div>
 
-  @if (tipo === 'empresa') {
-    <app-auth-register-empresa-form
-      [razonSocial]="c.razonSocial"
-      [nombreContacto]="c.nombreContacto"
-    />
-  } @else {
-    <app-auth-register-personal-form [nombres]="c.nombres" [apellidos]="c.apellidos" />
+  @if (error()) {
+    <p class="rounded-[10px] bg-brand-50 px-4 py-3 text-sm text-brand-700" role="alert">
+      {{ error() }}
+    </p>
   }
+
+  @if (esEmpresa) {
+    <app-auth-register-empresa-form [razonSocial]="c.razonSocial" />
+    <p class="text-xs text-muted">Datos de la persona de contacto:</p>
+  }
+
+  <app-auth-register-personal-form
+    [nombres]="c.nombres"
+    [apellidoPaterno]="c.apellidoPaterno"
+    [apellidoMaterno]="c.apellidoMaterno"
+  />
 
   <app-auth-input
     label="Correo electrónico"
@@ -25,17 +33,29 @@
     [control]="c.email"
     placeholder="tucorreo@ejemplo.com"
     autocomplete="email"
+    [maxLength]="150"
     error="Ingresa un correo electrónico válido."
   />
 
   <app-auth-input
-    label="Teléfono"
+    label="Nombre de usuario"
+    [control]="c.username"
+    placeholder="tucorreo o un alias"
+    autocomplete="username"
+    [maxLength]="50"
+    hint="Letras, números, punto, guion y guion bajo."
+    error="Solo letras, números y . _ - (máx. 50)."
+  />
+
+  <app-auth-input
+    label="Teléfono (opcional)"
     type="tel"
     [control]="c.telefono"
     placeholder="987654321"
     inputMode="tel"
     autocomplete="tel"
-    error="Ingresa un teléfono válido (solo dígitos)."
+    [maxLength]="9"
+    error="Ingresa un teléfono válido (6 a 9 dígitos)."
   />
 
   <app-auth-input
@@ -73,8 +93,9 @@
 
   <button
     type="submit"
-    class="mt-2 w-full rounded-[10px] bg-brand-600 py-3.5 text-[15px] font-semibold text-white transition hover:bg-brand-700 focus:ring-2 focus:ring-brand-500/40 focus:outline-none"
+    [disabled]="enviando()"
+    class="mt-2 w-full rounded-[10px] bg-brand-600 py-3.5 text-[15px] font-semibold text-white transition hover:bg-brand-700 focus:ring-2 focus:ring-brand-500/40 focus:outline-none disabled:opacity-60"
   >
-    Crear cuenta
+    {{ enviando() ? 'Creando cuenta…' : 'Crear cuenta' }}
   </button>
 </form>

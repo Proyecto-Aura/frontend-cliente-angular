@@ -1,16 +1,11 @@
-import { Component, output, signal } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
 import { AuthInput } from '../auth-input/auth-input';
+import { LoginRequest } from '../../models/auth.model';
 
-export interface LoginCredentials {
-  usuario: string;
-  password: string;
-  recordar: boolean;
-}
-
-/** Formulario de inicio de sesión. Emite las credenciales; la navegación/API la resuelve el padre. */
+/** Formulario de inicio de sesión. Emite las credenciales; la API la resuelve el padre. */
 @Component({
   selector: 'app-auth-login-form',
   imports: [ReactiveFormsModule, RouterLink, AuthInput],
@@ -18,18 +13,24 @@ export interface LoginCredentials {
   templateUrl: './auth-login-form.html',
 })
 export class AuthLoginForm {
-  readonly submitted = output<LoginCredentials>();
+  /** El padre lo pone en `true` mientras la petición está en curso. */
+  readonly enviando = input(false);
+  /** Mensaje de error de la API (credenciales inválidas, etc.). */
+  readonly error = input<string | null>(null);
 
-  protected readonly enviando = signal(false);
+  readonly submitted = output<LoginRequest>();
 
   protected readonly form = new FormGroup({
-    usuario: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    identificador: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
     password: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     recordar: new FormControl(false, { nonNullable: true }),
   });
 
-  protected get usuario(): FormControl<string> {
-    return this.form.controls.usuario;
+  protected get identificador(): FormControl<string> {
+    return this.form.controls.identificador;
   }
 
   protected get password(): FormControl<string> {
@@ -41,6 +42,7 @@ export class AuthLoginForm {
       this.form.markAllAsTouched();
       return;
     }
-    this.submitted.emit(this.form.getRawValue());
+    const { identificador, password } = this.form.getRawValue();
+    this.submitted.emit({ identificador, password });
   }
 }

@@ -3,7 +3,11 @@ import { FormControl } from '@angular/forms';
 
 import { AuthInput } from '../auth-input/auth-input';
 
-/** Sub-formulario de datos para persona natural. Los controles los crea el padre. */
+/**
+ * Sub-formulario de datos de la persona (natural o representante de la empresa).
+ * Los controles los crea el padre. Coincide con `RegisterClienteDto`: nombres,
+ * apellido_paterno, apellido_materno.
+ */
 @Component({
   selector: 'app-auth-register-personal-form',
   imports: [AuthInput],
@@ -13,17 +17,28 @@ import { AuthInput } from '../auth-input/auth-input';
       label="Nombres"
       [control]="nombres()"
       autocomplete="given-name"
-      error="Ingresa tus nombres."
+      [maxLength]="100"
+      error="Ingresa los nombres."
     />
-    <app-auth-input
-      label="Apellidos"
-      [control]="apellidos()"
-      autocomplete="family-name"
-      error="Ingresa tus apellidos."
-    />
+    <div class="grid gap-5 sm:grid-cols-2">
+      <app-auth-input
+        label="Apellido paterno"
+        [control]="apellidoPaterno()"
+        autocomplete="family-name"
+        [maxLength]="100"
+        error="Ingresa el apellido paterno."
+      />
+      <app-auth-input
+        label="Apellido materno"
+        [control]="apellidoMaterno()"
+        [maxLength]="100"
+        error="Ingresa el apellido materno."
+      />
+    </div>
   `,
 })
 export class AuthRegisterPersonalForm {
   readonly nombres = input.required<FormControl<string>>();
-  readonly apellidos = input.required<FormControl<string>>();
+  readonly apellidoPaterno = input.required<FormControl<string>>();
+  readonly apellidoMaterno = input.required<FormControl<string>>();
 }

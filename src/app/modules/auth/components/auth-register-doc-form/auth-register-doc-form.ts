@@ -29,9 +29,9 @@ export class AuthRegisterDocForm {
   });
 
   constructor() {
-    const tipoPrevio = this.store.tipo();
-    if (tipoPrevio) {
-      this.form.setValue({ tipo: tipoPrevio, documento: this.store.documento() });
+    const previo = this.store.doc();
+    if (previo) {
+      this.form.setValue({ tipo: previo.tipo, documento: previo.numeroDocumento });
     }
     this.applyDocumentoValidators(this.form.controls.tipo.value);
 
@@ -60,7 +60,13 @@ export class AuthRegisterDocForm {
       this.form.markAllAsTouched();
       return;
     }
-    this.store.setDocumento(this.form.getRawValue());
+    const { tipo, documento } = this.form.getRawValue();
+    this.store.setDocumento({
+      tipo,
+      tipoDocumento: tipo === 'empresa' ? 'ruc' : 'dni',
+      tipoCliente: tipo === 'empresa' ? 'empresa' : 'persona_natural',
+      numeroDocumento: documento,
+    });
     this.router.navigate(['/auth/registro/datos']);
   }
 

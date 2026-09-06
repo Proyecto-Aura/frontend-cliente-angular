@@ -3,27 +3,24 @@ import { FormControl } from '@angular/forms';
 
 import { AuthInput } from '../auth-input/auth-input';
 
-/** Sub-formulario de datos para empresa. Los controles los crea el padre. */
+/**
+ * Sub-formulario de empresa: solo la razón social (el backend además exige los
+ * datos de la persona de contacto vía `auth-register-personal-form`).
+ */
 @Component({
   selector: 'app-auth-register-empresa-form',
   imports: [AuthInput],
-  host: { class: 'block space-y-5' },
+  host: { class: 'block' },
   template: `
     <app-auth-input
       label="Razón social"
       [control]="razonSocial()"
       autocomplete="organization"
-      error="Ingresa la razón social."
-    />
-    <app-auth-input
-      label="Nombre de contacto"
-      [control]="nombreContacto()"
-      autocomplete="name"
-      error="Ingresa el nombre de la persona de contacto."
+      [maxLength]="200"
+      error="Ingresa la razón social de la empresa."
     />
   `,
 })
 export class AuthRegisterEmpresaForm {
   readonly razonSocial = input.required<FormControl<string>>();
-  readonly nombreContacto = input.required<FormControl<string>>();
 }

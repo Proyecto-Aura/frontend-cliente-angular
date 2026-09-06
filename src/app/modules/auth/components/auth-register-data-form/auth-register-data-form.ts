@@ -1,4 +1,4 @@
-import { Component, inject, output } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -13,7 +13,7 @@ import { AuthInput } from '../auth-input/auth-input';
 import { AuthRegisterEmpresaForm } from '../auth-register-empresa-form/auth-register-empresa-form';
 import { AuthRegisterPersonalForm } from '../auth-register-personal-form/auth-register-personal-form';
 import { AuthRegistroStore } from '../../services/auth-registro-store';
-import { RegistroPayload, TipoRegistro } from '../../models/registro.model';
+import { RegisterClientePayload, RegistroDocumento } from '../../models/registro.model';
 
 function passwordsMatch(group: AbstractControl): ValidationErrors | null {
   const pass = group.get('password')?.value;
@@ -21,7 +21,7 @@ function passwordsMatch(group: AbstractControl): ValidationErrors | null {
   return pass && confirm && pass !== confirm ? { passwordMismatch: true } : null;
 }
 
-/** Paso 2 del registro: datos (persona o empresa) + contacto + credenciales. */
+/** Paso 2 del registro: datos de la persona (+ empresa) + credenciales. */
 @Component({
   selector: 'app-auth-register-data-form',
   imports: [
@@ -37,31 +37,55 @@ function passwordsMatch(group: AbstractControl): ValidationErrors | null {
 export class AuthRegisterDataForm {
   private readonly store = inject(AuthRegistroStore);
 
-  readonly submitted = output<RegistroPayload>();
+  /** El padre lo pone en `true` mientras la petición está en curso. */
+  readonly enviando = input(false);
+  /** Mensaje de error de la API (409 documento/email/username duplicado, etc.). */
+  readonly error = input<string | null>(null);
 
-  protected readonly tipo: TipoRegistro = this.store.tipo() ?? 'persona';
-  protected readonly documento = this.store.documento();
+  readonly submitted = output<RegisterClientePayload>();
+
+  protected readonly doc: RegistroDocumento = this.store.doc() ?? {
+    tipo: 'persona',
+    tipoDocumento: 'dni',
+    tipoCliente: 'persona_natural',
+    numeroDocumento: '',
+  };
+  protected readonly esEmpresa = this.doc.tipoCliente === 'empresa';
 
   protected readonly form = new FormGroup(
     {
-      // Persona
-      nombres: new FormControl('', { nonNullable: true }),
-      apellidos: new FormControl('', { nonNullable: true }),
-      // Empresa
+      nombres: new FormControl('', {
+        nonNullable: true,
+        validators: [Validators.required, Validators.maxLength(100)],
+      }),
+      apellidoPaterno: new FormControl('', {
+        nonNullable: true,
+        validators: [Validators.required, Validators.maxLength(100)],
+      }),
+      apellidoMaterno: new FormControl('', {
+        nonNullable: true,
+        validators: [Validators.required, Validators.maxLength(100)],
+      }),
       razonSocial: new FormControl('', { nonNullable: true }),
-      nombreContacto: new FormControl('', { nonNullable: true }),
-      // Común
       email: new FormControl('', {
         nonNullable: true,
-        validators: [Validators.required, Validators.email],
+        validators: [Validators.required, Validators.email, Validators.maxLength(150)],
+      }),
+      username: new FormControl('', {
+        nonNullable: true,
+        validators: [
+          Validators.required,
+          Validators.maxLength(50),
+          Validators.pattern(/^[a-zA-Z0-9._-]+$/),
+        ],
       }),
       telefono: new FormControl('', {
         nonNullable: true,
-        validators: [Validators.required, Validators.pattern(/^\d{6,15}$/)],
+        validators: [Validators.pattern(/^\d{6,9}$/)],
       }),
       password: new FormControl('', {
         nonNullable: true,
-        validators: [Validators.required, Validators.minLength(8)],
+        validators: [Validators.required, Validators.minLength(8), Validators.maxLength(255)],
       }),
       confirmar: new FormControl('', {
         nonNullable: true,
@@ -76,15 +100,13 @@ export class AuthRegisterDataForm {
   );
 
   constructor() {
-    const req = [Validators.required];
-    if (this.tipo === 'empresa') {
-      this.form.controls.razonSocial.setValidators(req);
-      this.form.controls.nombreContacto.setValidators(req);
-    } else {
-      this.form.controls.nombres.setValidators(req);
-      this.form.controls.apellidos.setValidators(req);
+    if (this.esEmpresa) {
+      this.form.controls.razonSocial.setValidators([
+        Validators.required,
+        Validators.maxLength(200),
+      ]);
+      this.form.controls.razonSocial.updateValueAndValidity();
     }
-    this.form.updateValueAndValidity();
   }
 
   protected get c() {
@@ -92,9 +114,7 @@ export class AuthRegisterDataForm {
   }
 
   protected get mismatch(): boolean {
-    return (
-      this.form.hasError('passwordMismatch') && this.c.confirmar.touched
-    );
+    return this.form.hasError('passwordMismatch') && this.c.confirmar.touched;
   }
 
   protected onSubmit(): void {
@@ -103,17 +123,21 @@ export class AuthRegisterDataForm {
       return;
     }
     const v = this.form.getRawValue();
-    const base = {
-      tipo: this.tipo,
-      documento: this.documento,
-      email: v.email,
-      telefono: v.telefono,
+    const payload: RegisterClientePayload = {
+      nombres: v.nombres.trim(),
+      apellido_paterno: v.apellidoPaterno.trim(),
+      apellido_materno: v.apellidoMaterno.trim(),
+      tipo_documento: this.doc.tipoDocumento,
+      numero_documento: this.doc.numeroDocumento,
+      tipo_cliente: this.doc.tipoCliente,
+      categoria_cliente: 'minorista',
+      email: v.email.trim(),
+      username: v.username.trim(),
       password: v.password,
     };
-    const payload: RegistroPayload =
-      this.tipo === 'empresa'
-        ? { ...base, razonSocial: v.razonSocial, nombreContacto: v.nombreContacto }
-        : { ...base, nombres: v.nombres, apellidos: v.apellidos };
+    if (v.telefono.trim()) payload.telefono = v.telefono.trim();
+    if (this.esEmpresa) payload.razon_social = v.razonSocial.trim();
+
     this.submitted.emit(payload);
   }
 }
