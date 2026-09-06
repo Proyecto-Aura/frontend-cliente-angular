@@ -1,34 +1,36 @@
-<form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-6">
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-8">
   @if (error()) {
-    <p class="rounded-[10px] bg-brand-50 px-4 py-3 text-sm text-brand-700" role="alert">
+    <p class="rounded-lg bg-brand-50 px-4 py-3 text-[13px] text-brand-700" role="alert">
       {{ error() }}
     </p>
   }
 
-  <app-auth-input
-    label="Usuario"
-    [control]="identificador"
-    placeholder="Correo o nombre de usuario"
-    autocomplete="username"
-  />
+  <div class="flex flex-col gap-5">
+    <app-auth-input
+      label="Usuario"
+      [control]="identificador"
+      placeholder="Correo o nombre de usuario"
+      autocomplete="username"
+    />
 
-  <app-auth-input
-    label="Contraseña"
-    type="password"
-    [control]="password"
-    placeholder="••••••••"
-    autocomplete="current-password"
-  >
-    <a slot="action" routerLink="/auth/recuperar" class="text-xs font-bold text-brand-600 hover:underline">
-      ¿Has olvidado tu contraseña?
-    </a>
-  </app-auth-input>
+    <app-auth-input
+      label="Contraseña"
+      type="password"
+      [control]="password"
+      placeholder="••••••••"
+      autocomplete="current-password"
+    >
+      <a slot="action" routerLink="/auth/recuperar" class="text-[12px] font-semibold text-brand-600 hover:underline">
+        ¿Has olvidado tu contraseña?
+      </a>
+    </app-auth-input>
+  </div>
 
-  <label class="flex items-center gap-2.5 pt-2 text-sm text-ink-soft">
+  <label class="flex cursor-pointer items-center gap-3 text-[14px] font-medium text-label">
     <input
       type="checkbox"
       formControlName="recordar"
-      class="size-5 rounded-md border-line text-brand-600 accent-brand-600 focus:ring-brand-500/30"
+      class="size-5 rounded-lg border-[1.25px] border-line accent-brand-600"
     />
     Recordar sesión por 30 días
   </label>
@@ -36,13 +38,13 @@
   <button
     type="submit"
     [disabled]="enviando()"
-    class="mt-2 w-full rounded-[10px] bg-brand-600 py-3.5 text-[15px] font-semibold text-white transition hover:bg-brand-700 focus:ring-2 focus:ring-brand-500/40 focus:outline-none disabled:opacity-60"
+    class="h-[38px] w-full rounded-[6px] border border-brand-600 bg-brand-600 text-[15px] font-medium text-white transition-colors hover:bg-brand-700 active:bg-brand-800 disabled:opacity-60"
   >
-    {{ enviando() ? 'Ingresando…' : 'Iniciar sesión' }}
+    {{ enviando() ? 'Ingresando…' : 'Iniciar Sesión' }}
   </button>
 
-  <p class="text-center text-sm text-ink-soft">
-    ¿No tienes cuenta?
-    <a routerLink="/auth/registro" class="font-semibold text-brand-600 hover:underline">Crear cuenta</a>
+  <p class="flex items-center gap-1 text-[14px] font-medium text-muted">
+    ¿No tienes una cuenta?
+    <a routerLink="/auth/registro" class="text-brand-600 hover:underline">Regístrate</a>
   </p>
 </form>

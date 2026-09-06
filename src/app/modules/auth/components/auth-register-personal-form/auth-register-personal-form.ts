@@ -1,44 +1,133 @@
-import { Component, input } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { Component, inject, input, output, signal } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { AuthInput } from '../auth-input/auth-input';
+import { AuthSectionHeader } from '../auth-section-header/auth-section-header';
+import { AuthStepProgress } from '../auth-step-progress/auth-step-progress';
+import { AuthRegisterUserStep } from '../auth-register-user-step/auth-register-user-step';
+import { AuthRegistroStore } from '../../services/auth-registro-store';
+import { passwordScore, PASSWORD_MIN_SCORE } from '../../utils/password-rules';
+import { RegisterClientePayload } from '../../models/registro.model';
 
-/**
- * Sub-formulario de datos de la persona (natural o representante de la empresa).
- * Los controles los crea el padre. Coincide con `RegisterClienteDto`: nombres,
- * apellido_paterno, apellido_materno.
- */
+/** Registro · datos de persona natural (DNI / CE / Pasaporte). Dos pasos internos. */
 @Component({
   selector: 'app-auth-register-personal-form',
-  imports: [AuthInput],
-  host: { class: 'block space-y-5' },
-  template: `
-    <app-auth-input
-      label="Nombres"
-      [control]="nombres()"
-      autocomplete="given-name"
-      [maxLength]="100"
-      error="Ingresa los nombres."
-    />
-    <div class="grid gap-5 sm:grid-cols-2">
-      <app-auth-input
-        label="Apellido paterno"
-        [control]="apellidoPaterno()"
-        autocomplete="family-name"
-        [maxLength]="100"
-        error="Ingresa el apellido paterno."
-      />
-      <app-auth-input
-        label="Apellido materno"
-        [control]="apellidoMaterno()"
-        [maxLength]="100"
-        error="Ingresa el apellido materno."
-      />
-    </div>
-  `,
+  imports: [
+    ReactiveFormsModule,
+    AuthInput,
+    AuthSectionHeader,
+    AuthStepProgress,
+    AuthRegisterUserStep,
+  ],
+  host: { class: 'block' },
+  templateUrl: './auth-register-personal-form.html',
 })
 export class AuthRegisterPersonalForm {
-  readonly nombres = input.required<FormControl<string>>();
-  readonly apellidoPaterno = input.required<FormControl<string>>();
-  readonly apellidoMaterno = input.required<FormControl<string>>();
+  private readonly store = inject(AuthRegistroStore);
+
+  readonly enviando = input(false);
+  readonly error = input<string | null>(null);
+  readonly submitted = output<RegisterClientePayload>();
+
+  protected readonly paso = signal<1 | 2>(1);
+  protected readonly doc = this.store.doc();
+
+  protected readonly form = new FormGroup({
+    nombres: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.maxLength(100)],
+    }),
+    apellidoPaterno: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.maxLength(100)],
+    }),
+    apellidoMaterno: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.maxLength(100)],
+    }),
+    telefono: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.pattern(/^\d{6,9}$/)],
+    }),
+    fechaNacimiento: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+    direccion: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    email: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.email, Validators.maxLength(150)],
+    }),
+    username: new FormControl('', {
+      nonNullable: true,
+      validators: [
+        Validators.required,
+        Validators.maxLength(50),
+        Validators.pattern(/^[a-zA-Z0-9._-]+$/),
+      ],
+    }),
+    password: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.minLength(8), Validators.maxLength(255)],
+    }),
+  });
+
+  protected get c() {
+    return this.form.controls;
+  }
+
+  /** Getters (no señales): se reevalúan en cada ciclo de detección. */
+  protected puedePaso1(): boolean {
+    return [
+      this.c.nombres,
+      this.c.apellidoPaterno,
+      this.c.apellidoMaterno,
+      this.c.telefono,
+      this.c.fechaNacimiento,
+      this.c.direccion,
+    ].every((ctrl) => ctrl.valid);
+  }
+
+  protected puedeCrear(): boolean {
+    return (
+      this.c.email.valid &&
+      this.c.username.valid &&
+      this.c.password.valid &&
+      passwordScore(this.c.password.value) >= PASSWORD_MIN_SCORE
+    );
+  }
+
+  protected continuar(): void {
+    if (!this.puedePaso1()) {
+      this.c.nombres.markAsTouched();
+      this.c.apellidoPaterno.markAsTouched();
+      this.c.apellidoMaterno.markAsTouched();
+      this.c.telefono.markAsTouched();
+      this.c.fechaNacimiento.markAsTouched();
+      this.c.direccion.markAsTouched();
+      return;
+    }
+    this.paso.set(2);
+  }
+
+  protected onSubmit(): void {
+    if (!this.puedeCrear() || !this.doc) return;
+    const v = this.form.getRawValue();
+    const payload: RegisterClientePayload = {
+      nombres: v.nombres.trim(),
+      apellido_paterno: v.apellidoPaterno.trim(),
+      apellido_materno: v.apellidoMaterno.trim(),
+      tipo_documento: this.doc.tipoDocumento,
+      numero_documento: this.doc.numeroDocumento,
+      tipo_cliente: 'persona_natural',
+      categoria_cliente: 'minorista',
+      email: v.email.trim(),
+      username: v.username.trim(),
+      password: v.password,
+      telefono: v.telefono.trim(),
+      fecha_nacimiento: v.fechaNacimiento,
+      direccion: v.direccion.trim(),
+    };
+    this.submitted.emit(payload);
+  }
 }

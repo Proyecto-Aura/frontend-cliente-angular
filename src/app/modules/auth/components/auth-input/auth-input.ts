@@ -2,19 +2,19 @@ import { Component, computed, input, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 /**
- * Campo de formulario reutilizable para el módulo auth: etiqueta + input.
- * Recibe un `FormControl` ya creado por el formulario padre. Si `type` es
- * `password` añade el botón mostrar/ocultar. Muestra `error` cuando el control
- * está `touched` e inválido.
+ * Campo de formulario reutilizable del módulo auth: etiqueta + input, al estilo
+ * del prototipo del portal cliente. Recibe un `FormControl` ya creado por el
+ * padre. Si `type` es `password` añade el botón mostrar/ocultar. Muestra `error`
+ * cuando el control está `touched` e inválido.
  */
 @Component({
   selector: 'app-auth-input',
   imports: [ReactiveFormsModule],
   host: { class: 'block' },
   template: `
-    <label class="block">
-      <span class="mb-1.5 flex items-center justify-between gap-2">
-        <span class="text-sm font-semibold text-ink">{{ label() }}</span>
+    <label class="flex flex-col gap-1.5">
+      <span class="flex items-center justify-between gap-2">
+        <span class="text-[13px] font-semibold text-label">{{ label() }}</span>
         <ng-content select="[slot=action]" />
       </span>
 
@@ -26,10 +26,10 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
           [attr.autocomplete]="autocomplete()"
           [attr.inputmode]="inputMode()"
           [attr.maxlength]="maxLength()"
-          [class.pr-11]="type() === 'password'"
-          [class.border-line]="!showError()"
+          [class.pr-10]="type() === 'password'"
           [class.border-brand-600]="showError()"
-          class="w-full rounded-[10px] border bg-surface px-4 py-3.5 text-[15px] text-ink outline-none transition placeholder:text-muted focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+          [class.border-line]="!showError()"
+          class="h-[38px] w-full rounded-lg border bg-surface px-[13px] text-[14px] text-label outline-none transition-colors placeholder:text-muted focus:border-brand-600"
         />
 
         @if (type() === 'password') {
@@ -37,7 +37,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
             type="button"
             (click)="show.set(!show())"
             [attr.aria-label]="show() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
-            class="absolute inset-y-0 right-0 grid w-11 place-items-center text-muted hover:text-ink-soft"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-ink-soft"
           >
             @if (show()) {
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -57,9 +57,9 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
       </span>
 
       @if (showError()) {
-        <span class="mt-1.5 block text-xs text-brand-600">{{ error() }}</span>
+        <span class="text-[12px] text-brand-600">{{ error() }}</span>
       } @else if (hint()) {
-        <span class="mt-1.5 block text-xs text-muted">{{ hint() }}</span>
+        <span class="text-[12px] text-muted">{{ hint() }}</span>
       }
     </label>
   `,
@@ -67,7 +67,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 export class AuthInput {
   readonly label = input.required<string>();
   readonly control = input.required<FormControl>();
-  readonly type = input<'text' | 'email' | 'password' | 'tel'>('text');
+  readonly type = input<'text' | 'email' | 'password' | 'tel' | 'date'>('text');
   readonly placeholder = input('');
   readonly autocomplete = input<string | null>(null);
   readonly inputMode = input<string | null>(null);

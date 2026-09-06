@@ -1,0 +1,52 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-6">
+  <app-auth-step-progress [step]="paso()" [total]="2" />
+
+  @if (error()) {
+    <p class="rounded-lg bg-brand-50 px-4 py-3 text-[13px] text-brand-700" role="alert">{{ error() }}</p>
+  }
+
+  @if (paso() === 1) {
+    <div class="flex flex-col gap-5">
+      <div class="flex flex-col gap-4">
+        <app-auth-section-header [step]="1" [total]="2" title="Datos de Empresa" />
+        <app-auth-input label="Razón Social" [control]="c.razonSocial" placeholder="Ej: Mi Empresa S.A.C."
+          autocomplete="organization" [maxLength]="200" error="Ingresa la razón social." />
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <app-auth-section-header [step]="2" [total]="2" title="Datos del Contacto" />
+        <div class="grid gap-4 sm:grid-cols-2">
+          <app-auth-input label="Nombres" [control]="c.nombres" placeholder="Ej: Juan Carlos"
+            autocomplete="given-name" [maxLength]="100" error="Ingresa los nombres." />
+          <app-auth-input label="Apellido paterno" [control]="c.apellidoPaterno" placeholder="Ej: García"
+            autocomplete="family-name" [maxLength]="100" error="Ingresa el apellido paterno." />
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <app-auth-input label="Apellido materno" [control]="c.apellidoMaterno" placeholder="Ej: López"
+            [maxLength]="100" error="Ingresa el apellido materno." />
+          <app-auth-input label="Fecha de nacimiento" [control]="c.fechaNacimiento" type="date"
+            error="Ingresa la fecha de nacimiento." />
+        </div>
+      </div>
+
+      <button type="button" (click)="continuar()" [disabled]="!puedePaso1()"
+        class="h-[38px] w-full rounded-[6px] border text-[15px] font-medium transition-colors"
+        [class.bg-brand-600]="puedePaso1()" [class.border-brand-600]="puedePaso1()"
+        [class.text-white]="puedePaso1()" [class.hover:bg-brand-700]="puedePaso1()"
+        [class.bg-line-soft]="!puedePaso1()" [class.border-line-soft]="!puedePaso1()"
+        [class.text-muted]="!puedePaso1()" [class.cursor-not-allowed]="!puedePaso1()">
+        Continuar
+      </button>
+    </div>
+  } @else {
+    <div class="flex flex-col gap-3">
+      <app-auth-section-header [step]="2" [total]="2" title="Datos de Usuario" />
+      <div class="mt-3">
+        <app-auth-register-user-step
+          [email]="c.email" [username]="c.username" [password]="c.password"
+          [puedeCrear]="puedeCrear()" [enviando]="enviando()"
+          (back)="paso.set(1)" (submit)="onSubmit()" />
+      </div>
+    </div>
+  }
+</form>

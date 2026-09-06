@@ -1,0 +1,45 @@
+import { Component, input, output } from '@angular/core';
+
+/** Diálogo de éxito tras crear la cuenta. */
+@Component({
+  selector: 'app-auth-account-created-dialog',
+  host: { class: 'block' },
+  template: `
+    <div class="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-4" role="dialog" aria-modal="true">
+      <div class="w-full max-w-[460px] overflow-hidden rounded-2xl bg-surface shadow-2xl">
+        <div class="flex flex-col items-center gap-5 px-8 pb-8 pt-10">
+          <span class="grid size-[72px] place-items-center rounded-full bg-success-50">
+            <span class="grid size-[52px] place-items-center rounded-full bg-success-600 text-white">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                <path d="m9 11 3 3L22 4" />
+              </svg>
+            </span>
+          </span>
+          <div class="flex flex-col gap-2.5 text-center">
+            <h2 class="font-display text-[20px] font-extrabold text-ink">¡Cuenta creada exitosamente!</h2>
+            <p class="text-[14px] leading-relaxed text-ink-soft">
+              Te hemos enviado un correo de activación a
+              <span class="font-bold text-ink">{{ email() }}</span>.
+              <br />
+              Debes activar tu cuenta antes de poder iniciar sesión.
+            </p>
+          </div>
+        </div>
+        <div class="flex justify-center border-t border-line-soft px-8 py-4">
+          <button
+            type="button"
+            (click)="confirm.emit()"
+            class="h-[38px] rounded-xl bg-brand-600 px-8 text-[13px] font-semibold text-white transition-colors hover:bg-brand-700"
+          >
+            Ir al inicio de sesión
+          </button>
+        </div>
+      </div>
+    </div>
+  `,
+})
+export class AuthAccountCreatedDialog {
+  readonly email = input.required<string>();
+  readonly confirm = output<void>();
+}

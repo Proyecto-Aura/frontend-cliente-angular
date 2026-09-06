@@ -1,6 +1,6 @@
 import { Injectable, computed, signal } from '@angular/core';
 
-import { RegistroDocumento, TipoRegistro } from '../models/registro.model';
+import { RegistroDocumento } from '../models/registro.model';
 
 /**
  * Estado compartido entre los pasos del registro. Se provee a nivel de la ruta
@@ -15,8 +15,8 @@ export class AuthRegistroStore {
   /** `true` cuando el paso 1 está completo (habilita el paso 2). */
   readonly documentoListo = computed(() => this._doc() !== null);
 
-  /** Elección de la UI en el paso 1 (persona / empresa). */
-  readonly tipo = computed<TipoRegistro>(() => this._doc()?.tipo ?? 'persona');
+  /** `true` cuando el documento es RUC ⇒ flujo de empresa. */
+  readonly esEmpresa = computed(() => this._doc()?.tipoCliente === 'empresa');
 
   setDocumento(data: RegistroDocumento): void {
     this._doc.set(data);

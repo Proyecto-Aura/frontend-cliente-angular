@@ -1,36 +1,38 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { AuthStepper } from '../../components/auth-stepper/auth-stepper';
 import { AuthRegisterDocForm } from '../../components/auth-register-doc-form/auth-register-doc-form';
 
 /** Registro · paso 1 (documento). Hijo de auth-layout. */
 @Component({
   selector: 'app-auth-registro-documento',
-  imports: [RouterLink, AuthStepper, AuthRegisterDocForm],
-  host: { class: 'block w-full max-w-[564px] my-auto' },
+  imports: [RouterLink, AuthRegisterDocForm],
+  host: { class: 'block w-full max-w-[512px] my-auto' },
   template: `
     <section
-      class="w-full rounded-3xl bg-surface p-10 shadow-[0_30px_80px_-24px_rgba(17,24,39,0.22)] sm:px-14 sm:py-14"
+      class="flex w-full flex-col gap-8 rounded-[25px] bg-surface px-[30px] py-[50px] shadow-[0px_8px_32px_rgba(0,0,0,0.12)]"
     >
-      <app-auth-stepper [steps]="['Documento', 'Datos']" [current]="0" />
+      <a routerLink="/auth/login" class="flex w-fit items-center gap-2 text-[14px] font-medium text-muted hover:text-label">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m12 19-7-7 7-7" /><path d="M19 12H5" />
+        </svg>
+        Volver al inicio de sesión
+      </a>
 
-      <h2 class="mt-8 text-[32px] font-extrabold leading-tight tracking-tight text-ink">
-        Crear cuenta
-      </h2>
-      <p class="mt-2 text-[15px] text-ink-soft">
-        Elige el tipo de cuenta y escribe tu número de documento.
-      </p>
-
-      <div class="mt-8">
-        <app-auth-register-doc-form />
+      <div class="flex flex-col gap-2">
+        <h1 class="font-display text-[36px] font-extrabold leading-tight tracking-[-0.96px] text-black">
+          Crea tu cuenta
+        </h1>
+        <p class="text-[15px] font-medium text-ink-soft">
+          Primero, selecciona tu documento de identidad
+        </p>
       </div>
 
-      <p class="mt-6 text-center text-sm text-ink-soft">
+      <app-auth-register-doc-form />
+
+      <p class="text-center text-[14px] font-medium text-muted">
         ¿Ya tienes cuenta?
-        <a routerLink="/auth/login" class="font-semibold text-brand-600 hover:underline">
-          Inicia sesión
-        </a>
+        <a routerLink="/auth/login" class="text-brand-600 hover:underline">Inicia sesión</a>
       </p>
     </section>
   `,

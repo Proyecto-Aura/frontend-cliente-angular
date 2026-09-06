@@ -3,21 +3,52 @@
  * `RegisterClienteDto` del backend (`POST /api/v1/auth/register`).
  */
 
-/** Enum `TipoDocumento` del backend. En este front solo se exponen dni y ruc. */
+/** Enum `TipoDocumento` del backend. */
 export type TipoDocumento = 'dni' | 'ruc' | 'ce' | 'pasaporte';
 
-/** Enum `TipoCliente` del backend. */
+/** Enum `TipoCliente` del backend. RUC ⇒ empresa; el resto ⇒ persona_natural. */
 export type TipoCliente = 'persona_natural' | 'empresa';
 
-/** Enum `CategoriaCliente` del backend. Self-service se registra como minorista. */
+/** Enum `CategoriaCliente` del backend. El alta self-service se registra como minorista. */
 export type CategoriaCliente = 'minorista' | 'mayorista';
 
-/** Elección de la UI en el paso 1 (se traduce a tipo_documento + tipo_cliente). */
-export type TipoRegistro = 'persona' | 'empresa';
+/** Opción del desplegable "Tipo de documento" del paso 1. */
+export interface OpcionDocumento {
+  label: string;
+  tipo: TipoDocumento;
+  /** Regex de `numero-documento.validator.ts` del backend. */
+  patron: RegExp;
+  placeholder: string;
+  ayuda: string;
+}
+
+export const OPCIONES_DOCUMENTO: readonly OpcionDocumento[] = [
+  { label: 'DNI', tipo: 'dni', patron: /^\d{8}$/, placeholder: 'Ej: 12345678', ayuda: '8 dígitos' },
+  {
+    label: 'RUC',
+    tipo: 'ruc',
+    patron: /^\d{11}$/,
+    placeholder: 'Ej: 10XXXXXXXXX / 20XXXXXXXXX',
+    ayuda: '11 dígitos',
+  },
+  {
+    label: 'Carnet de Extranjería',
+    tipo: 'ce',
+    patron: /^[a-zA-Z0-9]{9,12}$/,
+    placeholder: 'Ej: 001234567',
+    ayuda: '9 a 12 caracteres alfanuméricos',
+  },
+  {
+    label: 'Pasaporte',
+    tipo: 'pasaporte',
+    patron: /^[a-zA-Z0-9]{6,12}$/,
+    placeholder: 'Ej: AB123456',
+    ayuda: '6 a 12 caracteres alfanuméricos',
+  },
+] as const;
 
 /** Paso 1 resuelto: lo que guarda el store tras elegir tipo + documento. */
 export interface RegistroDocumento {
-  tipo: TipoRegistro;
   tipoDocumento: TipoDocumento;
   tipoCliente: TipoCliente;
   numeroDocumento: string;
@@ -26,7 +57,7 @@ export interface RegistroDocumento {
 /**
  * Body de `POST /auth/register` (`RegisterClienteDto`). El `ValidationPipe` del
  * backend usa `forbidNonWhitelisted`, así que el payload debe tener SOLO estas
- * claves — nada de `confirmar`, `terminos`, etc.
+ * claves — nada de `confirmar`, `terminos`, `username` repetido, etc.
  */
 export interface RegisterClientePayload {
   nombres: string;
@@ -40,5 +71,7 @@ export interface RegisterClientePayload {
   username: string;
   password: string;
   telefono?: string;
+  fecha_nacimiento?: string; // ISO (yyyy-MM-dd)
+  direccion?: string;
   razon_social?: string;
 }

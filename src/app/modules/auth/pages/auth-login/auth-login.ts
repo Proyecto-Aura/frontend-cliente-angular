@@ -7,31 +7,33 @@ import { AuthApi } from '../../services/auth-api';
 import { apiErrorMessage } from '../../../../shared/utils/api-error';
 import { LoginRequest } from '../../models/auth.model';
 
-/** Página de inicio de sesión (hija de auth-layout). */
+/** Página de inicio de sesión del portal cliente (hija de auth-layout). */
 @Component({
   selector: 'app-auth-login',
   imports: [AuthLoginForm],
-  host: { class: 'block w-full max-w-[564px] my-auto' },
+  host: { class: 'block w-full max-w-[512px] my-auto' },
   template: `
     <section
-      class="w-full rounded-3xl bg-surface p-10 shadow-[0_30px_80px_-24px_rgba(17,24,39,0.22)] sm:px-14 sm:py-16"
+      class="flex w-full flex-col gap-8 rounded-[25px] bg-surface px-[30px] py-[50px] shadow-[0px_8px_32px_rgba(0,0,0,0.12)]"
     >
-      <h2 class="text-[36px] font-extrabold leading-tight tracking-tight text-ink">Iniciar sesión</h2>
-      <p class="mt-2 text-[15px] text-ink-soft">Ingresa tus credenciales para continuar</p>
+      <div class="flex flex-col gap-2">
+        <h1 class="font-display text-[36px] font-extrabold leading-tight tracking-[-0.96px] text-black">
+          Iniciar sesión
+        </h1>
+        <p class="text-[15px] font-medium text-ink-soft">Ingresa tus credenciales para continuar</p>
+      </div>
 
       @if (recienRegistrado) {
-        <p class="mt-6 rounded-[10px] bg-success-50 px-4 py-3 text-sm text-success-600" role="status">
-          Cuenta creada. Te enviamos un correo para verificarla; ya puedes iniciar sesión.
+        <p class="rounded-lg bg-success-50 px-4 py-3 text-[13px] text-success-700" role="status">
+          Cuenta creada. Te enviamos un correo de activación; actívala antes de iniciar sesión.
         </p>
       }
 
-      <div class="mt-10">
-        <app-auth-login-form
-          [enviando]="enviando()"
-          [error]="error()"
-          (submitted)="onLogin($event)"
-        />
-      </div>
+      <app-auth-login-form
+        [enviando]="enviando()"
+        [error]="error()"
+        (submitted)="onLogin($event)"
+      />
     </section>
   `,
 })
@@ -50,7 +52,7 @@ export class AuthLogin {
     this.api.login(credentials).subscribe({
       next: () => {
         this.enviando.set(false);
-        // TODO: destino real tras login (catálogo / mi-cuenta).
+        // TODO: destino real tras login (catálogo del portal cliente).
         this.router.navigate(['/catalogo']);
       },
       error: (err: HttpErrorResponse) => {
