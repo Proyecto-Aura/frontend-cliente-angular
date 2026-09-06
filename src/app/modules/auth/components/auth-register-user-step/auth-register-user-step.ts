@@ -45,7 +45,7 @@ import { AuthPasswordStrength } from '../auth-password-strength/auth-password-st
         <button
           type="button"
           (click)="back.emit()"
-          class="h-[38px] flex-1 rounded-[6px] border border-line-soft text-[15px] font-medium text-ink-soft transition-colors hover:bg-canvas"
+          class="h-[38px] flex-1 rounded-[6px] border border-line-soft text-[15px] font-medium text-ink-soft transition duration-150 hover:bg-canvas active:scale-[0.99]"
         >
           Atrás
         </button>
@@ -53,7 +53,7 @@ import { AuthPasswordStrength } from '../auth-password-strength/auth-password-st
           type="button"
           [disabled]="!puedeCrear() || enviando()"
           (click)="submit.emit()"
-          class="h-[38px] flex-1 rounded-[6px] border text-[15px] font-medium transition-colors"
+          class="h-[38px] flex-1 rounded-[6px] border text-[15px] font-medium transition duration-150 active:scale-[0.99]"
           [class.bg-brand-600]="puedeCrear() && !enviando()"
           [class.border-brand-600]="puedeCrear() && !enviando()"
           [class.text-white]="puedeCrear() && !enviando()"

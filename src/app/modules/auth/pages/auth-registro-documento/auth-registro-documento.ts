@@ -7,7 +7,7 @@ import { AuthRegisterDocForm } from '../../components/auth-register-doc-form/aut
 @Component({
   selector: 'app-auth-registro-documento',
   imports: [RouterLink, AuthRegisterDocForm],
-  host: { class: 'block w-full max-w-[512px] my-auto' },
+  host: { class: 'block w-full max-w-[512px] my-auto animate-fade-up' },
   template: `
     <section
       class="flex w-full flex-col gap-8 rounded-[25px] bg-surface px-[30px] py-[50px] shadow-[0px_8px_32px_rgba(0,0,0,0.12)]"

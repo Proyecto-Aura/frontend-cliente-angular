@@ -48,7 +48,7 @@ import {
       <button
         type="submit"
         [disabled]="form.invalid"
-        class="mt-1 h-[38px] w-full rounded-[6px] border text-[15px] font-medium transition-colors"
+        class="mt-1 h-[38px] w-full rounded-[6px] border text-[15px] font-medium transition duration-150 active:scale-[0.99]"
         [class.bg-brand-600]="form.valid"
         [class.border-brand-600]="form.valid"
         [class.text-white]="form.valid"

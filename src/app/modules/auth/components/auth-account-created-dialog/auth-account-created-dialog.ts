@@ -5,8 +5,8 @@ import { Component, input, output } from '@angular/core';
   selector: 'app-auth-account-created-dialog',
   host: { class: 'block' },
   template: `
-    <div class="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-4" role="dialog" aria-modal="true">
-      <div class="w-full max-w-[460px] overflow-hidden rounded-2xl bg-surface shadow-2xl">
+    <div class="animate-fade-in fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-4" role="dialog" aria-modal="true">
+      <div class="animate-scale-in w-full max-w-[460px] overflow-hidden rounded-2xl bg-surface shadow-2xl">
         <div class="flex flex-col items-center gap-5 px-8 pb-8 pt-10">
           <span class="grid size-[72px] place-items-center rounded-full bg-success-50">
             <span class="grid size-[52px] place-items-center rounded-full bg-success-600 text-white">
@@ -30,7 +30,7 @@ import { Component, input, output } from '@angular/core';
           <button
             type="button"
             (click)="confirm.emit()"
-            class="h-[38px] rounded-xl bg-brand-600 px-8 text-[13px] font-semibold text-white transition-colors hover:bg-brand-700"
+            class="h-[38px] rounded-xl bg-brand-600 px-8 text-[13px] font-semibold text-white transition duration-150 hover:bg-brand-700 active:scale-[0.98]"
           >
             Ir al inicio de sesión
           </button>

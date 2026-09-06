@@ -13,7 +13,7 @@ import { OPCIONES_DOCUMENTO, RegisterClientePayload } from '../../models/registr
 @Component({
   selector: 'app-auth-registro-datos',
   imports: [RouterLink, AuthRegisterDataForm, AuthAccountCreatedDialog],
-  host: { class: 'block w-full max-w-[600px] my-auto' },
+  host: { class: 'block w-full max-w-[600px] my-auto animate-fade-up' },
   template: `
     <section
       class="flex w-full flex-col gap-6 rounded-[25px] bg-surface px-[30px] py-[40px] shadow-[0px_8px_32px_rgba(0,0,0,0.12)]"

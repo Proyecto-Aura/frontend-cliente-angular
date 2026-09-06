@@ -11,7 +11,7 @@ import { PASSWORD_RULES, STRENGTH_LEVELS } from '../../utils/password-rules';
       <div class="flex gap-1.5">
         @for (i of [1, 2, 3, 4, 5]; track i) {
           <span
-            class="h-[5px] flex-1 rounded-full transition-all"
+            class="h-[5px] flex-1 rounded-full transition-colors duration-300"
             [style.background]="password().length > 0 && score() >= i ? level().color : '#e0e0e0'"
           ></span>
         }

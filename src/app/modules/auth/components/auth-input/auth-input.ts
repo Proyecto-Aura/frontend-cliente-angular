@@ -57,7 +57,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
       </span>
 
       @if (showError()) {
-        <span class="text-[12px] text-brand-600">{{ error() }}</span>
+        <span class="animate-fade-in text-[12px] text-brand-600">{{ error() }}</span>
       } @else if (hint()) {
         <span class="text-[12px] text-muted">{{ hint() }}</span>
       }

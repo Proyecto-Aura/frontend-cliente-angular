@@ -4,14 +4,14 @@
     class="relative hidden w-[48%] shrink-0 flex-col overflow-hidden px-12 py-12 text-white lg:flex"
     style="background: linear-gradient(134deg, #ef4444 6%, #dc2626 59%, #b91c1c 94%)"
   >
-    <!-- Círculos decorativos -->
-    <span class="pointer-events-none absolute -left-32 -top-32 size-96 rounded-full bg-white/12"></span>
-    <span class="pointer-events-none absolute right-12 top-10 size-32 rounded-full bg-white/[0.06]"></span>
-    <span class="pointer-events-none absolute bottom-40 left-1/3 size-48 rounded-full bg-white/[0.07]"></span>
-    <span class="pointer-events-none absolute -bottom-8 right-0 size-80 rounded-full bg-white/10"></span>
+    <!-- Círculos decorativos (deriva lentísima, solo transform → GPU) -->
+    <span class="animate-drift-a pointer-events-none absolute -left-32 -top-32 size-96 rounded-full bg-white/12"></span>
+    <span class="animate-drift-b pointer-events-none absolute right-12 top-10 size-32 rounded-full bg-white/[0.06]"></span>
+    <span class="animate-drift-a pointer-events-none absolute bottom-40 left-1/3 size-48 rounded-full bg-white/[0.07]"></span>
+    <span class="animate-drift-b pointer-events-none absolute -bottom-8 right-0 size-80 rounded-full bg-white/10"></span>
 
     <!-- Logo -->
-    <div class="relative flex items-center gap-3">
+    <div class="animate-fade-up relative flex items-center gap-3">
       <span class="grid size-14 place-items-center rounded-2xl bg-white shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)]">
         <img ngSrc="/francos-mark.png" width="36" height="34" alt="Franco's" class="h-auto w-9" priority />
       </span>
@@ -19,7 +19,9 @@
     </div>
 
     <!-- Claim -->
-    <h1 class="relative mt-auto max-w-md font-display text-[64px] font-black leading-[60px] tracking-[-0.96px]">
+    <h1
+      class="animate-fade-up relative mt-auto max-w-md font-display text-[64px] font-black leading-[60px] tracking-[-0.96px] [animation-delay:60ms]"
+    >
       ¡Hola,<br /><span class="text-[#ffe2e2]">bienvenido!</span>
     </h1>
 
