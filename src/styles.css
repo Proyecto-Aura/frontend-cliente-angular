@@ -116,3 +116,18 @@ body {
   color: var(--color-ink);
   background: var(--color-canvas);
 }
+
+/* Lenis (scroll suave) — solo activo mientras la landing de /nosotros está montada. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
