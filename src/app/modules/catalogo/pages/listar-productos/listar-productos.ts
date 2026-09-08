@@ -4,11 +4,12 @@ import { CatalogoApi } from '../../services/catalogo-api';
 import { Producto } from '../../models/producto.model';
 import { CatalogoFilterDropdown } from '../../components/catalogo-filter-dropdown/catalogo-filter-dropdown';
 import { CatalogoProductCard } from '../../components/catalogo-product-card/catalogo-product-card';
+import { CatalogoProductDetail } from '../../components/catalogo-product-detail/catalogo-product-detail';
 
 /** Vista de catálogo: filtros + grilla de productos. Hija de store-layout. */
 @Component({
   selector: 'app-listar-productos',
-  imports: [CatalogoFilterDropdown, CatalogoProductCard],
+  imports: [CatalogoFilterDropdown, CatalogoProductCard, CatalogoProductDetail],
   host: { class: 'block' },
   templateUrl: './listar-productos.html',
 })

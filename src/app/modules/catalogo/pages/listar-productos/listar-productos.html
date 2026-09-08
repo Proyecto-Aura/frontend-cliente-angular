@@ -54,4 +54,6 @@
   </div>
 </div>
 
-<!-- El modal de detalle lo agrega feature/Ver-detalle-producto, leyendo detalle() -->
+@if (detalle(); as p) {
+  <app-catalogo-product-detail [product]="p" (close)="detalle.set(null)" />
+}
