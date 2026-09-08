@@ -1,4 +1,9 @@
 import { Routes } from '@angular/router';
 
-// CONTACTO_ROUTES — página única: contacto
-export const CONTACTO_ROUTES: Routes = [];
+// CONTACTO_ROUTES — montado en '/contacto' dentro de store-layout.
+export const CONTACTO_ROUTES: Routes = [
+  {
+    path: '',
+    loadComponent: () => import('./pages/contacto').then((m) => m.Contacto),
+  },
+];

@@ -1,0 +1,114 @@
+<!-- Hero -->
+<div class="relative overflow-hidden bg-gradient-to-br from-brand-700 via-brand-600 to-brand-700 px-6 py-12 sm:px-12 lg:px-20 lg:py-14">
+  <span class="absolute -top-20 right-10 block size-[400px] rounded-full bg-white/5"></span>
+  <div class="relative z-10">
+    <p class="mb-2 text-[13px] font-bold uppercase tracking-widest text-white/60">Estamos aquí para ti</p>
+    <h1 class="mb-3 font-display text-[32px] font-black leading-tight tracking-[-1px] text-white sm:text-[48px]">
+      Contáctanos
+    </h1>
+    <p class="text-[15px] text-white/80">
+      ¿Tienes alguna pregunta, sugerencia o simplemente quieres saludar? Escríbenos.
+    </p>
+  </div>
+</div>
+
+<div
+  class="grid grid-cols-1 items-start gap-8 px-6 py-10 sm:px-12 lg:grid-cols-[1fr_420px] lg:gap-10 lg:px-20 lg:py-12"
+>
+  <!-- Formulario -->
+  <div class="flex flex-col gap-5 rounded-2xl border border-[#f0f0f0] bg-surface p-6 sm:p-8">
+    <h2 class="font-display text-[18px] font-bold text-ink sm:text-[20px]">Envíanos un mensaje</h2>
+
+    @if (enviado()) {
+      <div class="flex flex-col items-center gap-4 py-10 text-center">
+        <span class="flex size-16 items-center justify-center rounded-full border-2 border-[#86efac] bg-success-50 text-success-700">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335" /><path d="m9 11 3 3L22 4" /></svg>
+        </span>
+        <div>
+          <p class="font-display text-[16px] font-bold text-ink">¡Mensaje enviado!</p>
+          <p class="text-[13px] text-muted">Te responderemos en menos de 24 horas hábiles.</p>
+        </div>
+        <button type="button" (click)="otroMensaje()" class="text-[13px] font-semibold text-brand-600 hover:underline">
+          Enviar otro mensaje
+        </button>
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <label class="flex flex-col gap-1.5">
+          <span class="text-[11px] font-semibold uppercase tracking-wide text-muted">Nombre completo *</span>
+          <input
+            [value]="nombre()" (input)="set(nombre, $event)"
+            placeholder="Ej: Juan García"
+            class="h-[42px] w-full rounded-xl border border-line-soft bg-surface px-4 text-[13px] text-label outline-none transition-colors placeholder:text-[#c0c0c0] focus:border-brand-600"
+          />
+        </label>
+        <label class="flex flex-col gap-1.5">
+          <span class="text-[11px] font-semibold uppercase tracking-wide text-muted">Email *</span>
+          <input
+            type="email"
+            [value]="email()" (input)="set(email, $event)"
+            placeholder="tu@correo.com"
+            class="h-[42px] w-full rounded-xl border border-line-soft bg-surface px-4 text-[13px] text-label outline-none transition-colors placeholder:text-[#c0c0c0] focus:border-brand-600"
+          />
+        </label>
+      </div>
+      <label class="flex flex-col gap-1.5">
+        <span class="text-[11px] font-semibold uppercase tracking-wide text-muted">Asunto *</span>
+        <input
+          [value]="asunto()" (input)="set(asunto, $event)"
+          placeholder="Ej: Consulta sobre mi pedido"
+          class="h-[42px] w-full rounded-xl border border-line-soft bg-surface px-4 text-[13px] text-label outline-none transition-colors placeholder:text-[#c0c0c0] focus:border-brand-600"
+        />
+      </label>
+      <label class="flex flex-col gap-1.5">
+        <span class="text-[11px] font-semibold uppercase tracking-wide text-muted">Mensaje *</span>
+        <textarea
+          [value]="mensaje()" (input)="set(mensaje, $event)"
+          rows="5"
+          placeholder="Escribe tu mensaje aquí..."
+          class="w-full resize-none rounded-xl border border-line-soft bg-surface px-4 py-3 text-[13px] text-label outline-none transition-colors placeholder:text-[#c0c0c0] focus:border-brand-600"
+        ></textarea>
+      </label>
+      <button
+        type="button"
+        (click)="enviar()"
+        [disabled]="!puedeEnviar()"
+        [class]="puedeEnviar() ? 'bg-brand-600 text-white hover:bg-brand-700' : 'bg-line-soft text-muted cursor-not-allowed'"
+        class="h-[44px] rounded-xl text-[14px] font-semibold transition-colors"
+      >
+        Enviar mensaje
+      </button>
+    }
+  </div>
+
+  <!-- Datos de contacto -->
+  <div class="flex flex-col gap-4">
+    @for (item of info; track item.title) {
+      <div class="flex items-start gap-4 rounded-2xl border border-[#f0f0f0] bg-surface p-5">
+        <span class="flex size-10 shrink-0 items-center justify-center rounded-xl" [class]="item.tone">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /></svg>
+        </span>
+        <div>
+          <p class="mb-0.5 text-[13px] font-bold text-ink">{{ item.title }}</p>
+          @for (l of item.lines; track l) {
+            <p class="text-[12px] text-muted">{{ l }}</p>
+          }
+        </div>
+      </div>
+    }
+
+    <div class="rounded-2xl border border-[#f0f0f0] bg-surface p-5">
+      <p class="mb-3 text-[13px] font-bold text-ink">Síguenos</p>
+      <div class="flex gap-2">
+        @for (red of redes; track red.label) {
+          <span
+            class="flex h-[34px] flex-1 cursor-pointer items-center justify-center rounded-xl text-[11px] font-bold text-white transition-opacity hover:opacity-90"
+            [class]="red.tone"
+          >
+            {{ red.label }}
+          </span>
+        }
+      </div>
+    </div>
+  </div>
+</div>

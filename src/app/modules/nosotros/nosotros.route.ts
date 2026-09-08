@@ -1,4 +1,9 @@
 import { Routes } from '@angular/router';
 
-// NOSOTROS_ROUTES — página única: nosotros
-export const NOSOTROS_ROUTES: Routes = [];
+// NOSOTROS_ROUTES — montado en '/nosotros' dentro de store-layout.
+export const NOSOTROS_ROUTES: Routes = [
+  {
+    path: '',
+    loadComponent: () => import('./pages/nosotros').then((m) => m.Nosotros),
+  },
+];
