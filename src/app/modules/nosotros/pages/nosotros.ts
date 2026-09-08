@@ -76,10 +76,10 @@ export class Nosotros {
   ];
 
   protected readonly equipo = [
-    { ini: 'FF', name: 'Franco Flores', role: 'Fundador & CEO', bg: '#e2564a33', fg: '#ffd7d2' },
-    { ini: 'MR', name: 'María Ramos', role: 'Directora de Calidad', bg: '#f59e0b33', fg: '#ffe6bf' },
-    { ini: 'CP', name: 'Carlos Paz', role: 'Jefe de Producción', bg: '#16a34a33', fg: '#c7f0d3' },
-    { ini: 'LT', name: 'Lucía Torres', role: 'Gerente Comercial', bg: '#6366f133', fg: '#d3d5fb' },
+    { ini: 'FF', name: 'Franco Flores', role: 'Fundador & CEO', bg: '#fdecea', fg: '#c0392b' },
+    { ini: 'MR', name: 'María Ramos', role: 'Directora de Calidad', bg: '#fdf0dd', fg: '#b45309' },
+    { ini: 'CP', name: 'Carlos Paz', role: 'Jefe de Producción', bg: '#e6f4ea', fg: '#15803d' },
+    { ini: 'LT', name: 'Lucía Torres', role: 'Gerente Comercial', bg: '#e8e9fb', fg: '#4f46e5' },
   ];
 
   constructor() {
