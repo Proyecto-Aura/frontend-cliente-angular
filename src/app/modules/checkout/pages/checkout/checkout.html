@@ -1,0 +1,370 @@
+@if (carrito.items().length === 0) {
+  <div class="flex flex-1 items-center justify-center px-6 py-16">
+    <div
+      class="flex max-w-[420px] flex-col items-center gap-4 rounded-2xl border border-[#f0f0f0] bg-surface px-10 py-16 text-center"
+    >
+      <span class="flex size-16 items-center justify-center rounded-full bg-[#f0f0f0]">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#bdbdbd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" /></svg>
+      </span>
+      <div>
+        <p class="font-display text-[15px] font-semibold text-label">No hay nada que pagar todavía</p>
+        <p class="mt-1 text-[12px] text-muted">Tu carrito está vacío. Agrega productos antes de continuar.</p>
+      </div>
+      <a routerLink="/catalogo" class="flex h-[36px] items-center rounded-lg bg-brand-600 px-6 text-[13px] font-semibold text-white transition-colors hover:bg-brand-700">
+        Ver catálogo
+      </a>
+    </div>
+  </div>
+} @else {
+  <!-- Barra de pasos -->
+  <div
+    class="flex shrink-0 flex-col gap-3 border-b border-[#f0f0f0] bg-surface px-6 py-3 sm:h-[48px] sm:flex-row sm:items-center sm:gap-4 sm:py-0 lg:px-12"
+  >
+    <a routerLink="/carrito" class="flex w-fit items-center gap-1.5 text-muted transition-colors hover:text-label">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+      <span class="text-[13px] font-medium">Volver al carrito</span>
+    </a>
+    <span class="mx-1 hidden h-4 w-px bg-[#eeeeee] sm:block"></span>
+    <div class="flex flex-wrap items-center gap-2">
+      @for (paso of pasos; track paso; let i = $index) {
+        <div class="flex items-center gap-2">
+          @if (i > 0) {
+            <span class="h-px w-6 bg-line-soft"></span>
+          }
+          <div class="flex items-center gap-1.5">
+            <span
+              class="flex size-4 items-center justify-center rounded-full font-display text-[9px] font-bold"
+              [class.bg-brand-600]="i <= 1"
+              [class.text-white]="i <= 1"
+              [class.bg-line-soft]="i > 1"
+              [class.text-muted]="i > 1"
+            >
+              {{ i + 1 }}
+            </span>
+            <span class="text-[12px] font-semibold" [class.text-ink]="i <= 1" [class.text-line]="i > 1">
+              {{ paso }}
+            </span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div
+    class="mx-auto grid max-w-[1100px] grid-cols-1 items-start gap-8 px-6 py-8 lg:grid-cols-[1fr_380px] lg:px-8"
+  >
+    <!-- Columna izquierda: formularios -->
+    <div class="flex flex-col gap-6">
+      <!-- Dirección de entrega -->
+      <section class="flex flex-col gap-5 rounded-2xl border border-[#f0f0f0] bg-surface p-6">
+        <div class="flex items-center gap-2.5">
+          <span class="flex size-8 items-center justify-center rounded-xl bg-[#fff0f0] text-brand-600">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /><circle cx="12" cy="10" r="3" /></svg>
+          </span>
+          <h2 class="font-display text-[16px] font-bold text-ink">Dirección de entrega</h2>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <label class="flex flex-col gap-1.5">
+            <span class="text-[12px] font-semibold text-label">Nombre completo *</span>
+            <input
+              [value]="nombre()" (input)="bind(nombre, $event)"
+              placeholder="Ej: Juan García López"
+              class="h-[40px] rounded-xl border border-line-soft px-4 text-[13px] text-label outline-none transition-colors placeholder:text-[#c0c0c0] focus:border-brand-600"
+            />
+          </label>
+          <label class="flex flex-col gap-1.5">
+            <span class="text-[12px] font-semibold text-label">Teléfono de contacto *</span>
+            <input
+              [value]="telefono()" (input)="bind(telefono, $event)"
+              inputmode="tel"
+              placeholder="Ej: 987 654 321"
+              class="h-[40px] rounded-xl border border-line-soft px-4 text-[13px] text-label outline-none transition-colors placeholder:text-[#c0c0c0] focus:border-brand-600"
+            />
+          </label>
+        </div>
+
+        <label class="flex flex-col gap-1.5">
+          <span class="text-[12px] font-semibold text-label">Dirección *</span>
+          <input
+            [value]="direccion()" (input)="bind(direccion, $event)"
+            placeholder="Ej: Av. La Marina 2345, Dpto. 301"
+            class="h-[40px] rounded-xl border border-line-soft px-4 text-[13px] text-label outline-none transition-colors placeholder:text-[#c0c0c0] focus:border-brand-600"
+          />
+        </label>
+
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div class="relative flex flex-col gap-1.5">
+            <span class="text-[12px] font-semibold text-label">Distrito *</span>
+            <button
+              type="button"
+              (click)="distOpen.set(!distOpen())"
+              [class.border-brand-600]="distOpen()"
+              [class.border-line-soft]="!distOpen()"
+              [class.text-label]="distrito()"
+              [class.text-[#c0c0c0]]="!distrito()"
+              class="flex h-[40px] cursor-pointer items-center justify-between rounded-xl border px-4 text-left text-[13px] transition-colors"
+            >
+              {{ distrito() || 'Selecciona distrito' }}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#bdbdbd" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200" [class.rotate-180]="distOpen()"><path d="m6 9 6 6 6-6" /></svg>
+            </button>
+            @if (distOpen()) {
+              <div
+                class="absolute left-0 top-[68px] z-30 max-h-[200px] w-full overflow-y-auto rounded-xl border border-line-soft bg-surface shadow-[0px_8px_24px_rgba(0,0,0,0.1)]"
+              >
+                @for (d of distritos; track d) {
+                  <button
+                    type="button"
+                    (click)="pickDistrito(d)"
+                    [class.text-brand-600]="distrito() === d"
+                    [class.font-semibold]="distrito() === d"
+                    [class.text-label]="distrito() !== d"
+                    class="w-full cursor-pointer px-4 py-2.5 text-left text-[13px] transition-colors hover:bg-brand-50"
+                  >
+                    {{ d }}
+                  </button>
+                }
+              </div>
+            }
+          </div>
+          <label class="flex flex-col gap-1.5">
+            <span class="text-[12px] font-semibold text-label">Ciudad</span>
+            <input value="Lima" readonly class="h-[40px] rounded-xl border border-line-soft bg-[#fafafa] px-4 text-[13px] text-muted outline-none" />
+          </label>
+        </div>
+
+        <label class="flex flex-col gap-1.5">
+          <span class="text-[12px] font-semibold text-label">
+            Referencia <span class="font-normal text-line">(opcional)</span>
+          </span>
+          <input
+            [value]="referencia()" (input)="bind(referencia, $event)"
+            placeholder="Ej: Frente al parque, edificio azul"
+            class="h-[40px] rounded-xl border border-line-soft px-4 text-[13px] text-label outline-none transition-colors placeholder:text-[#c0c0c0] focus:border-brand-600"
+          />
+        </label>
+
+        <div class="flex items-center gap-2.5 rounded-xl border border-[#bbf7d0] bg-success-50 px-4 py-2.5">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" /><path d="M15 18H9" /><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14" /><circle cx="17" cy="18" r="2" /><circle cx="7" cy="18" r="2" /></svg>
+          <p class="text-[12px] font-medium text-success-700">
+            Entrega estimada: <strong>2–3 días hábiles</strong> · Envío gratuito en todos los pedidos
+          </p>
+        </div>
+      </section>
+
+      <!-- Comprobante -->
+      <section class="flex flex-col gap-5 rounded-2xl border border-[#f0f0f0] bg-surface p-6">
+        <div class="flex items-center gap-2.5">
+          <span class="flex size-8 items-center justify-center rounded-xl bg-[#fff0f0] text-brand-600">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" /><path d="M14 2v4a2 2 0 0 0 2 2h4" /><path d="M10 9H8" /><path d="M16 13H8" /><path d="M16 17H8" /></svg>
+          </span>
+          <h2 class="font-display text-[16px] font-bold text-ink">Comprobante de pago</h2>
+        </div>
+
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          @for (tipo of ['boleta', 'factura']; track tipo) {
+            <button
+              type="button"
+              (click)="comprobante.set($any(tipo))"
+              [class.border-brand-600]="comprobante() === tipo"
+              [class.bg-brand-50]="comprobante() === tipo"
+              [class.border-line-soft]="comprobante() !== tipo"
+              class="flex cursor-pointer items-center gap-3 rounded-xl border-2 p-4 transition-all hover:border-[#f0a0a0]"
+            >
+              <span
+                class="flex size-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors"
+                [class.border-brand-600]="comprobante() === tipo"
+                [class.border-line]="comprobante() !== tipo"
+              >
+                @if (comprobante() === tipo) {
+                  <span class="size-2.5 rounded-full bg-brand-600"></span>
+                }
+              </span>
+              <span class="text-left">
+                <span
+                  class="block text-[13px] font-semibold capitalize"
+                  [class.text-brand-600]="comprobante() === tipo"
+                  [class.text-label]="comprobante() !== tipo"
+                >
+                  {{ tipo }}
+                </span>
+                <span class="block text-[11px] text-muted">
+                  {{ tipo === 'boleta' ? 'Para personas naturales' : 'Para empresas con RUC' }}
+                </span>
+              </span>
+            </button>
+          }
+        </div>
+
+        @if (comprobante() === 'factura') {
+          <div class="flex flex-col gap-3 pt-1">
+            <label class="flex flex-col gap-1.5">
+              <span class="text-[12px] font-semibold text-label">RUC de la empresa *</span>
+              <input
+                [value]="ruc()" (input)="bind(ruc, $event)"
+                inputmode="numeric" maxlength="11"
+                placeholder="Ej: 20123456789"
+                class="h-[40px] rounded-xl border border-line-soft px-4 text-[13px] text-label outline-none transition-colors placeholder:text-[#c0c0c0] focus:border-brand-600"
+              />
+            </label>
+            <label class="flex flex-col gap-1.5">
+              <span class="text-[12px] font-semibold text-label">Razón social *</span>
+              <input
+                [value]="razonSocial()" (input)="bind(razonSocial, $event)"
+                placeholder="Ej: Mi Empresa S.A.C."
+                class="h-[40px] rounded-xl border border-line-soft px-4 text-[13px] text-label outline-none transition-colors placeholder:text-[#c0c0c0] focus:border-brand-600"
+              />
+            </label>
+          </div>
+        }
+      </section>
+
+      <!-- Método de pago -->
+      <section class="flex flex-col gap-5 rounded-2xl border border-[#f0f0f0] bg-surface p-6">
+        <div class="flex items-center gap-2.5">
+          <span class="flex size-8 items-center justify-center rounded-xl bg-[#fff0f0] text-brand-600">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2" /><line x1="2" x2="22" y1="10" y2="10" /></svg>
+          </span>
+          <h2 class="font-display text-[16px] font-bold text-ink">Método de pago</h2>
+        </div>
+
+        <div class="flex flex-col gap-3">
+          <button
+            type="button"
+            (click)="metodoPago.set('culqi')"
+            [class.border-brand-600]="metodoPago() === 'culqi'"
+            [class.bg-brand-50]="metodoPago() === 'culqi'"
+            [class.border-line-soft]="metodoPago() !== 'culqi'"
+            class="flex cursor-pointer items-center gap-4 rounded-xl border-2 p-4 transition-all hover:border-[#f0a0a0]"
+          >
+            <span class="flex size-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors" [class.border-brand-600]="metodoPago() === 'culqi'" [class.border-line]="metodoPago() !== 'culqi'">
+              @if (metodoPago() === 'culqi') { <span class="size-2.5 rounded-full bg-brand-600"></span> }
+            </span>
+            <span class="flex-1 text-left">
+              <span class="flex flex-wrap items-center gap-2">
+                <span class="text-[13px] font-semibold" [class.text-brand-600]="metodoPago() === 'culqi'" [class.text-label]="metodoPago() !== 'culqi'">Pago online con Culqi</span>
+                <span class="rounded-full bg-[#6366f1] px-2 py-0.5 text-[10px] font-bold text-white">SEGURO</span>
+              </span>
+              <span class="mt-0.5 block text-[11px] text-muted">Tarjeta de crédito / débito · Yape · Plin</span>
+            </span>
+          </button>
+
+          <button
+            type="button"
+            (click)="metodoPago.set('presencial')"
+            [class.border-brand-600]="metodoPago() === 'presencial'"
+            [class.bg-brand-50]="metodoPago() === 'presencial'"
+            [class.border-line-soft]="metodoPago() !== 'presencial'"
+            class="flex cursor-pointer items-center gap-4 rounded-xl border-2 p-4 transition-all hover:border-[#f0a0a0]"
+          >
+            <span class="flex size-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors" [class.border-brand-600]="metodoPago() === 'presencial'" [class.border-line]="metodoPago() !== 'presencial'">
+              @if (metodoPago() === 'presencial') { <span class="size-2.5 rounded-full bg-brand-600"></span> }
+            </span>
+            <span class="flex-1 text-left">
+              <span class="block text-[13px] font-semibold" [class.text-brand-600]="metodoPago() === 'presencial'" [class.text-label]="metodoPago() !== 'presencial'">Pago presencial</span>
+              <span class="mt-0.5 block text-[11px] text-muted">Paga en efectivo al recibir tu pedido o en tienda</span>
+            </span>
+          </button>
+
+          @if (metodoPago() === 'culqi') {
+            <div class="flex items-center gap-2 rounded-xl border border-[#c7d7fd] bg-[#f0f4ff] px-4 py-2.5">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><path d="M21.801 10A10 10 0 1 1 17 3.335" /><path d="m9 11 3 3L22 4" /></svg>
+              <p class="text-[12px] font-medium text-[#4338ca]">
+                Serás redirigido a la pasarela de Culqi para completar el pago de forma segura.
+              </p>
+            </div>
+          } @else {
+            <div class="flex items-center gap-2 rounded-xl border border-[#fcd34d] bg-[#fef3c7] px-4 py-2.5">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><path d="M12 9v4M12 17h.01" /></svg>
+              <p class="text-[12px] font-medium text-[#92400e]">
+                Tu pedido quedará reservado. El pago se realiza al momento de la entrega.
+              </p>
+            </div>
+          }
+        </div>
+      </section>
+    </div>
+
+    <!-- Resumen -->
+    <div class="flex flex-col gap-4 lg:sticky lg:top-6">
+      <div class="flex flex-col gap-4 rounded-2xl border border-[#f0f0f0] bg-surface p-5">
+        <h2 class="font-display text-[15px] font-bold text-ink">Resumen del pedido</h2>
+
+        <div class="flex max-h-[300px] flex-col gap-3 overflow-y-auto">
+          @for (entry of carrito.items(); track entry.product.id) {
+            <div class="flex items-center gap-3">
+              <div class="relative size-[52px] shrink-0 overflow-hidden rounded-lg border border-[#f0f0f0] bg-[#fafafa]">
+                <img [ngSrc]="entry.product.img" [alt]="entry.product.name" fill class="object-contain p-1" sizes="52px" />
+              </div>
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-[12px] font-semibold leading-snug text-ink">{{ entry.product.name }}</p>
+                <p class="text-[11px] text-muted">{{ entry.product.weight }} · x{{ entry.qty }}</p>
+              </div>
+              <span class="shrink-0 font-display text-[13px] font-bold text-ink">
+                S/ {{ entry.product.price * entry.qty | number: '1.2-2' }}
+              </span>
+            </div>
+          }
+        </div>
+
+        <div class="h-px bg-[#f0f0f0]"></div>
+
+        <div class="flex flex-col gap-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-[13px] text-muted">
+              Subtotal ({{ carrito.totalItems() }}
+              {{ carrito.totalItems() === 1 ? 'producto' : 'productos' }})
+            </span>
+            <span class="text-[13px] font-semibold text-label">S/ {{ carrito.subtotal() | number: '1.2-2' }}</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-[13px] text-muted">Envío</span>
+            <span class="text-[13px] font-semibold text-success-700">Gratis</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-[13px] text-muted">Comprobante</span>
+            <span class="text-[13px] font-semibold capitalize text-label">{{ comprobante() }}</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-[13px] text-muted">Pago</span>
+            <span class="text-[13px] font-semibold text-label">
+              {{ metodoPago() === 'culqi' ? 'Online · Culqi' : 'Presencial' }}
+            </span>
+          </div>
+          <div class="my-1 h-px bg-[#f0f0f0]"></div>
+          <div class="flex items-center justify-between">
+            <span class="font-display text-[16px] font-bold text-ink">Total</span>
+            <span class="font-display text-[22px] font-black text-brand-600">
+              S/ {{ carrito.subtotal() | number: '1.2-2' }}
+            </span>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          (click)="confirmar()"
+          [disabled]="!puedeConfirmar()"
+          [class.bg-brand-600]="puedeConfirmar()"
+          [class.text-white]="puedeConfirmar()"
+          [class.hover:bg-brand-700]="puedeConfirmar()"
+          [class.cursor-pointer]="puedeConfirmar()"
+          [class.bg-line-soft]="!puedeConfirmar()"
+          [class.text-muted]="!puedeConfirmar()"
+          [class.cursor-not-allowed]="!puedeConfirmar()"
+          class="flex h-[48px] w-full items-center justify-center gap-2 rounded-xl text-[15px] font-semibold transition-colors"
+        >
+          {{ metodoPago() === 'culqi' ? 'Ir a pagar con Culqi' : 'Confirmar pedido' }}
+        </button>
+
+        @if (!puedeConfirmar()) {
+          <p class="text-center text-[11px] text-line">Completa los campos requeridos (*) para continuar</p>
+        }
+
+        <div class="mt-1 flex items-center justify-center gap-1.5">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335" /><path d="m9 11 3 3L22 4" /></svg>
+          <span class="text-[11px] text-muted">Compra 100% segura y protegida</span>
+        </div>
+      </div>
+    </div>
+  </div>
+}
