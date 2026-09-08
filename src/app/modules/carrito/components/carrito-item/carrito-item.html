@@ -1,0 +1,62 @@
+<div class="flex gap-3 rounded-xl border border-[#f5eded] bg-surface p-3">
+  <div class="relative size-[80px] shrink-0 overflow-hidden rounded-lg bg-[#fafafa]">
+    <img [ngSrc]="entry().product.img" [alt]="entry().product.name" fill class="object-contain p-1" sizes="80px" />
+  </div>
+
+  <div class="flex min-w-0 flex-1 flex-col gap-1">
+    <div class="flex items-start gap-1.5">
+      <span class="flex-1 text-[13px] font-semibold leading-snug text-ink">{{ entry().product.name }}</span>
+      @if (entry().product.promo) {
+        <span class="shrink-0 rounded-md bg-warning-600 px-1.5 py-0.5 font-display text-[9px] font-black text-white">
+          {{ entry().product.promo }}
+        </span>
+      }
+    </div>
+
+    <span class="w-fit rounded bg-[#f5f5f5] px-1.5 py-0.5 text-[11px] font-semibold text-muted">
+      {{ entry().product.weight }}
+    </span>
+
+    <span class="text-[11px] text-muted">S/ {{ entry().product.price | number: '1.2-2' }} c/u</span>
+
+    <div class="mt-1 flex items-center justify-between">
+      <div class="flex h-[28px] items-center overflow-hidden rounded-lg bg-[#f5f5f5]">
+        <button
+          type="button"
+          (click)="carrito.changeQty(entry().product.id, -1)"
+          aria-label="Restar"
+          class="flex h-full w-[28px] cursor-pointer items-center justify-center text-[16px] font-bold text-ink-soft transition-colors hover:bg-[#e8e8e8]"
+        >
+          −
+        </button>
+        <span class="flex h-full w-[28px] items-center justify-center font-display text-[13px] font-bold text-ink">
+          {{ entry().qty }}
+        </span>
+        <button
+          type="button"
+          (click)="carrito.changeQty(entry().product.id, 1)"
+          [disabled]="entry().qty >= entry().product.stock"
+          aria-label="Sumar"
+          class="flex h-full w-[28px] cursor-pointer items-center justify-center text-[16px] font-bold text-brand-600 transition-colors hover:bg-[#fff0f0] disabled:cursor-not-allowed disabled:text-line-soft disabled:hover:bg-transparent"
+        >
+          +
+        </button>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <span class="font-display text-[14px] font-bold text-brand-600">
+          S/ {{ entry().product.price * entry().qty | number: '1.2-2' }}
+        </span>
+        <button
+          type="button"
+          (click)="carrito.removeItem(entry().product.id)"
+          title="Quitar producto"
+          aria-label="Quitar producto"
+          class="group cursor-pointer rounded-lg p-1 transition-colors hover:bg-[#fff0f0]"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" class="text-line group-hover:text-brand-600"><path d="M18 6 6 18M6 6l12 12" /></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
