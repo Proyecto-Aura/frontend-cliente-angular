@@ -111,9 +111,13 @@ export class Nosotros {
         tl.to('.wordmark', { yPercent: -130, opacity: 0, ease: 'power2.in', duration: 1 }, 0)
           .to('.scroll-hint', { opacity: 0, duration: 0.25 }, 0)
           .from('.bag-scene', { scale: 0.5, yPercent: 10, opacity: 0.4, duration: 1.1, ease: 'power2.out' }, 0)
-          .to('.bag', { rotateY: -22, rotateX: 7, duration: 1.4, ease: 'sine.inOut' }, 0.35)
-          .from('.story .rise', { yPercent: 130, opacity: 0, stagger: 0.14, duration: 0.8, ease: 'power3.out' }, 0.85)
-          .to('.story', { opacity: 0, yPercent: -12, duration: 0.5, ease: 'power1.in' }, 2.25)
+          .to('.bag', { rotateY: -18, rotateX: 6, duration: 1.2, ease: 'sine.inOut' }, 0.35)
+          // La bolsa sube y encoge para dejar sitio al texto de la historia.
+          .to('.bag-scene', { scale: 0.7, yPercent: -24, duration: 1, ease: 'power2.inOut' }, 0.7)
+          .from('.story .rise', { yPercent: 130, opacity: 0, stagger: 0.14, duration: 0.8, ease: 'power3.out' }, 1)
+          .to('.story', { opacity: 0, yPercent: -12, duration: 0.5, ease: 'power1.in' }, 2.2)
+          // La bolsa vuelve al centro y se abre.
+          .to('.bag-scene', { scale: 1, yPercent: 0, duration: 0.7, ease: 'power2.inOut' }, 2.3)
           .to('.bag', { rotateY: 0, rotateX: 8, scale: 1.08, duration: 0.8, ease: 'power2.inOut' }, 2.4)
           .to('.bag', { rotateX: -4, y: -30, duration: 0.6, ease: 'power2.in' }, 3.0)
           .to('.chip', {
