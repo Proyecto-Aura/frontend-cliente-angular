@@ -1,0 +1,48 @@
+import { Component, inject } from '@angular/core';
+
+import { ToastService } from './toast-service';
+
+/** Pila de toasts, abajo a la derecha. Se monta una sola vez en app.ts. */
+@Component({
+  selector: 'app-toaster',
+  host: { class: 'pointer-events-none fixed bottom-4 right-4 z-[100] flex w-[340px] max-w-[calc(100vw-2rem)] flex-col gap-2' },
+  template: `
+    @for (t of toast.toasts(); track t.id) {
+      <div
+        class="animate-fade-up pointer-events-auto flex items-start gap-3 rounded-xl border bg-surface px-4 py-3 shadow-[0px_8px_24px_rgba(0,0,0,0.12)]"
+        [class.border-success-600]="t.type === 'success'"
+        [class.border-warning-600]="t.type === 'warning'"
+        [class.border-brand-600]="t.type === 'error'"
+        [class.border-line-soft]="t.type === 'info'"
+        role="status"
+      >
+        <span
+          class="mt-0.5 size-2 shrink-0 rounded-full"
+          [class.bg-success-600]="t.type === 'success'"
+          [class.bg-warning-600]="t.type === 'warning'"
+          [class.bg-brand-600]="t.type === 'error'"
+          [class.bg-info-600]="t.type === 'info'"
+        ></span>
+        <div class="flex-1">
+          <p class="text-[13px] font-semibold text-ink">{{ t.title }}</p>
+          @if (t.description) {
+            <p class="mt-0.5 text-[12px] text-ink-soft">{{ t.description }}</p>
+          }
+        </div>
+        <button
+          type="button"
+          (click)="toast.dismiss(t.id)"
+          aria-label="Cerrar"
+          class="text-muted transition-colors hover:text-ink"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    }
+  `,
+})
+export class Toaster {
+  protected readonly toast = inject(ToastService);
+}

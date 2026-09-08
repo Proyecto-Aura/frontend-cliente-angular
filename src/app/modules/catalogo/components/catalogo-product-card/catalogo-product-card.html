@@ -1,0 +1,92 @@
+<article
+  class="group flex flex-col overflow-hidden rounded-2xl border border-[#f0f0f0] bg-surface transition-all duration-200 hover:border-[#e8e8e8] hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)]"
+>
+  <div class="relative flex h-[180px] items-center justify-center overflow-hidden bg-[#fafafa]">
+    <div class="relative h-[150px] w-[85%] transition-transform duration-300 group-hover:scale-105">
+      <img
+        [ngSrc]="product().img"
+        [alt]="product().name"
+        fill
+        class="object-contain"
+        sizes="(max-width: 768px) 50vw, 25vw"
+      />
+    </div>
+
+    @if (product().promo && product().available) {
+      <div class="absolute left-0 top-0">
+        <span
+          class="block rounded-br-xl bg-warning-600 px-3 py-1 font-display text-[11px] font-black tracking-wide text-white shadow-sm"
+        >
+          {{ product().promo }}
+        </span>
+      </div>
+    }
+
+    @if (!product().available) {
+      <div class="absolute inset-0 flex items-center justify-center bg-white/75 backdrop-blur-[1px]">
+        <span class="rounded-full bg-ink-soft px-4 py-1.5 text-[11px] font-semibold text-white">
+          No disponible
+        </span>
+      </div>
+    }
+  </div>
+
+  <div class="flex flex-1 flex-col gap-3 p-4">
+    <div class="flex flex-col gap-1">
+      <span class="text-[10px] font-semibold uppercase tracking-wide text-brand-600">
+        {{ product().category }}
+      </span>
+      <h3 class="font-display text-[15px] font-bold leading-tight text-ink">{{ product().name }}</h3>
+      <p class="text-[12px] leading-snug text-muted">{{ product().desc }}</p>
+    </div>
+
+    <div class="flex gap-1.5">
+      <span
+        class="rounded-md border border-line-soft bg-[#f0f0f0] px-2.5 py-0.5 text-[11px] font-semibold text-ink-soft"
+      >
+        {{ product().weight }}
+      </span>
+    </div>
+
+    @if (product().available && product().stock <= 3 && product().stock > 0) {
+      <div class="flex items-center gap-1">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+          <path d="M12 9v4M12 17h.01" />
+        </svg>
+        <span class="text-[11px] font-semibold text-[#b45309]">Solo {{ product().stock }} disponibles</span>
+      </div>
+    }
+
+    <div class="mt-auto flex items-center justify-between gap-2">
+      <span class="font-display text-[17px] font-bold text-ink">
+        S/ {{ product().price | number: '1.2-2' }}
+      </span>
+      <div class="flex items-center gap-1.5">
+        <button
+          type="button"
+          (click)="detail.emit(product())"
+          class="h-[30px] cursor-pointer rounded-lg border border-line-soft px-2.5 text-[11px] font-semibold text-ink-soft transition-colors hover:border-brand-600 hover:text-brand-600"
+        >
+          Ver detalle
+        </button>
+        <button
+          type="button"
+          (click)="agregar()"
+          [disabled]="!product().available"
+          [class.cursor-not-allowed]="!product().available"
+          [class.bg-line-soft]="!product().available"
+          [class.text-muted]="!product().available"
+          [class.bg-success-600]="product().available && agregado()"
+          [class.text-white]="product().available"
+          [class.bg-brand-600]="product().available && !agregado()"
+          [class.hover:bg-brand-700]="product().available && !agregado()"
+          class="flex h-[30px] cursor-pointer items-center gap-1 rounded-lg px-2.5 text-[11px] font-semibold transition-all"
+        >
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14" /></svg>
+          {{ agregado() ? 'Agregado' : 'Agregar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</article>
