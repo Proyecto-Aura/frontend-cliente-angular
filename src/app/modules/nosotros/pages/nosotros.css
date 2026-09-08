@@ -28,7 +28,7 @@
   position: absolute; top: 50%; left: 50%; translate: -50% -50%;
   font-family: var(--font-display), system-ui, sans-serif;
   font-weight: 900; letter-spacing: -0.04em;
-  font-size: clamp(3.5rem, 17vw, 14rem); line-height: 0.9;
+  font-size: clamp(3.5rem, 16vw, 13rem); line-height: 0.9;
   white-space: nowrap; text-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
   will-change: transform, opacity;
 }
@@ -73,72 +73,16 @@
 .line { display: block; overflow: hidden; }
 .line > * { display: block; will-change: transform; }
 
-/* --- Bolsa CSS 3D --- */
+/* --- La bolsa (SVG) --- */
 .bag-scene {
-  position: relative; width: 260px; height: 380px;
+  position: relative; width: clamp(230px, 60vw, 300px); aspect-ratio: 300 / 430;
   perspective: 1400px; will-change: transform; z-index: 2;
 }
-.bag { position: absolute; inset: 0; transform-style: preserve-3d; will-change: transform; }
-.face { position: absolute; overflow: hidden; backface-visibility: hidden; border-radius: 6px; }
-.face-front, .face-back { width: 260px; height: 380px; }
-.face-front {
-  transform: translateZ(46px);
-  background: linear-gradient(150deg, var(--r1), var(--r2) 55%, var(--r3));
-  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.35);
+.bag { position: absolute; inset: 0; will-change: transform; }
+.bag-svg {
+  width: 100%; height: 100%; display: block;
+  filter: drop-shadow(0 40px 55px rgba(0, 0, 0, 0.55));
 }
-.face-back { transform: translateZ(-46px) rotateY(180deg); background: linear-gradient(150deg, var(--r2), var(--r3)); }
-.face-left, .face-right { width: 92px; height: 380px; }
-.face-left { left: 0; transform: rotateY(-90deg) translateZ(46px); background: linear-gradient(var(--r3), #5e120b); }
-.face-right { right: 0; transform: rotateY(90deg) translateZ(46px); background: linear-gradient(#5e120b, var(--r3)); }
-.face-bottom { width: 260px; height: 92px; bottom: 0; transform: rotateX(-90deg) translateZ(46px); background: #5e120b; }
-
-.crimp {
-  position: absolute; left: -6px; right: -6px; height: 20px;
-  background: repeating-linear-gradient(-45deg, #7a1710 0 7px, #a3271c 7px 14px);
-  -webkit-mask: repeating-linear-gradient(90deg, #000 0 8px, transparent 8px 16px);
-  mask: repeating-linear-gradient(90deg, #000 0 8px, transparent 8px 16px);
-}
-.crimp-top { top: -4px; }
-.crimp-bottom { bottom: -4px; }
-
-.label {
-  position: absolute; inset: 40px 18px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 14px; text-align: center;
-}
-.label .brand {
-  font-family: var(--font-display), system-ui, sans-serif;
-  font-weight: 900; font-size: 2.6rem; letter-spacing: -0.03em;
-  text-shadow: 0 3px 0 rgba(0, 0, 0, 0.25);
-}
-.label .kicker {
-  font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.85);
-  border-top: 1px solid rgba(255, 255, 255, 0.4);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-  padding: 6px 0;
-}
-.label .puff { font-size: 2.4rem; }
-
-.sheen {
-  position: absolute; inset: -40%;
-  background: linear-gradient(115deg, transparent 42%, rgba(255, 255, 255, 0.5) 48%, rgba(255, 255, 255, 0.05) 55%, transparent 62%);
-  mix-blend-mode: screen; transform: translateX(-60%);
-  will-change: transform; pointer-events: none;
-}
-
-.flap {
-  position: absolute; top: 0; width: 130px; height: 120px;
-  background: linear-gradient(var(--r2), var(--r3));
-  transform-style: preserve-3d; backface-visibility: hidden; will-change: transform;
-}
-.flap::after {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(#3f0d08, #7a1710);
-  transform: rotateX(180deg); backface-visibility: hidden;
-}
-.flap-l { left: 0; transform-origin: top left; transform: translateZ(46px) rotateX(0deg); }
-.flap-r { right: 0; transform-origin: top right; transform: translateZ(46px) rotateX(0deg); }
 
 .chips { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
 .chip {
@@ -231,7 +175,6 @@
 :host(.no-motion) .act-title, :host(.no-motion) .scroll-hint, :host(.no-motion) .chips { display: none; }
 :host(.no-motion) .story { position: static; translate: none; }
 :host(.no-motion) .bag { transform: none !important; }
-:host(.no-motion) .flap-l, :host(.no-motion) .flap-r { transform: translateZ(46px) !important; }
 :host(.no-motion) .line > *,
 :host(.no-motion) .valor,
 :host(.no-motion) .miembro,

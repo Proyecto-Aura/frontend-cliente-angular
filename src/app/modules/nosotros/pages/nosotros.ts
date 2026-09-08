@@ -32,7 +32,7 @@ export class Nosotros {
     typeof matchMedia !== 'undefined' &&
     matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /** 14 papas — trayectoria de dispersión determinista (sin aleatoriedad real). */
+  /** 14 papas del "estallido" — trayectoria de dispersión determinista. */
   protected readonly chips = Array.from({ length: 14 }, (_, i) => {
     const a = (i / 14) * Math.PI * 2 + (i % 2 ? 0.5 : 0);
     const r = 160 + (i % 5) * 90;
@@ -41,7 +41,18 @@ export class Nosotros {
       y: Math.sin(a) * r * 0.8 - 40,
       rot: (i * 57) % 360,
       scale: 0.7 + ((i * 7) % 10) / 14,
-      tilt: (i * 43) % 40 - 20,
+    };
+  });
+
+  /** ~26 papas que llenan la bolsa (posiciones en el viewBox 300x430). */
+  protected readonly chipsInside = Array.from({ length: 26 }, (_, i) => {
+    const col = i % 5;
+    const row = Math.floor(i / 5);
+    return {
+      x: 42 + col * 46 + ((row % 2) * 20) + ((i * 13) % 11) - 5,
+      y: 60 + row * 52 + ((i * 7) % 14) - 6,
+      r: (i * 47) % 360,
+      s: 0.62 + ((i * 5) % 9) / 20,
     };
   });
 
@@ -103,8 +114,8 @@ export class Nosotros {
           .to('.bag', { rotateY: -22, rotateX: 7, duration: 1.4, ease: 'sine.inOut' }, 0.35)
           .from('.story .rise', { yPercent: 130, opacity: 0, stagger: 0.14, duration: 0.8, ease: 'power3.out' }, 0.85)
           .to('.story', { opacity: 0, yPercent: -12, duration: 0.5, ease: 'power1.in' }, 2.25)
-          .to('.bag', { rotateY: 0, rotateX: 2, scale: 1.06, duration: 0.8, ease: 'power2.inOut' }, 2.4)
-          .to('.flap-l, .flap-r', { rotateX: -158, duration: 0.9, ease: 'power2.inOut' }, 2.7)
+          .to('.bag', { rotateY: 0, rotateX: 8, scale: 1.08, duration: 0.8, ease: 'power2.inOut' }, 2.4)
+          .to('.bag', { rotateX: -4, y: -30, duration: 0.6, ease: 'power2.in' }, 3.0)
           .to('.chip', {
             opacity: 1,
             x: (i: number) => this.chips[i].x,
@@ -118,14 +129,8 @@ export class Nosotros {
           .to('.bag-scene', { scale: 0.92, opacity: 0.9, duration: 0.7 }, 3.2)
           .from('.act-title', { opacity: 0, yPercent: 40, duration: 0.5, ease: 'power2.out' }, 3.55);
 
-        // Brillo de foil, en bucle (independiente del scroll).
-        gsap.fromTo(
-          '.sheen',
-          { xPercent: -60 },
-          { xPercent: 260, duration: 3.6, repeat: -1, repeatDelay: 1.4, ease: 'power1.inOut' },
-        );
-        // Flotación sutil de la bolsa.
-        gsap.to('.bag', { y: -14, duration: 2.6, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+        // Flotación sutil de la bolsa (antes de que el scroll tome el control).
+        gsap.to('.bag-scene', { y: -14, duration: 2.6, repeat: -1, yoyo: true, ease: 'sine.inOut' });
 
         // --- Escena: valores ---
         gsap.from('.valor', {
