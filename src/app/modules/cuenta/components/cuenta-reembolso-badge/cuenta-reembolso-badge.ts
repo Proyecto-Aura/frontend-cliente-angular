@@ -1,0 +1,34 @@
+import { Component, input } from '@angular/core';
+
+import { EstadoSolicitud } from '../../models/solicitud-reembolso.model';
+
+/** Estado de una solicitud de reembolso: pendiente / aprobado / rechazado. */
+@Component({
+  selector: 'app-cuenta-reembolso-badge',
+  host: { class: 'inline-flex' },
+  template: `
+    @switch (status()) {
+      @case ('pending') {
+        <span class="flex items-center gap-1 rounded-full bg-[#fefce8] px-3 py-1 text-[11px] font-bold text-[#a16207]">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+          Pendiente
+        </span>
+      }
+      @case ('approved') {
+        <span class="flex items-center gap-1 rounded-full bg-success-50 px-3 py-1 text-[11px] font-bold text-success-700">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335" /><path d="m9 11 3 3L22 4" /></svg>
+          Aprobado
+        </span>
+      }
+      @default {
+        <span class="flex items-center gap-1 rounded-full bg-[#fee2e2] px-3 py-1 text-[11px] font-bold text-brand-700">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+          Rechazado
+        </span>
+      }
+    }
+  `,
+})
+export class CuentaReembolsoBadge {
+  readonly status = input.required<EstadoSolicitud>();
+}

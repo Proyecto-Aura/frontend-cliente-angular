@@ -1,0 +1,148 @@
+<div class="flex flex-col gap-6 pb-4">
+  <div class="flex flex-col gap-1">
+    <p class="text-[11px] font-bold uppercase tracking-widest text-brand-600">Cuenta</p>
+    <h1 class="font-display text-[24px] font-black leading-tight tracking-[-0.4px] text-ink sm:text-[28px]">
+      Mi Perfil
+    </h1>
+    <p class="text-[13px] text-muted">Gestiona tu información personal y preferencias de entrega.</p>
+  </div>
+
+  <!-- Datos personales -->
+  <div class="flex flex-col gap-5 rounded-2xl border border-[#fca5a5] bg-surface p-6">
+    <div class="flex items-center gap-3">
+      <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#fecaca] text-brand-600">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+      </span>
+      <div>
+        <p class="font-display text-[15px] font-semibold text-[#1e1b19]">Datos Personales</p>
+        <p class="text-[12px] text-[#574235]">Esta información es privada y se usa para tus envíos.</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-x-14 gap-y-4 sm:grid-cols-2">
+      <label class="flex flex-col gap-1.5">
+        <span class="text-[13px] font-semibold text-label">Nombre</span>
+        <input [value]="nombre()" (input)="set(nombre, $event)" class="h-[40px] w-full rounded-xl border border-line-soft bg-surface px-4 text-[13px] text-label outline-none transition-colors focus:border-brand-600" />
+      </label>
+      <label class="flex flex-col gap-1.5">
+        <span class="text-[13px] font-semibold text-label">Apellido</span>
+        <input [value]="apellido()" (input)="set(apellido, $event)" class="h-[40px] w-full rounded-xl border border-line-soft bg-surface px-4 text-[13px] text-label outline-none transition-colors focus:border-brand-600" />
+      </label>
+      <label class="flex flex-col gap-1.5">
+        <span class="text-[13px] font-semibold text-label">Correo</span>
+        <input [value]="email()" (input)="set(email, $event)" class="h-[40px] w-full rounded-xl border border-line-soft bg-surface px-4 text-[13px] text-label outline-none transition-colors focus:border-brand-600" />
+      </label>
+      <label class="flex flex-col gap-1.5">
+        <span class="text-[13px] font-semibold text-label">Teléfono</span>
+        <input [value]="telefono()" (input)="set(telefono, $event)" class="h-[40px] w-full rounded-xl border border-line-soft bg-surface px-4 text-[13px] text-label outline-none transition-colors focus:border-brand-600" />
+      </label>
+    </div>
+
+    <div class="flex justify-end">
+      <button
+        type="button"
+        (click)="guardarPerfil()"
+        class="flex h-[34px] items-center gap-2 rounded-lg bg-brand-600 px-5 text-[13px] font-semibold text-white transition-colors hover:bg-brand-700"
+      >
+        @if (guardado()) {
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335" /><path d="m9 11 3 3L22 4" /></svg>
+          Guardado
+        } @else {
+          Guardar Cambios
+        }
+      </button>
+    </div>
+  </div>
+
+  <!-- Direcciones -->
+  <div class="flex flex-col gap-4">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-3">
+        <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#fecaca] text-brand-600">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /><circle cx="12" cy="10" r="3" /></svg>
+        </span>
+        <div>
+          <p class="font-display text-[15px] font-semibold text-[#1e1b19]">Mis Direcciones</p>
+          <p class="text-[12px] text-[#574235]">Esta información es privada y se usa para tus envíos.</p>
+        </div>
+      </div>
+      <button
+        type="button"
+        (click)="abrirNueva()"
+        class="flex items-center gap-1.5 text-[13px] font-semibold text-brand-600 transition-colors hover:text-brand-700"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14" /></svg>
+        Agregar dirección
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+      @for (addr of api.direcciones(); track addr.id) {
+        <div
+          class="relative flex flex-col gap-4 overflow-hidden rounded-xl border-2 bg-surface p-5 transition-all"
+          [class]="addr.predeterminada ? 'border-brand-600' : 'border-[#fca5a5]'"
+        >
+          @if (addr.predeterminada) {
+            <span class="absolute right-0 top-0 rounded-bl-lg bg-brand-600 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+              Predeterminada
+            </span>
+          }
+          <div class="flex items-start gap-3 pr-4">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0" [class.text-brand-600]="addr.predeterminada" [class.text-muted]="!addr.predeterminada"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /><circle cx="12" cy="10" r="3" /></svg>
+            <div class="flex flex-col gap-0.5">
+              <p class="text-[14px] font-semibold text-ink">{{ addr.nombre }}</p>
+              <p class="text-[13px] text-label">{{ addr.linea1 }}</p>
+              <p class="text-[13px] text-label">{{ addr.linea2 }}</p>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-3 border-t border-[#f4ede8] pt-3">
+            <button type="button" (click)="abrirEdicion(addr)" class="flex items-center gap-1 text-[12px] font-medium text-brand-600 hover:underline">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
+              Editar
+            </button>
+            <button type="button" (click)="confirmEliminarId.set(addr.id)" class="flex items-center gap-1 text-[12px] font-medium text-brand-600 hover:underline">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+              Eliminar
+            </button>
+            @if (!addr.predeterminada) {
+              <button
+                type="button"
+                (click)="api.marcarPredeterminada(addr.id)"
+                class="ml-auto rounded-lg border border-line-soft px-2.5 py-1 text-[11px] font-semibold text-ink-soft transition-colors hover:border-brand-600 hover:text-brand-600"
+              >
+                Predeterminar
+              </button>
+            }
+          </div>
+        </div>
+      } @empty {
+        <div class="flex flex-col items-center gap-2 rounded-xl border border-dashed border-[#fca5a5] bg-surface p-8 text-center sm:col-span-2">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fca5a5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /><circle cx="12" cy="10" r="3" /></svg>
+          <p class="text-[13px] text-muted">No tienes direcciones guardadas.</p>
+        </div>
+      }
+    </div>
+  </div>
+
+  <app-cuenta-email-card />
+  <app-cuenta-password-card />
+</div>
+
+@if (modalAbierto()) {
+  <app-cuenta-direccion-modal
+    [initial]="editando()"
+    (close)="cerrarModal()"
+    (save)="guardarDireccion($event)"
+  />
+}
+
+@if (confirmEliminarId() !== null) {
+  <app-confirm-dialog
+    title="¿Eliminar esta dirección?"
+    message="Esta dirección será eliminada permanentemente y no podrá recuperarse."
+    confirmLabel="Sí, eliminar"
+    cancelLabel="No, mantener"
+    (confirmed)="eliminarDireccion()"
+    (cancelled)="confirmEliminarId.set(null)"
+  />
+}

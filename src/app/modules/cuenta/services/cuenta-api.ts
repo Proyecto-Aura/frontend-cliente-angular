@@ -27,7 +27,37 @@ export class CuentaApi {
   readonly direcciones = this._direcciones.asReadonly();
   readonly solicitudes = this._solicitudes.asReadonly();
 
-  crearSolicitud(solicitud: SolicitudReembolso): void {
+  // --- Direcciones ---
+
+  agregarDireccion(data: Omit<Direccion, 'id' | 'predeterminada'>): void {
+    this._direcciones.update((list) => [
+      ...list,
+      { ...data, id: `addr-${Date.now()}`, predeterminada: list.length === 0 },
+    ]);
+  }
+
+  editarDireccion(id: string, data: Omit<Direccion, 'id' | 'predeterminada'>): void {
+    this._direcciones.update((list) => list.map((a) => (a.id === id ? { ...a, ...data } : a)));
+  }
+
+  eliminarDireccion(id: string): void {
+    this._direcciones.update((list) => list.filter((a) => a.id !== id));
+  }
+
+  marcarPredeterminada(id: string): void {
+    this._direcciones.update((list) => list.map((a) => ({ ...a, predeterminada: a.id === id })));
+  }
+
+  // --- Solicitudes ---
+
+  crearSolicitud(data: Omit<SolicitudReembolso, 'id' | 'date' | 'status'>): SolicitudReembolso {
+    const solicitud: SolicitudReembolso = {
+      ...data,
+      id: `SOL-${String(this._solicitudes().length + 3).padStart(3, '0')}`,
+      date: new Date().toLocaleDateString('es-PE', { day: 'numeric', month: 'short', year: 'numeric' }),
+      status: 'pending',
+    };
     this._solicitudes.update((list) => [solicitud, ...list]);
+    return solicitud;
   }
 }

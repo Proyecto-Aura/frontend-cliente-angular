@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 
 // CUENTA_ROUTES — montado en '/mi-cuenta'. cuenta-layout (header + sidebar)
-// envuelve las secciones. perfil y solicitudes llegan en feature/Perfil-y-solicitudes.
+// envuelve las secciones: perfil, pedidos y solicitudes.
 export const CUENTA_ROUTES: Routes = [
   {
     path: '',
@@ -9,12 +9,22 @@ export const CUENTA_ROUTES: Routes = [
       import('./layout/cuenta-layout/cuenta-layout').then((m) => m.CuentaLayout),
     children: [
       {
+        path: 'perfil',
+        loadComponent: () =>
+          import('./pages/cuenta-perfil/cuenta-perfil').then((m) => m.CuentaPerfil),
+      },
+      {
         path: 'pedidos',
         loadComponent: () =>
           import('./pages/cuenta-pedidos/cuenta-pedidos').then((m) => m.CuentaPedidos),
       },
-      { path: '', redirectTo: 'pedidos', pathMatch: 'full' },
-      { path: '**', redirectTo: 'pedidos' },
+      {
+        path: 'solicitudes',
+        loadComponent: () =>
+          import('./pages/cuenta-solicitudes/cuenta-solicitudes').then((m) => m.CuentaSolicitudes),
+      },
+      { path: '', redirectTo: 'perfil', pathMatch: 'full' },
+      { path: '**', redirectTo: 'perfil' },
     ],
   },
 ];

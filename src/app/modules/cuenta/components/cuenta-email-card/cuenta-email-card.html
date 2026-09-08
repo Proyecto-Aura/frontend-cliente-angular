@@ -1,0 +1,78 @@
+<div class="flex flex-col gap-5 rounded-2xl border border-[#fca5a5] bg-surface p-6">
+  <div class="flex items-center gap-3">
+    <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#fecaca] text-brand-600">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>
+    </span>
+    <div>
+      <p class="font-display text-[15px] font-semibold text-[#1e1b19]">Verificar Cambio de Correo</p>
+      <p class="text-[12px] text-[#574235]">Confirma tu nuevo correo para mantener tu cuenta segura.</p>
+    </div>
+  </div>
+
+  @if (step() === 'form') {
+    <div class="grid grid-cols-1 gap-x-14 gap-y-4 sm:grid-cols-2">
+      <label class="flex flex-col gap-1.5">
+        <span class="text-[13px] font-semibold text-label">Correo actual</span>
+        <input
+          [value]="currentEmail()" readonly
+          class="h-[40px] w-full rounded-xl border border-line-soft bg-[#fafafa] px-4 text-[13px] text-muted outline-none"
+        />
+      </label>
+      <label class="flex flex-col gap-1.5">
+        <span class="text-[13px] font-semibold text-label">Nuevo correo electrónico</span>
+        <input
+          type="email"
+          [value]="nuevoEmail()" (input)="nuevoEmail.set($any($event.target).value)"
+          placeholder="nuevo@correo.com"
+          class="h-[40px] w-full rounded-xl border border-line-soft bg-surface px-4 text-[13px] text-label outline-none transition-colors focus:border-brand-600"
+        />
+      </label>
+    </div>
+
+    <div class="flex justify-end">
+      <button
+        type="button"
+        (click)="enviarCodigo()"
+        [disabled]="!canSendCode()"
+        class="h-[34px] rounded-lg bg-brand-600 px-5 text-[13px] font-semibold text-white transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        Enviar código de verificación
+      </button>
+    </div>
+  } @else {
+    <div class="flex items-center gap-2 rounded-xl border border-[#bbf7d0] bg-success-50 px-4 py-2.5">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><path d="M21.801 10A10 10 0 1 1 17 3.335" /><path d="m9 11 3 3L22 4" /></svg>
+      <p class="text-[12px] font-medium text-success-700">
+        Te enviamos un código de 6 dígitos a <strong>{{ nuevoEmail() }}</strong>.
+      </p>
+    </div>
+
+    <label class="flex max-w-[220px] flex-col gap-1.5">
+      <span class="text-[13px] font-semibold text-label">Código de verificación</span>
+      <input
+        [value]="codigo()" (input)="onCodigo($any($event.target).value)"
+        inputmode="numeric"
+        placeholder="000000"
+        class="h-[40px] w-full rounded-xl border border-line-soft bg-surface px-4 text-center text-[13px] tracking-[0.3em] text-label outline-none transition-colors focus:border-brand-600"
+      />
+    </label>
+
+    <div class="flex flex-wrap items-center gap-3">
+      <button
+        type="button"
+        (click)="verificar()"
+        [disabled]="!canVerify()"
+        class="h-[34px] rounded-lg bg-brand-600 px-5 text-[13px] font-semibold text-white transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        Verificar correo
+      </button>
+      <button
+        type="button"
+        (click)="cambiarCorreo()"
+        class="text-[13px] font-medium text-ink-soft transition-colors hover:text-brand-600"
+      >
+        Cambiar correo
+      </button>
+    </div>
+  }
+</div>

@@ -1,0 +1,147 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+  <button type="button" (click)="close.emit()" aria-label="Cerrar" class="animate-fade-in absolute inset-0 cursor-default bg-black/40"></button>
+
+  <div class="animate-scale-in relative max-h-[90vh] w-full max-w-[560px] overflow-y-auto rounded-2xl bg-surface shadow-[0px_24px_60px_rgba(0,0,0,0.18)]">
+    <div class="flex items-center justify-between border-b border-[#f0f0f0] px-7 py-5">
+      <div class="flex items-center gap-3">
+        <span class="flex size-9 items-center justify-center rounded-xl bg-[#fff0f0] text-brand-600">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" /></svg>
+        </span>
+        <div>
+          <h2 class="font-display text-[16px] font-bold text-ink">Nueva Solicitud de Reembolso</h2>
+          <p class="text-[12px] text-muted">Solo pedidos pagados pueden solicitar reembolso</p>
+        </div>
+      </div>
+      <button type="button" (click)="close.emit()" aria-label="Cerrar" class="rounded-lg p-1.5 text-ink-soft transition-colors hover:bg-[#f5f5f5]">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+      </button>
+    </div>
+
+    <div class="flex flex-col gap-5 px-7 py-6">
+      <!-- Pedido -->
+      <div class="flex flex-col gap-1.5">
+        <label class="text-[12px] font-semibold text-label">Pedido a reembolsar *</label>
+        <div class="relative">
+          <button
+            type="button"
+            (click)="orderOpen.set(!orderOpen())"
+            [class]="orderOpen() ? 'border-brand-600' : 'border-line-soft'"
+            class="flex h-[44px] w-full items-center justify-between rounded-xl border px-4 text-left text-[13px] transition-colors"
+          >
+            @if (selectedOrder(); as o) {
+              <span class="truncate">
+                <span class="font-semibold text-brand-600">#{{ o.id }}</span> · {{ o.summary }} ·
+                <span class="font-semibold text-brand-600">S/ {{ o.total.toFixed(2) }}</span>
+              </span>
+            } @else {
+              <span class="text-[#c0c0c0]">Selecciona el pedido</span>
+            }
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#bdbdbd" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 transition-transform duration-200" [class.rotate-180]="orderOpen()"><path d="m6 9 6 6 6-6" /></svg>
+          </button>
+          @if (orderOpen()) {
+            <div class="absolute left-0 top-[48px] z-20 w-full overflow-hidden rounded-xl border border-line-soft bg-surface shadow-[0px_8px_24px_rgba(0,0,0,0.1)]">
+              @for (o of pedidosPagados; track o.id) {
+                <button
+                  type="button"
+                  (click)="pickOrder(o.id)"
+                  class="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-brand-50"
+                  [class.bg-brand-50]="selectedOrderId() === o.id"
+                >
+                  <span>
+                    <span class="block text-[13px] font-semibold text-brand-600">#{{ o.id }}</span>
+                    <span class="block text-[11px] text-muted">{{ o.summary }} · {{ o.date }}</span>
+                  </span>
+                  <span class="text-[13px] font-bold text-ink">S/ {{ o.total.toFixed(2) }}</span>
+                </button>
+              }
+            </div>
+          }
+        </div>
+        @if (selectedOrder(); as o) {
+          <div class="mt-1 flex items-center gap-2 rounded-xl border border-[#bbf7d0] bg-success-50 px-3 py-2">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><path d="M21.801 10A10 10 0 1 1 17 3.335" /><path d="m9 11 3 3L22 4" /></svg>
+            <p class="text-[12px] font-medium text-success-700">
+              Pedido elegible · {{ o.items }} artículos · Pagado el {{ o.date }}
+            </p>
+          </div>
+        }
+      </div>
+
+      <!-- Motivo -->
+      <div class="flex flex-col gap-1.5">
+        <label class="text-[12px] font-semibold text-label">Motivo del reembolso *</label>
+        <div class="relative">
+          <button
+            type="button"
+            (click)="motivoOpen.set(!motivoOpen())"
+            [class]="motivoOpen() ? 'border-brand-600' : 'border-line-soft'"
+            class="flex h-[44px] w-full items-center justify-between rounded-xl border px-4 text-left text-[13px] transition-colors"
+          >
+            <span [class]="motivo() ? 'text-ink' : 'text-[#c0c0c0]'">
+              {{ motivo() || 'Selecciona el motivo' }}
+            </span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#bdbdbd" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200" [class.rotate-180]="motivoOpen()"><path d="m6 9 6 6 6-6" /></svg>
+          </button>
+          @if (motivoOpen()) {
+            <div class="absolute left-0 top-[48px] z-20 w-full overflow-hidden rounded-xl border border-line-soft bg-surface shadow-[0px_8px_24px_rgba(0,0,0,0.1)]">
+              @for (m of motivos; track m) {
+                <button
+                  type="button"
+                  (click)="pickMotivo(m)"
+                  class="w-full px-4 py-2.5 text-left text-[13px] transition-colors hover:bg-brand-50"
+                  [class]="motivo() === m ? 'bg-brand-50 font-semibold text-brand-600' : 'text-label'"
+                >
+                  {{ m }}
+                </button>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Descripción -->
+      <div class="flex flex-col gap-1.5">
+        <label class="text-[12px] font-semibold text-label">
+          Descripción detallada * <span class="font-normal text-line">(mín. 10 caracteres)</span>
+        </label>
+        <textarea
+          [value]="descripcion()" (input)="descripcion.set($any($event.target).value)"
+          rows="4"
+          placeholder="Describe detalladamente el problema con tu pedido..."
+          class="w-full resize-none rounded-xl border border-line-soft px-4 py-3 text-[13px] text-label outline-none transition-colors placeholder:text-[#c0c0c0] focus:border-brand-600"
+        ></textarea>
+        <p class="text-right text-[11px]" [class.text-success-700]="descripcion().length >= 10" [class.text-line]="descripcion().length < 10">
+          {{ descripcion().length }} caracteres
+        </p>
+      </div>
+
+      <div class="flex items-start gap-2 rounded-xl border border-[#fde68a] bg-[#fefce8] px-4 py-3">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><path d="M12 9v4M12 17h.01" /></svg>
+        <p class="text-[12px] leading-relaxed text-[#92400e]">
+          Tu solicitud será revisada en un plazo de <strong>2–5 días hábiles</strong>. Te
+          notificaremos por email con el resultado.
+        </p>
+      </div>
+    </div>
+
+    <div class="flex gap-3 px-7 pb-6">
+      <button
+        type="button"
+        (click)="close.emit()"
+        class="h-[44px] flex-1 rounded-xl border border-line-soft text-[13px] font-semibold text-ink-soft transition-colors hover:bg-[#f5f5f5]"
+      >
+        Cancelar
+      </button>
+      <button
+        type="button"
+        (click)="enviar()"
+        [disabled]="!canSubmit()"
+        [class]="canSubmit() ? 'bg-brand-600 text-white hover:bg-brand-700' : 'bg-line-soft text-muted cursor-not-allowed'"
+        class="flex h-[44px] flex-1 items-center justify-center gap-2 rounded-xl text-[14px] font-semibold transition-colors"
+      >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" /></svg>
+        Enviar solicitud
+      </button>
+    </div>
+  </div>
+</div>
