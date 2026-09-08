@@ -9,9 +9,11 @@
 
   <div class="flex flex-col gap-4">
     @for (order of api.pedidos(); track order.id) {
+      @let cancelado = estaCancelado(order.id);
       <div
         class="flex flex-col gap-5 rounded-2xl border bg-surface p-6 shadow-sm transition-all"
-        [class]="borde(order.payment, order.delivery)"
+        [class]="borde(order.id, order.payment, order.delivery)"
+        [class.opacity-70]="cancelado"
       >
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
@@ -19,8 +21,15 @@
             <p class="text-[12px] text-muted">Realizado el {{ order.date }}</p>
           </div>
           <div class="flex items-center gap-2">
-            <app-cuenta-pago-badge [status]="order.payment" />
-            <app-cuenta-entrega-badge [status]="order.delivery" />
+            @if (cancelado) {
+              <span class="flex items-center gap-1 rounded-full bg-[#f0f0f0] px-2.5 py-1 text-[11px] font-bold text-ink-soft">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+                Cancelado
+              </span>
+            } @else {
+              <app-cuenta-pago-badge [status]="order.payment" />
+              <app-cuenta-entrega-badge [status]="order.delivery" />
+            }
           </div>
         </div>
 
@@ -30,6 +39,7 @@
               @for (thumb of order.thumbs; track $index) {
                 <span
                   class="relative block size-12 overflow-hidden rounded-lg border-2 border-white bg-[#fafafa] shadow-sm"
+                  [class.grayscale]="cancelado"
                   [style.margin-left.px]="$index > 0 ? -10 : 0"
                 >
                   <img [src]="thumb" alt="" class="absolute inset-0 size-full object-contain" />
@@ -45,15 +55,34 @@
           </div>
 
           <div class="flex items-center gap-2">
-            @if (order.delivery === 'shipping' || order.delivery === 'delivered') {
-              <a
-                [routerLink]="['/mi-cuenta/solicitudes']"
-                [queryParams]="{ nueva: 1, pedido: order.id }"
-                class="flex h-[32px] items-center gap-1.5 rounded-lg border border-brand-600 px-3 text-[12px] font-semibold text-brand-600 transition-colors hover:bg-brand-50"
-              >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" /></svg>
-                Solicitar reembolso
-              </a>
+            @if (cancelado) {
+              <span class="text-[12px] italic text-muted">Pedido cancelado</span>
+            } @else {
+              @if (sePuedeCancelar(order.payment, order.delivery)) {
+                <button
+                  type="button"
+                  (click)="confirmarId.set(order.id)"
+                  class="flex h-[32px] items-center gap-1.5 rounded-lg border px-3 text-[12px] font-semibold transition-colors"
+                  [class]="
+                    order.payment === 'pending'
+                      ? 'border-brand-600 text-brand-600 hover:bg-brand-50'
+                      : 'border-ink-soft text-ink-soft hover:bg-[#f5f5f5]'
+                  "
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+                  Cancelar
+                </button>
+              }
+              @if (order.delivery === 'shipping' || order.delivery === 'delivered') {
+                <a
+                  [routerLink]="['/mi-cuenta/solicitudes']"
+                  [queryParams]="{ nueva: 1, pedido: order.id }"
+                  class="flex h-[32px] items-center gap-1.5 rounded-lg border border-brand-600 px-3 text-[12px] font-semibold text-brand-600 transition-colors hover:bg-brand-50"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" /></svg>
+                  Solicitar reembolso
+                </a>
+              }
             }
           </div>
         </div>
@@ -76,3 +105,14 @@
     </a>
   </div>
 </div>
+
+@if (confirmarId(); as id) {
+  <app-confirm-dialog
+    title="¿Cancelar este pedido?"
+    [message]="'El pedido #' + id + ' será cancelado. Esta acción no se puede deshacer.'"
+    confirmLabel="Sí, cancelar pedido"
+    cancelLabel="No, mantener"
+    (confirmed)="confirmarCancelacion()"
+    (cancelled)="confirmarId.set(null)"
+  />
+}
