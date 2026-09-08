@@ -1,0 +1,34 @@
+<div class="flex items-center gap-3 border-b border-[rgba(222,193,175,0.25)] pb-5">
+  <span
+    class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-600 to-brand-700 font-display text-[16px] font-black text-white"
+  >
+    JP
+  </span>
+  <div>
+    <p class="font-display text-[14px] font-bold text-ink">Juan Pérez</p>
+    <p class="text-[11px] text-muted">Cliente</p>
+  </div>
+</div>
+
+<nav class="flex flex-1 flex-col gap-1.5">
+  @for (item of items; track item.path) {
+    <a
+      [routerLink]="item.path"
+      routerLinkActive="!bg-brand-600 !text-white shadow-sm"
+      class="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-[14px] font-semibold text-label transition-all hover:bg-[#fde0e0]"
+    >
+      {{ item.label }}
+    </a>
+  }
+</nav>
+
+<div class="border-t border-[rgba(222,193,175,0.25)] pt-4">
+  <button
+    type="button"
+    (click)="cerrarSesion()"
+    class="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-[14px] font-semibold text-[#ba1a1a] transition-colors hover:bg-[#fde0e0]"
+  >
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" x2="9" y1="12" y2="12" /></svg>
+    Cerrar Sesión
+  </button>
+</div>
