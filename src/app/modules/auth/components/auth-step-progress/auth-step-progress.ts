@@ -4,17 +4,7 @@ import { Component, computed, input } from '@angular/core';
 @Component({
   selector: 'app-auth-step-progress',
   host: { class: 'block' },
-  template: `
-    <div class="flex gap-2">
-      @for (i of segmentos(); track i) {
-        <span
-          class="h-[4px] flex-1 rounded-full transition-colors"
-          [class.bg-brand-600]="i < step()"
-          [class.bg-line-soft]="i >= step()"
-        ></span>
-      }
-    </div>
-  `,
+  templateUrl: './auth-step-progress.html',
 })
 export class AuthStepProgress {
   readonly step = input.required<number>();

@@ -1,101 +1,13 @@
-<form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
-  <!-- Resumen del paso 1 -->
-  <div class="flex items-center justify-between rounded-[10px] bg-canvas px-4 py-3 text-sm">
-    <span class="text-ink-soft">
-      <span class="font-semibold text-ink">{{ esEmpresa ? 'Empresa' : 'Persona' }}</span>
-      · {{ esEmpresa ? 'RUC' : 'DNI' }} {{ doc.numeroDocumento }}
-    </span>
-    <a routerLink="/auth/registro/documento" class="font-semibold text-brand-600 hover:underline">
-      Editar
-    </a>
-  </div>
-
-  @if (error()) {
-    <p class="rounded-[10px] bg-brand-50 px-4 py-3 text-sm text-brand-700" role="alert">
-      {{ error() }}
-    </p>
-  }
-
-  @if (esEmpresa) {
-    <app-auth-register-empresa-form [razonSocial]="c.razonSocial" />
-    <p class="text-xs text-muted">Datos de la persona de contacto:</p>
-  }
-
+@if (store.esEmpresa()) {
+  <app-auth-register-empresa-form
+    [enviando]="enviando()"
+    [error]="error()"
+    (submitted)="submitted.emit($event)"
+  />
+} @else {
   <app-auth-register-personal-form
-    [nombres]="c.nombres"
-    [apellidoPaterno]="c.apellidoPaterno"
-    [apellidoMaterno]="c.apellidoMaterno"
+    [enviando]="enviando()"
+    [error]="error()"
+    (submitted)="submitted.emit($event)"
   />
-
-  <app-auth-input
-    label="Correo electrónico"
-    type="email"
-    [control]="c.email"
-    placeholder="tucorreo@ejemplo.com"
-    autocomplete="email"
-    [maxLength]="150"
-    error="Ingresa un correo electrónico válido."
-  />
-
-  <app-auth-input
-    label="Nombre de usuario"
-    [control]="c.username"
-    placeholder="tucorreo o un alias"
-    autocomplete="username"
-    [maxLength]="50"
-    hint="Letras, números, punto, guion y guion bajo."
-    error="Solo letras, números y . _ - (máx. 50)."
-  />
-
-  <app-auth-input
-    label="Teléfono (opcional)"
-    type="tel"
-    [control]="c.telefono"
-    placeholder="987654321"
-    inputMode="tel"
-    autocomplete="tel"
-    [maxLength]="9"
-    error="Ingresa un teléfono válido (6 a 9 dígitos)."
-  />
-
-  <app-auth-input
-    label="Contraseña"
-    type="password"
-    [control]="c.password"
-    autocomplete="new-password"
-    hint="Mínimo 8 caracteres."
-    error="La contraseña debe tener al menos 8 caracteres."
-  />
-
-  <app-auth-input
-    label="Confirmar contraseña"
-    type="password"
-    [control]="c.confirmar"
-    autocomplete="new-password"
-    error="Vuelve a escribir la contraseña."
-  />
-  @if (mismatch) {
-    <p class="-mt-3 text-xs text-brand-600">Las contraseñas no coinciden.</p>
-  }
-
-  <label class="flex items-start gap-2.5 pt-1 text-sm text-ink-soft">
-    <input
-      type="checkbox"
-      formControlName="terminos"
-      class="mt-0.5 size-5 shrink-0 rounded-md accent-brand-600 focus:ring-brand-500/30"
-    />
-    <span>
-      Acepto los
-      <a routerLink="/nosotros" class="font-semibold text-brand-600 hover:underline">términos y condiciones</a>
-      y la política de privacidad.
-    </span>
-  </label>
-
-  <button
-    type="submit"
-    [disabled]="enviando()"
-    class="mt-2 w-full rounded-[10px] bg-brand-600 py-3.5 text-[15px] font-semibold text-white transition hover:bg-brand-700 focus:ring-2 focus:ring-brand-500/40 focus:outline-none disabled:opacity-60"
-  >
-    {{ enviando() ? 'Creando cuenta…' : 'Crear cuenta' }}
-  </button>
-</form>
+}

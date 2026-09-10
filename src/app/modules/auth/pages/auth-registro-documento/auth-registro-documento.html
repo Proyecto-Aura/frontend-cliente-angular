@@ -1,0 +1,26 @@
+<section
+  class="flex w-full flex-col gap-8 rounded-[25px] bg-surface px-[30px] py-[50px] shadow-[0px_8px_32px_rgba(0,0,0,0.12)]"
+>
+  <a routerLink="/auth/login" class="flex w-fit items-center gap-2 text-[14px] font-medium text-muted hover:text-label">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m12 19-7-7 7-7" /><path d="M19 12H5" />
+    </svg>
+    Volver al inicio de sesión
+  </a>
+
+  <div class="flex flex-col gap-2">
+    <h1 class="font-display text-[36px] font-extrabold leading-tight tracking-[-0.96px] text-black">
+      Crea tu cuenta
+    </h1>
+    <p class="text-[15px] font-medium text-ink-soft">
+      Primero, selecciona tu documento de identidad
+    </p>
+  </div>
+
+  <app-auth-register-doc-form />
+
+  <p class="text-center text-[14px] font-medium text-muted">
+    ¿Ya tienes cuenta?
+    <a routerLink="/auth/login" class="text-brand-600 hover:underline">Inicia sesión</a>
+  </p>
+</section>

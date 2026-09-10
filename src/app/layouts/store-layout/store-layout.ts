@@ -12,12 +12,6 @@ import { Footer } from '../../shared/ui/footer/footer';
   selector: 'app-store-layout',
   imports: [RouterOutlet, Header, Footer],
   host: { class: 'flex min-h-screen flex-col bg-canvas' },
-  template: `
-    <app-header />
-    <main class="flex-1">
-      <router-outlet />
-    </main>
-    <app-footer />
-  `,
+  templateUrl: './store-layout.html',
 })
 export class StoreLayout {}
