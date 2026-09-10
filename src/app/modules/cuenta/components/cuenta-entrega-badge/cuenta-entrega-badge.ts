@@ -6,28 +6,7 @@ import { EstadoEntrega } from '../../models/pedido.model';
 @Component({
   selector: 'app-cuenta-entrega-badge',
   host: { class: 'inline-flex' },
-  template: `
-    @switch (status()) {
-      @case ('processing') {
-        <span class="flex items-center gap-1 rounded-full bg-[#eff6ff] px-2.5 py-1 text-[11px] font-bold text-[#1d4ed8]">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15" /><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" /></svg>
-          Procesando
-        </span>
-      }
-      @case ('shipping') {
-        <span class="flex items-center gap-1 rounded-full bg-[#eff6ff] px-2.5 py-1 text-[11px] font-bold text-[#1d4ed8]">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" /><path d="M15 18H9" /><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14" /><circle cx="17" cy="18" r="2" /><circle cx="7" cy="18" r="2" /></svg>
-          En camino
-        </span>
-      }
-      @default {
-        <span class="flex items-center gap-1 rounded-full bg-success-50 px-2.5 py-1 text-[11px] font-bold text-success-700">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335" /><path d="m9 11 3 3L22 4" /></svg>
-          Entregado
-        </span>
-      }
-    }
-  `,
+  templateUrl: './cuenta-entrega-badge.html',
 })
 export class CuentaEntregaBadge {
   readonly status = input.required<EstadoEntrega>();

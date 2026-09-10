@@ -7,42 +7,7 @@ import { Component, input, output } from '@angular/core';
 @Component({
   selector: 'app-confirm-dialog',
   host: { class: 'block' },
-  template: `
-    <div
-      class="animate-fade-in fixed inset-0 z-50 flex items-center justify-center px-4"
-      role="alertdialog"
-      aria-modal="true"
-    >
-      <button
-        type="button"
-        (click)="cancelled.emit()"
-        aria-label="Cerrar"
-        class="absolute inset-0 cursor-default bg-black/40"
-      ></button>
-
-      <div class="animate-scale-in relative w-full max-w-[420px] rounded-2xl bg-surface p-6 shadow-2xl">
-        <h2 class="font-display text-[18px] font-bold text-ink">{{ title() }}</h2>
-        <p class="mt-2 text-[14px] leading-relaxed text-ink-soft">{{ message() }}</p>
-
-        <div class="mt-6 flex justify-end gap-3">
-          <button
-            type="button"
-            (click)="cancelled.emit()"
-            class="h-[38px] rounded-xl border border-line-soft px-4 text-[13px] font-semibold text-label transition-colors hover:bg-[#f5f5f5]"
-          >
-            {{ cancelLabel() }}
-          </button>
-          <button
-            type="button"
-            (click)="confirmed.emit()"
-            class="h-[38px] rounded-xl bg-brand-600 px-4 text-[13px] font-semibold text-white transition-colors hover:bg-brand-700"
-          >
-            {{ confirmLabel() }}
-          </button>
-        </div>
-      </div>
-    </div>
-  `,
+  templateUrl: './confirm-dialog.html',
 })
 export class ConfirmDialog {
   readonly title = input.required<string>();
