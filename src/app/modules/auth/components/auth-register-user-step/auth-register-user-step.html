@@ -1,0 +1,57 @@
+<div class="flex flex-col gap-4">
+  <app-auth-input
+    label="Email de acceso"
+    type="email"
+    [control]="email()"
+    placeholder="correo@ejemplo.com"
+    autocomplete="email"
+    [maxLength]="150"
+    error="Ingresa un correo electrónico válido."
+  />
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    <app-auth-input
+      label="Username"
+      [control]="username()"
+      placeholder="usuario123"
+      autocomplete="username"
+      [maxLength]="50"
+      error="Solo letras, números y . _ - (máx. 50)."
+    />
+    <app-auth-input
+      label="Contraseña"
+      type="password"
+      [control]="password()"
+      autocomplete="new-password"
+      error="Cumple al menos 3 de las reglas de seguridad."
+    />
+  </div>
+
+  <app-auth-password-strength [password]="pwdValue()" />
+
+  <div class="flex gap-3 pt-2">
+    <button
+      type="button"
+      (click)="back.emit()"
+      class="h-[38px] flex-1 rounded-[6px] border border-line-soft text-[15px] font-medium text-ink-soft transition duration-150 hover:bg-canvas active:scale-[0.99]"
+    >
+      Atrás
+    </button>
+    <button
+      type="button"
+      [disabled]="!puedeCrear() || enviando()"
+      (click)="submit.emit()"
+      class="h-[38px] flex-1 rounded-[6px] border text-[15px] font-medium transition duration-150 active:scale-[0.99]"
+      [class.bg-brand-600]="puedeCrear() && !enviando()"
+      [class.border-brand-600]="puedeCrear() && !enviando()"
+      [class.text-white]="puedeCrear() && !enviando()"
+      [class.hover:bg-brand-700]="puedeCrear() && !enviando()"
+      [class.bg-line-soft]="!puedeCrear() || enviando()"
+      [class.border-line-soft]="!puedeCrear() || enviando()"
+      [class.text-muted]="!puedeCrear() || enviando()"
+      [class.cursor-not-allowed]="!puedeCrear() || enviando()"
+    >
+      {{ enviando() ? 'Creando cuenta…' : 'Crear cuenta' }}
+    </button>
+  </div>
+</div>

@@ -1,0 +1,9 @@
+<div class="flex gap-2">
+  @for (i of segmentos(); track i) {
+    <span
+      class="h-[4px] flex-1 rounded-full transition-colors"
+      [class.bg-brand-600]="i < step()"
+      [class.bg-line-soft]="i >= step()"
+    ></span>
+  }
+</div>
