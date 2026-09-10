@@ -1,0 +1,67 @@
+<div class="animate-fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+  <div class="animate-scale-in flex w-full max-w-[480px] flex-col gap-5 rounded-2xl bg-surface p-7 shadow-2xl">
+    <div class="flex items-center justify-between">
+      <h2 class="font-display text-[18px] font-black text-ink">
+        {{ initial() ? 'Editar dirección' : 'Nueva dirección' }}
+      </h2>
+      <button
+        type="button"
+        (click)="close.emit()"
+        aria-label="Cerrar"
+        class="flex size-8 items-center justify-center rounded-lg text-ink-soft transition-colors hover:bg-[#f0f0f0]"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+      </button>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <label class="flex flex-col gap-1.5">
+        <span class="text-[13px] font-semibold text-label">Nombre de la dirección</span>
+        <input
+          [value]="nombre()" (input)="nombre.set($any($event.target).value)"
+          placeholder="Casa, Oficina…"
+          class="h-[40px] w-full rounded-xl border border-line-soft bg-surface px-4 text-[13px] text-label outline-none transition-colors focus:border-brand-600"
+        />
+      </label>
+      <label class="flex flex-col gap-1.5">
+        <span class="text-[13px] font-semibold text-label">Dirección</span>
+        <input
+          [value]="linea1()" (input)="linea1.set($any($event.target).value)"
+          placeholder="Av. José Larco 1232, Int 402"
+          class="h-[40px] w-full rounded-xl border border-line-soft bg-surface px-4 text-[13px] text-label outline-none transition-colors focus:border-brand-600"
+        />
+      </label>
+      <label class="flex flex-col gap-1.5">
+        <span class="text-[13px] font-semibold text-label">Distrito</span>
+        <select
+          [value]="distrito()" (change)="distrito.set($any($event.target).value)"
+          class="h-[40px] w-full cursor-pointer appearance-none rounded-xl border border-line-soft bg-surface px-4 text-[13px] text-label outline-none transition-colors focus:border-brand-600"
+        >
+          <option value="" disabled>Selecciona un distrito</option>
+          @for (d of distritos; track d) {
+            <option [value]="d">{{ d }}</option>
+          }
+        </select>
+        <span class="text-[11px] text-muted">Ciudad: Lima, Perú</span>
+      </label>
+    </div>
+
+    <div class="flex justify-end gap-3 pt-1">
+      <button
+        type="button"
+        (click)="close.emit()"
+        class="h-[38px] rounded-xl border border-line-soft px-5 text-[13px] font-semibold text-ink-soft transition-colors hover:bg-canvas"
+      >
+        Cancelar
+      </button>
+      <button
+        type="button"
+        (click)="guardar()"
+        [disabled]="!valido()"
+        class="h-[38px] rounded-xl bg-brand-600 px-5 text-[13px] font-semibold text-white transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        {{ initial() ? 'Guardar cambios' : 'Agregar' }}
+      </button>
+    </div>
+  </div>
+</div>

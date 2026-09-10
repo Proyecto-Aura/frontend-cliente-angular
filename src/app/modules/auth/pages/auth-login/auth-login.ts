@@ -12,30 +12,7 @@ import { LoginRequest } from '../../models/auth.model';
   selector: 'app-auth-login',
   imports: [AuthLoginForm],
   host: { class: 'block w-full max-w-[512px] my-auto animate-fade-up' },
-  template: `
-    <section
-      class="flex w-full flex-col gap-8 rounded-[25px] bg-surface px-[30px] py-[50px] shadow-[0px_8px_32px_rgba(0,0,0,0.12)]"
-    >
-      <div class="flex flex-col gap-2">
-        <h1 class="font-display text-[36px] font-extrabold leading-tight tracking-[-0.96px] text-black">
-          Iniciar sesión
-        </h1>
-        <p class="text-[15px] font-medium text-ink-soft">Ingresa tus credenciales para continuar</p>
-      </div>
-
-      @if (recienRegistrado) {
-        <p class="animate-fade-in rounded-lg bg-success-50 px-4 py-3 text-[13px] text-success-700" role="status">
-          Cuenta creada. Te enviamos un correo de activación; actívala antes de iniciar sesión.
-        </p>
-      }
-
-      <app-auth-login-form
-        [enviando]="enviando()"
-        [error]="error()"
-        (submitted)="onLogin($event)"
-      />
-    </section>
-  `,
+  templateUrl: './auth-login.html',
 })
 export class AuthLogin {
   private readonly api = inject(AuthApi);

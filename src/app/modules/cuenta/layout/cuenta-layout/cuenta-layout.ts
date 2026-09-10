@@ -9,14 +9,6 @@ import { CuentaSidebar } from '../../components/cuenta-sidebar/cuenta-sidebar';
   selector: 'app-cuenta-layout',
   imports: [RouterOutlet, Header, CuentaSidebar],
   host: { class: 'flex min-h-screen flex-col bg-canvas' },
-  template: `
-    <app-header />
-    <div class="flex flex-1 flex-col lg:flex-row">
-      <app-cuenta-sidebar />
-      <main class="flex-1 px-6 py-8 lg:px-10">
-        <router-outlet />
-      </main>
-    </div>
-  `,
+  templateUrl: './cuenta-layout.html',
 })
 export class CuentaLayout {}
