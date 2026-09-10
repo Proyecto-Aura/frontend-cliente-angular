@@ -12,47 +12,7 @@ import { CarritoStore } from '../../services/carrito-store';
     class:
       'flex w-full shrink-0 flex-col gap-4 rounded-xl border border-[#f0f0f0] bg-surface p-5 lg:sticky lg:top-6 lg:w-[320px]',
   },
-  template: `
-    <div class="flex flex-col gap-2">
-      <div class="flex items-center justify-between">
-        <span class="text-[13px] text-muted">
-          Subtotal ({{ carrito.totalItems() }}
-          {{ carrito.totalItems() === 1 ? 'producto' : 'productos' }})
-        </span>
-        <span class="text-[13px] font-semibold text-label">
-          S/ {{ carrito.subtotal() | number: '1.2-2' }}
-        </span>
-      </div>
-      <div class="flex items-center justify-between">
-        <span class="text-[13px] text-muted">Envío estimado</span>
-        <span class="text-[13px] font-semibold text-success-700">Gratis</span>
-      </div>
-      <div class="my-1 h-px bg-[#f0f0f0]"></div>
-      <div class="flex items-center justify-between">
-        <span class="font-display text-[15px] font-bold text-ink">Total</span>
-        <span class="font-display text-[20px] font-bold text-ink">
-          S/ {{ carrito.subtotal() | number: '1.2-2' }}
-        </span>
-      </div>
-    </div>
-
-    <div class="flex flex-col gap-2">
-      <a
-        routerLink="/checkout"
-        class="flex h-[42px] w-full items-center justify-center gap-2 rounded-xl bg-brand-600 text-[14px] font-semibold text-white transition-colors hover:bg-brand-700"
-      >
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" /></svg>
-        Finalizar Compra
-      </a>
-      <a
-        routerLink="/catalogo"
-        class="flex h-[38px] w-full items-center justify-center gap-2 rounded-xl border border-line-soft bg-surface text-[13px] font-medium text-ink-soft transition-colors hover:bg-brand-50 hover:text-brand-600"
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
-        Seguir comprando
-      </a>
-    </div>
-  `,
+  templateUrl: './carrito-resumen.html',
 })
 export class CarritoResumen {
   protected readonly carrito = inject(CarritoStore);

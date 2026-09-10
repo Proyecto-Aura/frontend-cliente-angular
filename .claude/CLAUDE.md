@@ -28,12 +28,13 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Keep components small and focused on a single responsibility
 - Use `input()` and `output()` functions instead of decorators
 - Use `computed()` for derived state
-- Prefer inline templates for small components
+- **Plantilla SIEMPRE en archivo `.html` separado** (`templateUrl: './x.html'`), en todos los componentes sin excepción — convención del equipo por consistencia y tooling (Angular Language Service, formateo, type-check de la plantilla). Nada de `template:` inline.
 - Prefer Signal Forms (`@angular/forms/signals`) for new forms. They are stable in Angular v22+ and provide signal-based state, type-safe field access, and schema-based validation
 - When not using Signal Forms, prefer Reactive forms instead of Template-driven ones
 - Do NOT use `ngClass`, use `class` bindings instead
 - Do NOT use `ngStyle`, use `style` bindings instead
-- When using external templates/styles, use paths relative to the component TS file.
+- Rutas de `templateUrl` / `styleUrl` siempre relativas al `.ts` del componente.
+- Si una plantilla se vuelve enorme, el problema es el componente (hace demasiado): partilo en sub-componentes, no basta con mover el HTML.
 
 ## State Management
 
@@ -103,7 +104,7 @@ El sidebar solo existe en `cuenta` (`modules/cuenta/components/cuenta-sidebar/` 
 ### Estilos
 
 - Tailwind v4, **sin `tailwind.config.js`**. Paleta y fuentes en `src/styles.css` con `@theme`.
-- Solo clases utilitarias en el HTML. **Nunca** un `.css` por componente.
+- Solo clases utilitarias en el HTML. **Nunca** un `.css` por componente (única excepción actual: `modules/nosotros/pages/nosotros.css`, pieza cinemática a medida, con comentario explicando el porqué).
 - Mobile-first: clase sin prefijo = default; `sm: md: lg: xl: 2xl:` sobreescriben hacia arriba.
 - Nada de porcentajes a mano para layout: `flex-1`. Para mostrar/ocultar por tamaño: reemplazar `flex` por `hidden` (p. ej. `hidden lg:flex`), no combinar.
 
