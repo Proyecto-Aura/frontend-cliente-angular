@@ -10,21 +10,7 @@ import { RegisterClientePayload } from '../../models/registro.model';
   selector: 'app-auth-register-data-form',
   imports: [AuthRegisterPersonalForm, AuthRegisterEmpresaForm],
   host: { class: 'block' },
-  template: `
-    @if (store.esEmpresa()) {
-      <app-auth-register-empresa-form
-        [enviando]="enviando()"
-        [error]="error()"
-        (submitted)="submitted.emit($event)"
-      />
-    } @else {
-      <app-auth-register-personal-form
-        [enviando]="enviando()"
-        [error]="error()"
-        (submitted)="submitted.emit($event)"
-      />
-    }
-  `,
+  templateUrl: './auth-register-data-form.html',
 })
 export class AuthRegisterDataForm {
   protected readonly store = inject(AuthRegistroStore);
