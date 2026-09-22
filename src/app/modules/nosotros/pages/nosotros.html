@@ -38,98 +38,17 @@
 
     <div class="bag-scene">
       <div class="bag">
-        <svg class="bag-svg" viewBox="0 0 300 430" xmlns="http://www.w3.org/2000/svg" role="img"
-          aria-label="Bolsa de papas Franco's">
-          <defs>
-            <clipPath id="bagClip">
-              <path d="M44 34 Q34 22 50 18 L250 18 Q266 22 256 34 L270 388 Q274 410 252 412 L48 412 Q26 410 30 388 Z" />
-            </clipPath>
-            <path id="ribbonPath" d="M40 300 Q150 322 262 296" fill="none" />
-            <path id="papasPath" d="M182 176 Q232 146 296 178" fill="none" />
-          </defs>
-
-          <!-- Cuerpo translúcido -->
-          <path d="M44 34 Q34 22 50 18 L250 18 Q266 22 256 34 L270 388 Q274 410 252 412 L48 412 Q26 410 30 388 Z"
-            fill="#eef1f4" />
-
-          <g clip-path="url(#bagClip)">
-            <!-- Papas dentro de la bolsa -->
-            @for (c of chipsInside; track $index) {
-              <use href="#chipShape" [attr.transform]="
-                'translate(' + c.x + ',' + c.y + ') rotate(' + c.r + ' 31 26) scale(' + c.s + ')'
-              " />
-            }
-            <!-- Plástico frost + brillo diagonal -->
-            <rect x="0" y="0" width="300" height="430" fill="url(#plastic)" />
-            <rect x="-40" y="-40" width="140" height="520" fill="url(#glare)" transform="rotate(8 150 215)" />
-            <!-- Banda diagonal rojo / amarillo / verde -->
-            <g transform="rotate(-17 150 118)">
-              <rect x="-40" y="70" width="400" height="24" fill="#e2231a" />
-              <rect x="-40" y="94" width="400" height="22" fill="#f7c500" />
-              <rect x="-40" y="116" width="400" height="24" fill="#1e9e46" />
-            </g>
-            <!-- Zip / sello superior -->
-            <line x1="44" y1="30" x2="256" y2="30" stroke="#1a1a1a" stroke-opacity="0.22"
-              stroke-width="3" stroke-dasharray="2 3" />
-          </g>
-
-          <!-- Octágono de advertencia -->
-          <g transform="translate(238,58)">
-            <polygon points="-17,-28 17,-28 28,-17 28,17 17,28 -17,28 -28,17 -28,-17"
-              fill="#101010" stroke="#fff" stroke-width="1.5" />
-            <text text-anchor="middle" fill="#fff" font-family="Montserrat, sans-serif" font-weight="800">
-              <tspan x="0" y="-6" font-size="7.5">ALTO EN</tspan>
-              <tspan x="0" y="4" font-size="7.5">GRASAS</tspan>
-              <tspan x="0" y="14" font-size="7.5">SATURADAS</tspan>
-            </text>
-          </g>
-
-          <!-- Papas en hojuelas -->
-          <text fill="#e2231a" font-family="Montserrat, sans-serif" font-weight="900" font-style="italic"
-            font-size="29">
-            <textPath href="#papasPath" startOffset="0">Papas</textPath>
-          </text>
-          <text x="258" y="200" text-anchor="middle" fill="#e2231a" font-family="Montserrat, sans-serif"
-            font-weight="800" font-style="italic" font-size="13">en hojuelas</text>
-
-          <!-- Logo -->
-          <g transform="translate(0,4)">
-            <rect x="66" y="196" width="56" height="20" rx="4" fill="#e2231a" />
-            <text x="94" y="210" text-anchor="middle" fill="#fff" font-family="Montserrat, sans-serif"
-              font-weight="800" font-size="12">Snacks</text>
-
-            <rect x="40" y="216" width="150" height="66" rx="13" fill="#e2231a" stroke="#fff" stroke-width="3" />
-            <path d="M48 268 Q115 286 182 260" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" />
-            <text x="115" y="260" text-anchor="middle" fill="#fff" font-family="Montserrat, sans-serif"
-              font-weight="900" font-style="italic" font-size="40" stroke="#7a0d12" stroke-width="1"
-              paint-order="stroke" style="transform: skewX(-7deg); transform-origin: 115px 260px">Franco's</text>
-            <text x="182" y="228" fill="#fff" font-family="Montserrat, sans-serif" font-weight="700"
-              font-size="9">&#174;</text>
-          </g>
-
-          <!-- Ribbon -->
-          <path d="M34 296 Q150 320 266 292 L262 308 Q150 336 30 312 Z" fill="#c0181e" />
-          <text fill="#fff" font-family="Montserrat, sans-serif" font-weight="800" font-style="italic" font-size="12.5">
-            <textPath href="#ribbonPath" startOffset="12">¡Francamente buenazos!</textPath>
-          </text>
-
-          <!-- Peso neto -->
-          <text x="256" y="372" text-anchor="end" fill="#8a5a2a" font-family="Montserrat, sans-serif"
-            font-weight="700" font-size="12" style="transform: rotate(-4deg); transform-origin: 256px 372px">
-            PESO NETO 250 gr
-          </text>
-
-          <!-- Borde de la bolsa -->
-          <path d="M44 34 Q34 22 50 18 L250 18 Q266 22 256 34 L270 388 Q274 410 252 412 L48 412 Q26 410 30 388 Z"
-            fill="none" stroke="#1a1a1a" stroke-opacity="0.14" stroke-width="2" />
-        </svg>
+        <img class="bag-svg" ngSrc="/nosotros/bolsa-papas.png" alt="Bolsa de papas Franco's"
+          width="1254" height="1254" priority />
+        <img class="bag-torn" ngSrc="/nosotros/bolsa-rota.png" alt="Bolsa de papas Franco's abierta"
+          width="1024" height="1536" priority />
       </div>
     </div>
 
     <div class="chips" aria-hidden="true">
       @for (c of chips; track $index) {
         <span class="chip">
-          <svg viewBox="0 0 62 52" width="62" height="52"><use href="#chipShape" /></svg>
+          <img ngSrc="/nosotros/papita.png" alt="" width="1536" height="1024" />
         </span>
       }
     </div>
@@ -158,7 +77,7 @@
   <div class="valores">
     @for (v of valores; track v.title) {
       <div class="valor">
-        <svg class="chip-ico" viewBox="0 0 62 52"><use href="#chipShape" /></svg>
+        <img class="chip-ico" ngSrc="/nosotros/papita.png" alt="" width="1536" height="1024" />
         <h3>{{ v.title }}</h3>
         <p>{{ v.desc }}</p>
       </div>

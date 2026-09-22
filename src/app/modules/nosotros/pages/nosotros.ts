@@ -5,6 +5,7 @@ import {
   inject,
   DestroyRef,
 } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 import gsap from 'gsap';
@@ -20,7 +21,7 @@ import Lenis from 'lenis';
  */
 @Component({
   selector: 'app-nosotros',
-  imports: [RouterLink],
+  imports: [RouterLink, NgOptimizedImage],
   host: { class: 'block', '[class.no-motion]': 'reduceMotion' },
   templateUrl: './nosotros.html',
   styleUrl: './nosotros.css',
@@ -32,29 +33,24 @@ export class Nosotros {
     typeof matchMedia !== 'undefined' &&
     matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /** 14 papas del "estallido" — trayectoria de dispersión determinista. */
-  protected readonly chips = Array.from({ length: 14 }, (_, i) => {
-    const a = (i / 14) * Math.PI * 2 + (i % 2 ? 0.5 : 0);
+  /** Cantidad de papas del "estallido" — única fuente de verdad para el cálculo
+   * de trayectorias de abajo (antes hardcodeado en 3 sitios distintos). */
+  private static readonly CHIP_COUNT = 20;
+
+  /** Papas del "estallido" — trayectoria de dispersión determinista. */
+  protected readonly chips = Array.from({ length: Nosotros.CHIP_COUNT }, (_, i) => {
+    const a = (i / Nosotros.CHIP_COUNT) * Math.PI * 2 + (i % 2 ? 0.5 : 0);
     const r = 160 + (i % 5) * 90;
     return {
       x: Math.cos(a) * r * 1.35,
       y: Math.sin(a) * r * 0.8 - 40,
       rot: (i * 57) % 360,
-      scale: 0.7 + ((i * 7) % 10) / 14,
+      scale: 0.7 + ((i * 7) % 10) / Nosotros.CHIP_COUNT,
     };
   });
 
-  /** ~26 papas que llenan la bolsa (posiciones en el viewBox 300x430). */
-  protected readonly chipsInside = Array.from({ length: 26 }, (_, i) => {
-    const col = i % 5;
-    const row = Math.floor(i / 5);
-    return {
-      x: 42 + col * 46 + ((row % 2) * 20) + ((i * 13) % 11) - 5,
-      y: 60 + row * 52 + ((i * 7) % 14) - 6,
-      r: (i * 47) % 360,
-      s: 0.62 + ((i * 5) % 9) / 20,
-    };
-  });
+  /** ~26 papas que llenaban el SVG dibujado de la bolsa — ya no aplica desde
+   * que la bolsa es una foto real (ver commit del reemplazo de assets). */
 
   protected readonly historia = [
     'Franco’s nació en 2010 con una misión clara: llevar los sabores auténticos',
@@ -120,6 +116,8 @@ export class Nosotros {
           .to('.bag-scene', { scale: 1, yPercent: 0, duration: 0.7, ease: 'power2.inOut' }, 2.3)
           .to('.bag', { rotateY: 0, rotateX: 8, scale: 1.08, duration: 0.8, ease: 'power2.inOut' }, 2.4)
           .to('.bag', { rotateX: -4, y: -30, duration: 0.6, ease: 'power2.in' }, 3.0)
+          .to('.bag-svg', { opacity: 0, duration: 0.4, ease: 'power2.in' }, 3.0)
+          .to('.bag-torn', { opacity: 1, duration: 0.4, ease: 'power2.in' }, 3.0)
           .to('.chip', {
             opacity: 1,
             x: (i: number) => this.chips[i].x,
