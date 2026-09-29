@@ -2,15 +2,17 @@ import { Component, computed, input } from '@angular/core';
 
 export type UiAlertTone = 'success' | 'info' | 'warning' | 'danger';
 
+/** Tintes semánticos del DS: fondo tenue + texto oscurecido, sin bordes de color. */
 const TONES: Record<UiAlertTone, string> = {
-  success: 'gap-2.5 rounded-xl border border-[#bbf7d0] bg-success-50 px-4 py-2.5 text-[12px] font-medium text-success-700',
-  info: 'gap-2 rounded-xl border border-[#c7d7fd] bg-[#f0f4ff] px-4 py-2.5 text-[12px] font-medium text-[#4338ca]',
-  warning: 'gap-2 rounded-xl border border-[#fcd34d] bg-[#fef3c7] px-4 py-2.5 text-[12px] font-medium text-[#92400e]',
-  danger: 'rounded-lg bg-brand-50 px-4 py-3 text-[13px] text-brand-700',
+  success: 'bg-success-50 text-success-700',
+  info: 'bg-info-50 text-info-700',
+  warning: 'bg-warning-50 text-warning-700',
+  danger: 'bg-danger-50 text-danger-700',
 };
 
 /**
  * Aviso en línea (entrega estimada, pasarela de pago, stock bajo, error de formulario).
+ * El DS no define un Alert: se construye con sus tintes semánticos (como los badges).
  * El icono, si lleva, va como contenido junto al texto:
  * `<app-ui-alert tone="success"><svg …/> Entrega estimada…</app-ui-alert>`.
  */
@@ -25,5 +27,7 @@ const TONES: Record<UiAlertTone, string> = {
 export class UiAlert {
   readonly tone = input<UiAlertTone>('info');
 
-  protected readonly classes = computed(() => `animate-fade-in flex items-center ${TONES[this.tone()]}`);
+  protected readonly classes = computed(
+    () => `flex items-center gap-2.5 rounded-lg px-4 py-3 text-[12px] font-medium ${TONES[this.tone()]}`,
+  );
 }
