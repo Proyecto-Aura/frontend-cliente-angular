@@ -1,0 +1,296 @@
+<header class="bg-gradient-to-r from-brand-700 to-brand-600 px-6 py-8 lg:px-12">
+  <p class="text-[12px] font-semibold uppercase tracking-widest text-white/70">Franco's · Portal cliente</p>
+  <h1 class="mt-1 font-display text-[28px] font-black text-white">Design system</h1>
+  <p class="mt-1 max-w-[640px] text-[14px] text-white/80">
+    Componentes reutilizables de <code class="rounded bg-white/15 px-1.5 py-0.5 text-[12px]">src/app/shared/ui</code>.
+    Cada bloque muestra el componente en vivo y el código para copiar.
+  </p>
+</header>
+
+<div class="flex gap-10 px-6 py-8 lg:px-12">
+  <nav aria-label="Secciones" class="sticky top-6 hidden h-fit w-[200px] shrink-0 lg:block">
+    <ul class="flex flex-col gap-0.5">
+      @for (s of sections; track s.id) {
+        <li>
+          <button
+            type="button"
+            (click)="scrollTo(s.id)"
+            class="w-full cursor-pointer rounded-lg px-3 py-1.5 text-left text-[13px] font-medium text-ink-soft transition-colors hover:bg-brand-50 hover:text-brand-600"
+          >
+            {{ s.label }}
+          </button>
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <main class="flex min-w-0 flex-1 flex-col gap-12">
+    <!-- Tokens -->
+    <app-showcase-section
+      sectionId="tokens"
+      title="Colores y tipografía"
+      description="Tokens definidos con @theme en src/styles.css. Úsalos como clases de Tailwind: bg-brand-600, text-ink-soft, border-line-soft, font-display…"
+    >
+      <div class="flex flex-col gap-6">
+        @for (group of colorGroups; track group.title) {
+          <div>
+            <h3 class="mb-3 text-[13px] font-semibold text-label">{{ group.title }}</h3>
+            <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-8">
+              @for (c of group.colors; track c.name) {
+                <div class="flex flex-col gap-1.5">
+                  <span class="h-12 rounded-xl border border-[#f0f0f0]" [style.background]="c.hex"></span>
+                  <span class="text-[12px] font-semibold text-ink">{{ c.name }}</span>
+                  <span class="text-[11px] text-ink-soft">{{ c.note ? c.hex + ' · ' + c.note : c.hex }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <div>
+          <h3 class="mb-3 text-[13px] font-semibold text-label">Tipografía</h3>
+          <div class="flex flex-col gap-3">
+            <p class="font-display text-[28px] font-black text-ink">Montserrat — font-display <span class="text-[13px] font-semibold text-ink-soft">(títulos)</span></p>
+            <p class="font-sans text-[15px] text-ink">DM Sans — font-sans <span class="text-[13px] text-ink-soft">(cuerpo, por defecto)</span></p>
+          </div>
+        </div>
+      </div>
+    </app-showcase-section>
+
+    <!-- Button -->
+    <app-showcase-section
+      sectionId="button"
+      title="Button"
+      description="Directiva appButton sobre un button o un enlace (a) nativo. Variantes: primary, secondary, soft, outline, ghost y danger. Tamaños: sm, md y lg."
+      [code]="code.button"
+    >
+      <div class="flex flex-col gap-5">
+        <div class="flex flex-wrap items-center gap-3">
+          <button appButton type="button">Primario</button>
+          <button appButton variant="secondary" type="button">Secundario</button>
+          <button appButton variant="soft" type="button">Suave</button>
+          <button appButton variant="outline" type="button">Outline</button>
+          <button appButton variant="ghost" type="button">Ghost</button>
+          <button appButton variant="danger" type="button">Cerrar sesión</button>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <button appButton size="sm" type="button">Small</button>
+          <button appButton size="md" type="button">Medium</button>
+          <button appButton size="lg" type="button">Large</button>
+          <button appButton type="button" disabled>Deshabilitado</button>
+        </div>
+        <div class="max-w-[360px]">
+          <button appButton size="lg" [block]="true" type="button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" />
+              <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+            </svg>
+            Agregar al carrito
+          </button>
+        </div>
+      </div>
+    </app-showcase-section>
+
+    <!-- Input -->
+    <app-showcase-section
+      sectionId="input"
+      title="Input"
+      description="Campo con etiqueta, hint y error. Funciona con [formControl], formControlName o ngModel. Con type='password' incluye el botón mostrar/ocultar."
+      [code]="code.input"
+    >
+      <div class="grid max-w-[720px] gap-5 sm:grid-cols-2">
+        <app-ui-input
+          label="Correo electrónico" type="email" placeholder="tu@correo.com"
+          autocomplete="email" [formControl]="email"
+          [error]="email.touched && email.invalid ? 'Ingresa un correo válido' : null"
+        />
+        <app-ui-input label="Contraseña" type="password" hint="Mínimo 8 caracteres" [formControl]="password" />
+        <app-ui-input
+          label="DNI" inputMode="numeric" [maxLength]="8" [formControl]="dni"
+          [error]="dni.touched && dni.invalid ? 'Ingresa un DNI válido (8 dígitos)' : null"
+        />
+        <app-ui-input label="Deshabilitado" [formControl]="disabledInput" />
+      </div>
+    </app-showcase-section>
+
+    <!-- Select -->
+    <app-showcase-section
+      sectionId="select"
+      title="Select"
+      description="Select nativo con estilo del portal. Recibe las opciones como objetos con value y label."
+      [code]="code.select"
+    >
+      <div class="max-w-[340px]">
+        <app-ui-select
+          label="Distrito" placeholder="Selecciona un distrito" hint="Ciudad: Lima, Perú"
+          [options]="distritos" [formControl]="distrito"
+        />
+        <p class="mt-2 text-[12px] text-muted">Valor: {{ distrito.value || '—' }}</p>
+      </div>
+    </app-showcase-section>
+
+    <!-- Textarea -->
+    <app-showcase-section sectionId="textarea" title="Textarea" [code]="code.textarea">
+      <div class="max-w-[480px]">
+        <app-ui-textarea
+          label="Motivo de la solicitud" placeholder="Cuéntanos qué pasó…"
+          [maxLength]="500" [formControl]="motivo"
+          [hint]="motivo.value.length + '/500'"
+        />
+      </div>
+    </app-showcase-section>
+
+    <!-- Checkbox -->
+    <app-showcase-section sectionId="checkbox" title="Checkbox" [code]="code.checkbox">
+      <app-ui-checkbox [formControl]="acepta">Acepto los términos y condiciones</app-ui-checkbox>
+      <p class="mt-2 text-[12px] text-muted">Valor: {{ acepta.value }}</p>
+    </app-showcase-section>
+
+    <!-- Badge -->
+    <app-showcase-section
+      sectionId="badge"
+      title="Badge"
+      description="Etiquetas de estado (pago, entrega, stock, reembolso). Tonos: success, warning, info, danger y neutral. El icono es opcional."
+      [code]="code.badge"
+    >
+      <div class="flex flex-wrap items-center gap-3">
+        <app-ui-badge tone="success">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /><path d="m9 11 3 3L22 4" /></svg>
+          Pagado
+        </app-ui-badge>
+        <app-ui-badge tone="warning">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+          Pendiente
+        </app-ui-badge>
+        <app-ui-badge tone="info">En camino</app-ui-badge>
+        <app-ui-badge tone="danger">Rechazado</app-ui-badge>
+        <app-ui-badge tone="neutral">Sin stock</app-ui-badge>
+      </div>
+    </app-showcase-section>
+
+    <!-- Alert -->
+    <app-showcase-section
+      sectionId="alert"
+      title="Alert"
+      description="Avisos en línea. danger y warning se anuncian a lectores de pantalla (role=alert)."
+      [code]="code.alert"
+    >
+      <div class="flex max-w-[560px] flex-col gap-3">
+        <app-ui-alert tone="info">Los pedidos se entregan de lunes a sábado.</app-ui-alert>
+        <app-ui-alert tone="success">Tu dirección se guardó correctamente.</app-ui-alert>
+        <app-ui-alert tone="warning">
+          Tu solicitud será revisada en un plazo de <strong>2–5 días hábiles</strong>.
+        </app-ui-alert>
+        <app-ui-alert tone="danger" title="No pudimos iniciar sesión">Correo o contraseña incorrectos.</app-ui-alert>
+      </div>
+    </app-showcase-section>
+
+    <!-- Card -->
+    <app-showcase-section
+      sectionId="card"
+      title="Card"
+      description="Contenedor base. Variantes: default, danger (zonas sensibles) e interactive (con hover). Padding: none, sm y md."
+      [code]="code.card"
+    >
+      <div class="grid gap-4 md:grid-cols-3">
+        <app-ui-card>
+          <h3 class="font-display text-[15px] font-extrabold text-ink">Default</h3>
+          <p class="mt-1 text-[13px] text-ink-soft">Datos personales, resumen de pedido…</p>
+        </app-ui-card>
+        <app-ui-card variant="danger">
+          <h3 class="font-display text-[15px] font-extrabold text-brand-700">Danger</h3>
+          <p class="mt-1 text-[13px] text-ink-soft">Eliminar cuenta, acciones irreversibles.</p>
+        </app-ui-card>
+        <app-ui-card variant="interactive" padding="sm">
+          <h3 class="font-display text-[15px] font-extrabold text-ink">Interactive</h3>
+          <p class="mt-1 text-[13px] text-ink-soft">Pasa el cursor: cards de producto.</p>
+        </app-ui-card>
+      </div>
+    </app-showcase-section>
+
+    <!-- Modal -->
+    <app-showcase-section
+      sectionId="modal"
+      title="Modal"
+      description="Se cierra con Escape, con el botón X o al hacer clic en el fondo. Al abrir mueve el foco al panel. Las acciones van en slot=&quot;footer&quot;."
+      [code]="code.modal"
+    >
+      <button appButton type="button" (click)="modalOpen.set(true)">Abrir modal</button>
+      @if (modalOpen()) {
+        <app-ui-modal title="Nueva dirección" (closed)="modalOpen.set(false)">
+          <div class="flex flex-col gap-4">
+            <app-ui-input label="Nombre de la dirección" placeholder="Casa, Oficina…" />
+            <app-ui-select label="Distrito" placeholder="Selecciona un distrito" [options]="distritos" />
+          </div>
+          <div slot="footer" class="flex gap-3">
+            <button appButton variant="secondary" type="button" (click)="modalOpen.set(false)">Cancelar</button>
+            <button appButton type="button" (click)="modalOpen.set(false); toast.success('Dirección guardada')">Guardar</button>
+          </div>
+        </app-ui-modal>
+      }
+    </app-showcase-section>
+
+    <!-- Confirm dialog -->
+    <app-showcase-section
+      sectionId="confirm"
+      title="Confirm dialog"
+      description="Confirmación antes de una acción destructiva."
+      [code]="code.confirm"
+    >
+      <button appButton variant="outline" type="button" (click)="confirmOpen.set(true)">Cancelar pedido</button>
+      @if (confirmOpen()) {
+        <app-confirm-dialog
+          title="¿Cancelar pedido?"
+          message="Esta acción no se puede deshacer."
+          confirmLabel="Sí, cancelar"
+          (confirmed)="confirmOpen.set(false); toast.info('Pedido cancelado')"
+          (cancelled)="confirmOpen.set(false)"
+        />
+      }
+    </app-showcase-section>
+
+    <!-- Toast -->
+    <app-showcase-section
+      sectionId="toast"
+      title="Toast"
+      description="Notificaciones temporales (4 s) abajo a la derecha. El toaster ya está montado en app.html; solo se inyecta ToastService."
+      [code]="code.toast"
+    >
+      <div class="flex flex-wrap gap-3">
+        <button appButton variant="secondary" type="button" (click)="toast.success('Producto agregado', 'Papas clásicas x2')">Success</button>
+        <button appButton variant="secondary" type="button" (click)="toast.warning('Stock bajo', 'Solo quedan 3 unidades')">Warning</button>
+        <button appButton variant="secondary" type="button" (click)="toast.error('No se pudo guardar')">Error</button>
+        <button appButton variant="secondary" type="button" (click)="toast.info('Tu pedido está en camino')">Info</button>
+      </div>
+    </app-showcase-section>
+
+    <!-- Quantity -->
+    <app-showcase-section
+      sectionId="quantity"
+      title="Quantity"
+      description="Selector −/+ con two-way binding [(value)] y límites min / max."
+      [code]="code.quantity"
+    >
+      <div class="flex items-center gap-4">
+        <app-ui-quantity [(value)]="cantidad" [min]="1" [max]="5" label="Cantidad de Papas clásicas" />
+        <span class="text-[13px] text-ink-soft">Cantidad: {{ cantidad() }} (máx. 5)</span>
+      </div>
+    </app-showcase-section>
+
+    <!-- Step progress -->
+    <app-showcase-section
+      sectionId="step-progress"
+      title="Step progress"
+      description="Barra segmentada para flujos por pasos (registro, checkout)."
+      [code]="code.stepProgress"
+    >
+      <div class="flex max-w-[420px] flex-col gap-4">
+        <app-ui-step-progress [step]="paso()" [total]="3" />
+        <div class="flex gap-3">
+          <button appButton variant="secondary" size="sm" type="button" [disabled]="paso() <= 1" (click)="paso.set(paso() - 1)">Anterior</button>
+          <button appButton size="sm" type="button" [disabled]="paso() >= 3" (click)="paso.set(paso() + 1)">Siguiente</button>
+        </div>
+      </div>
+    </app-showcase-section>
+  </main>
+</div>

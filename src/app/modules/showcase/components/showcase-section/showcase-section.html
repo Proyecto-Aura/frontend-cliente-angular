@@ -1,0 +1,26 @@
+<h2 class="font-display text-[20px] font-extrabold text-ink">{{ title() }}</h2>
+@if (description()) {
+  <p class="mt-1 max-w-[720px] text-[13px] leading-relaxed text-ink-soft">{{ description() }}</p>
+}
+
+<div class="mt-4 overflow-hidden rounded-2xl border border-[#f0f0f0] bg-surface">
+  <div class="p-6">
+    <ng-content />
+  </div>
+
+  @if (code()) {
+    <div class="border-t border-[#f0f0f0] bg-[#1f1f1f]">
+      <div class="flex items-center justify-between px-4 pt-3">
+        <span class="text-[11px] font-semibold uppercase tracking-widest text-[#a3a3a3]">Código</span>
+        <button
+          type="button"
+          (click)="copy()"
+          class="h-[28px] cursor-pointer rounded-lg border border-white/15 px-3 text-[11px] font-semibold text-white transition-colors hover:bg-white/10"
+        >
+          {{ copied() ? '¡Copiado!' : 'Copiar' }}
+        </button>
+      </div>
+      <pre class="overflow-x-auto p-4 text-[12px] leading-relaxed text-[#e5e5e5]"><code>{{ code() }}</code></pre>
+    </div>
+  }
+</div>

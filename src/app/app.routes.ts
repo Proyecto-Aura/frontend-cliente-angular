@@ -14,6 +14,10 @@ export const routes: Routes = [
     loadChildren: () => import('./modules/cuenta/cuenta.route').then((m) => m.CUENTA_ROUTES),
   },
   {
+    path: 'showcase',
+    loadChildren: () => import('./modules/showcase/showcase.route').then((m) => m.SHOWCASE_ROUTES),
+  },
+  {
     path: '',
     loadComponent: () =>
       import('./layouts/store-layout/store-layout').then((m) => m.StoreLayout),
