@@ -17,9 +17,10 @@ import { LoginRequest } from '../../models/auth.model';
 export class AuthLogin {
   private readonly api = inject(AuthApi);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   protected readonly recienRegistrado =
-    inject(ActivatedRoute).snapshot.queryParamMap.get('registrado') === '1';
+    this.route.snapshot.queryParamMap.get('registrado') === '1';
   protected readonly enviando = signal(false);
   protected readonly error = signal<string | null>(null);
 
@@ -29,8 +30,10 @@ export class AuthLogin {
     this.api.login(credentials).subscribe({
       next: () => {
         this.enviando.set(false);
-        // TODO: destino real tras login (catálogo del portal cliente).
-        this.router.navigate(['/catalogo']);
+        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+        // Solo rutas internas: evita que un returnUrl manipulado (ej. "//evil.com") redirija fuera de la app.
+        const destino = returnUrl?.startsWith('/') && !returnUrl.startsWith('//') ? returnUrl : '/catalogo';
+        this.router.navigateByUrl(destino);
       },
       error: (err: HttpErrorResponse) => {
         this.enviando.set(false);
