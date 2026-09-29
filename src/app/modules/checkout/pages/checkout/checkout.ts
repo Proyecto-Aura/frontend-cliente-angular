@@ -1,8 +1,9 @@
-import { Component, WritableSignal, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 
 import { CarritoStore } from '../../../carrito/services/carrito-store';
+import { UiAlert, UiButton, UiCard, UiInput } from '../../../../shared/ui';
 import { DISTRITOS } from '../../../../shared/utils/constants';
 import { MetodoPago, TipoComprobante } from '../../models/checkout.model';
 
@@ -13,7 +14,7 @@ import { MetodoPago, TipoComprobante } from '../../models/checkout.model';
  */
 @Component({
   selector: 'app-checkout',
-  imports: [RouterLink, NgOptimizedImage, DecimalPipe],
+  imports: [RouterLink, NgOptimizedImage, DecimalPipe, UiAlert, UiButton, UiCard, UiInput],
   host: { class: 'block flex-1' },
   templateUrl: './checkout.html',
 })
@@ -44,11 +45,6 @@ export class Checkout {
       (this.comprobante() === 'boleta' ||
         (this.ruc().trim() !== '' && this.razonSocial().trim() !== '')),
   );
-
-  /** Enlaza un `<input>` a una señal de texto (two-way manual). */
-  protected bind(sig: WritableSignal<string>, ev: Event): void {
-    sig.set((ev.target as HTMLInputElement).value);
-  }
 
   protected pickDistrito(d: string): void {
     this.distrito.set(d);
