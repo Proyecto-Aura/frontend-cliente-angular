@@ -3,13 +3,13 @@ import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 
 import { Producto } from '../../models/producto.model';
 import { CarritoStore } from '../../../carrito/services/carrito-store';
-import { ToastService } from '../../../../shared/ui/toast/toast-service';
+import { ToastService, UiAlert, UiButton, UiQuantity } from '../../../../shared/ui';
 import { CatalogoStockBadge } from '../catalogo-stock-badge/catalogo-stock-badge';
 
 /** Modal de detalle de producto: imagen grande, datos, selector de cantidad y añadir al carrito. */
 @Component({
   selector: 'app-catalogo-product-detail',
-  imports: [NgOptimizedImage, DecimalPipe, CatalogoStockBadge],
+  imports: [NgOptimizedImage, DecimalPipe, CatalogoStockBadge, UiAlert, UiButton, UiQuantity],
   host: { class: 'block' },
   templateUrl: './catalogo-product-detail.html',
 })
@@ -26,13 +26,7 @@ export class CatalogoProductDetail {
   protected readonly stockLibre = computed(() => this.product().stock - this.enCarrito());
   protected readonly total = computed(() => this.product().price * this.qty());
 
-  protected menos(): void {
-    this.qty.update((q) => Math.max(1, q - 1));
-  }
-
-  protected mas(): void {
-    this.qty.update((q) => Math.min(Math.max(this.stockLibre(), 1), q + 1));
-  }
+  protected readonly maxQty = computed(() => Math.max(this.stockLibre(), 1));
 
   protected agregar(): void {
     const p = this.product();
