@@ -1,5 +1,11 @@
 @if (error()) {
-  <span [id]="for() + '-msg'" class="animate-fade-in text-[12px] text-brand-600">{{ error() }}</span>
+  <p [id]="for() + '-msg'" class="flex items-center gap-1.5 text-[12px] font-medium text-destructive">
+    <span
+      aria-hidden="true"
+      class="inline-flex size-[15px] shrink-0 items-center justify-center rounded-full bg-destructive text-[10px] leading-none font-bold text-white"
+    >!</span>
+    {{ error() }}
+  </p>
 } @else if (hint()) {
-  <span [id]="for() + '-msg'" class="text-[12px] text-muted">{{ hint() }}</span>
+  <p [id]="for() + '-msg'" class="text-[12px] text-muted-foreground">{{ hint() }}</p>
 }
