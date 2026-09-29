@@ -18,6 +18,7 @@ const PADDINGS: Record<UiCardPadding, string> = {
 
 /**
  * Contenedor blanco con borde suave y esquinas redondeadas.
+ * Es un contenedor flex en columna: el espaciado interno se da con `class="gap-4"`.
  * `danger` es para zonas sensibles (ej. eliminar cuenta); `interactive` para cards clicables.
  */
 @Component({
@@ -31,6 +32,6 @@ export class UiCard {
 
   protected readonly classes = computed(
     () =>
-      `block overflow-hidden rounded-2xl border bg-surface ${VARIANTS[this.variant()]} ${PADDINGS[this.padding()]}`,
+      `flex flex-col overflow-hidden rounded-2xl border bg-surface ${VARIANTS[this.variant()]} ${PADDINGS[this.padding()]}`,
   );
 }

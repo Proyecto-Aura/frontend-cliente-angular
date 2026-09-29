@@ -24,7 +24,13 @@ export const SNIPPETS = {
   autocomplete="email" [formControl]="email" />
 
 <app-ui-input label="Contraseña" type="password" [formControl]="password"
-  hint="Mínimo 8 caracteres" />
+  hint="Mínimo 8 caracteres">
+  <!-- Enlace junto a la etiqueta -->
+  <a slot="action" routerLink="/auth/recuperar">¿Has olvidado tu contraseña?</a>
+</app-ui-input>
+
+<!-- Solo lectura -->
+<app-ui-input label="Ciudad" value="Lima" [readonly]="true" />
 
 <!-- Con formularios, el error solo se ve cuando el campo está touched e inválido -->
 <app-ui-input label="DNI" inputMode="numeric" [maxLength]="8" [formControl]="dni"
@@ -89,7 +95,8 @@ distritos: UiSelectOption[] = [
 
   card: `import { UiCard } from '../../../../shared/ui';   // imports: [UiCard]
 
-<!-- variant: default · danger · interactive   |   padding: none · sm · md -->
+<!-- variant: default · danger · interactive   |   padding: none · sm · md
+     Es flex en columna: el espaciado interno va con class="gap-4" -->
 <app-ui-card>…contenido…</app-ui-card>
 <app-ui-card variant="danger">Zona de riesgo</app-ui-card>
 <app-ui-card variant="interactive" padding="none">…card de producto…</app-ui-card>`,

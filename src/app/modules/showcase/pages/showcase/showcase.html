@@ -104,12 +104,15 @@
           autocomplete="email" [formControl]="email"
           error="Ingresa un correo válido"
         />
-        <app-ui-input label="Contraseña" type="password" hint="Mínimo 8 caracteres" [formControl]="password" />
+        <app-ui-input label="Contraseña" type="password" hint="Mínimo 8 caracteres" [formControl]="password">
+          <button slot="action" type="button" class="cursor-pointer text-[12px] font-semibold text-brand-600 hover:underline">¿Has olvidado tu contraseña?</button>
+        </app-ui-input>
         <app-ui-input
           label="DNI" inputMode="numeric" [maxLength]="8" [formControl]="dni"
           error="Ingresa un DNI válido (8 dígitos)"
         />
         <app-ui-input label="Deshabilitado" [formControl]="disabledInput" />
+        <app-ui-input label="Ciudad (solo lectura)" value="Lima" [readonly]="true" />
       </div>
     </app-showcase-section>
 
