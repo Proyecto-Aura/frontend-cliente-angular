@@ -1,27 +1,35 @@
-<div class="flex flex-col gap-1.5">
+<div class="flex flex-col gap-2">
   @if (label()) {
-    <label [for]="id" class="text-[13px] font-semibold text-label">{{ label() }}</label>
+    <app-ui-field-label [for]="id" [required]="required()">{{ label() }}</app-ui-field-label>
   }
 
-  <select
-    [id]="id"
-    [disabled]="disabled()"
-    [attr.aria-invalid]="visibleError() ? true : null"
-    [attr.aria-describedby]="visibleError() || hint() ? id + '-msg' : null"
-    (change)="onChangeEvent($event)"
-    (blur)="onTouched()"
-    [class]="fieldClasses"
-    class="h-[40px] cursor-pointer appearance-none"
-    [class.border-brand-600]="!!visibleError()"
-    [class.border-line-soft]="!visibleError()"
-  >
-    @if (placeholder()) {
-      <option value="" disabled [selected]="value() === ''">{{ placeholder() }}</option>
-    }
-    @for (opt of options(); track opt.value) {
-      <option [value]="opt.value" [selected]="opt.value === value()">{{ opt.label }}</option>
-    }
-  </select>
+  <span class="relative flex items-center">
+    <select
+      [id]="id"
+      [disabled]="disabled()"
+      [required]="required()"
+      [attr.aria-invalid]="visibleError() ? true : null"
+      [attr.aria-describedby]="visibleError() || hint() ? id + '-msg' : null"
+      (change)="onChangeEvent($event)"
+      (blur)="onTouched()"
+      [class]="fieldClass()"
+      class="cursor-pointer appearance-none pr-[38px]"
+    >
+      @if (placeholder()) {
+        <option value="" disabled [selected]="value() === ''">{{ placeholder() }}</option>
+      }
+      @for (opt of options(); track opt.value) {
+        <option [value]="opt.value" [selected]="opt.value === value()">{{ opt.label }}</option>
+      }
+    </select>
+    <svg
+      class="pointer-events-none absolute right-3.5 text-muted-foreground"
+      width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  </span>
 
   <app-ui-field-message [for]="id" [hint]="hint()" [error]="visibleError()" />
 </div>
