@@ -1,0 +1,5 @@
+@if (error()) {
+  <span [id]="for() + '-msg'" class="animate-fade-in text-[12px] text-brand-600">{{ error() }}</span>
+} @else if (hint()) {
+  <span [id]="for() + '-msg'" class="text-[12px] text-muted">{{ hint() }}</span>
+}

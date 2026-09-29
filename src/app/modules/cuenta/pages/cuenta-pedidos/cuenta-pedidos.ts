@@ -6,12 +6,13 @@ import { CuentaPagoBadge } from '../../components/cuenta-pago-badge/cuenta-pago-
 import { CuentaEntregaBadge } from '../../components/cuenta-entrega-badge/cuenta-entrega-badge';
 import { ConfirmDialog } from '../../../../shared/ui/confirm-dialog/confirm-dialog';
 import { ToastService } from '../../../../shared/ui/toast/toast-service';
+import { UiBadge } from '../../../../shared/ui';
 import { EstadoEntrega, EstadoPago } from '../../models/pedido.model';
 
 /** Historial de pedidos del cliente, con cancelación. Hija de cuenta-layout. */
 @Component({
   selector: 'app-cuenta-pedidos',
-  imports: [RouterLink, CuentaPagoBadge, CuentaEntregaBadge, ConfirmDialog],
+  imports: [RouterLink, CuentaPagoBadge, CuentaEntregaBadge, ConfirmDialog, UiBadge],
   host: { class: 'block' },
   templateUrl: './cuenta-pedidos.html',
 })

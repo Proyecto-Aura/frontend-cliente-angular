@@ -1,0 +1,27 @@
+<div class="flex flex-col gap-1.5">
+  @if (label()) {
+    <label [for]="id" class="text-[13px] font-semibold text-label">{{ label() }}</label>
+  }
+
+  <select
+    [id]="id"
+    [disabled]="disabled()"
+    [attr.aria-invalid]="visibleError() ? true : null"
+    [attr.aria-describedby]="visibleError() || hint() ? id + '-msg' : null"
+    (change)="onChangeEvent($event)"
+    (blur)="onTouched()"
+    [class]="fieldClasses"
+    class="h-[40px] cursor-pointer appearance-none"
+    [class.border-brand-600]="!!visibleError()"
+    [class.border-line-soft]="!visibleError()"
+  >
+    @if (placeholder()) {
+      <option value="" disabled [selected]="value() === ''">{{ placeholder() }}</option>
+    }
+    @for (opt of options(); track opt.value) {
+      <option [value]="opt.value" [selected]="opt.value === value()">{{ opt.label }}</option>
+    }
+  </select>
+
+  <app-ui-field-message [for]="id" [hint]="hint()" [error]="visibleError()" />
+</div>
