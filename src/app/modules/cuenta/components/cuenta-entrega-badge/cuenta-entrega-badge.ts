@@ -1,10 +1,12 @@
 import { Component, input } from '@angular/core';
 
+import { UiBadge } from '../../../../shared/ui';
 import { EstadoEntrega } from '../../models/pedido.model';
 
 /** Estado de entrega del pedido: procesando / en camino / entregado. */
 @Component({
   selector: 'app-cuenta-entrega-badge',
+  imports: [UiBadge],
   host: { class: 'inline-flex' },
   templateUrl: './cuenta-entrega-badge.html',
 })
