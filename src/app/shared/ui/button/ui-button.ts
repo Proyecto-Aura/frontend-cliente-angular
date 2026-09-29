@@ -1,32 +1,48 @@
 import { Directive, computed, input } from '@angular/core';
 
-export type UiButtonVariant = 'primary' | 'secondary' | 'soft' | 'outline' | 'ghost' | 'danger';
+/**
+ * Variantes del DS: primary · secondary · ghost · destructive · link.
+ * `outline`, `soft` y `danger` son nombres anteriores que se mantienen como alias
+ * (outline/soft → secondary, danger → destructive) para no romper pantallas ya migradas.
+ */
+export type UiButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'ghost'
+  | 'destructive'
+  | 'link'
+  | 'outline'
+  | 'soft'
+  | 'danger';
 export type UiButtonSize = 'sm' | 'md' | 'lg';
 
 const BASE =
-  'inline-flex cursor-pointer items-center justify-center gap-2 font-semibold transition duration-150 ' +
-  'active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 ' +
-  'disabled:pointer-events-none disabled:opacity-40';
+  'inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md border font-medium ' +
+  'transition-colors duration-[120ms] focus-visible:shadow-focus focus-visible:outline-none ' +
+  'disabled:cursor-not-allowed disabled:opacity-45';
 
 const VARIANTS: Record<UiButtonVariant, string> = {
-  primary: 'bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800',
-  secondary: 'border border-line-soft bg-surface text-ink-soft hover:bg-canvas',
-  soft: 'bg-[#f5f5f5] text-ink-soft hover:bg-[#eeeeee]',
-  outline: 'border border-line-soft bg-surface text-ink-soft hover:border-brand-600 hover:text-brand-600',
-  ghost: 'text-ink-soft hover:bg-brand-50 hover:text-brand-600',
-  danger: 'text-[#ba1a1a] hover:bg-[#fde0e0]',
+  primary: 'border-transparent bg-primary text-white hover:bg-primary-hover active:bg-primary-active disabled:hover:bg-primary',
+  secondary: 'border-border bg-white text-foreground hover:bg-background disabled:hover:bg-white',
+  ghost: 'border-transparent bg-transparent text-foreground hover:bg-accent hover:text-primary disabled:hover:bg-transparent',
+  destructive: 'border-transparent bg-destructive text-white hover:bg-destructive-hover disabled:hover:bg-destructive',
+  link: '!h-auto !px-0 border-transparent bg-transparent text-primary hover:underline',
+  outline: 'border-border bg-white text-foreground hover:bg-background disabled:hover:bg-white',
+  soft: 'border-border bg-white text-foreground hover:bg-background disabled:hover:bg-white',
+  danger: 'border-transparent bg-destructive text-white hover:bg-destructive-hover disabled:hover:bg-destructive',
 };
 
 const SIZES: Record<UiButtonSize, string> = {
-  sm: 'h-[30px] rounded-lg px-3 text-[12px]',
-  md: 'h-[38px] rounded-xl px-5 text-[13px]',
-  lg: 'h-[44px] rounded-xl px-8 text-[14px]',
+  sm: 'h-8 px-2.5 text-[12px]',
+  md: 'h-9 px-3.5 text-[14px]',
+  lg: 'h-10 px-[18px] text-[14px]',
 };
 
 /**
- * Estilo de botón del portal. Se aplica sobre un `<button>` o `<a>` nativo para
- * conservar su semántica y accesibilidad:
+ * Botón del DS. Se aplica sobre un `<button>` o `<a>` nativo para conservar su
+ * semántica y accesibilidad:
  * `<button appButton variant="primary" size="md" type="button">Guardar</button>`.
+ * Un solo `primary` por vista; el resto `secondary` o `ghost`.
  */
 @Directive({
   selector: 'button[appButton], a[appButton]',

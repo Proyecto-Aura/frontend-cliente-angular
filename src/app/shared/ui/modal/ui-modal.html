@@ -3,7 +3,7 @@
   (click)="closed.emit()"
   aria-label="Cerrar"
   tabindex="-1"
-  class="absolute inset-0 cursor-default bg-black/40"
+  class="absolute inset-0 cursor-default bg-[rgb(33_33_33/0.45)]"
 ></button>
 
 <div
@@ -12,26 +12,37 @@
   aria-modal="true"
   [attr.aria-labelledby]="titleId"
   tabindex="-1"
-  class="animate-scale-in relative flex max-h-[calc(100vh-2rem)] w-full flex-col gap-5 overflow-y-auto rounded-2xl bg-surface p-7 shadow-2xl outline-none"
-  [style.max-width.px]="size() === 'sm' ? 420 : 480"
+  class="relative flex max-h-full w-full flex-col overflow-hidden rounded-lg bg-white text-foreground shadow-lg outline-none"
+  [style.max-width.px]="maxWidth()"
 >
-  <div class="flex items-center justify-between gap-4">
-    <h2 [id]="titleId" class="font-display text-[18px] font-black text-ink">{{ title() }}</h2>
+  <header class="flex shrink-0 items-center gap-3 bg-primary px-6 py-[18px] text-white">
+    <ng-content select="[slot=icon]" />
+    <div class="min-w-0 flex-1">
+      <h3 [id]="titleId" class="text-[16px] font-semibold text-white">{{ title() }}</h3>
+      @if (description()) {
+        <p class="mt-0.5 text-[12px] text-white/80">{{ description() }}</p>
+      }
+    </div>
     <button
       type="button"
       (click)="closed.emit()"
       aria-label="Cerrar"
-      class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-ink-soft transition-colors hover:bg-[#f0f0f0]"
-    >
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
-        <path d="M18 6 6 18M6 6l12 12" />
-      </svg>
-    </button>
+      class="cursor-pointer p-0.5 text-[18px] leading-none text-white opacity-90 hover:opacity-100 focus-visible:shadow-[0_0_0_3px_rgb(255_255_255/0.5)] focus-visible:outline-none"
+    >✕</button>
+  </header>
+
+  <div class="min-h-0 flex-1 overflow-y-auto p-6">
+    <ng-content />
   </div>
 
-  <ng-content />
-
-  <div class="flex justify-end gap-3 empty:hidden">
-    <ng-content select="[slot=footer]" />
-  </div>
+  <footer
+    class="flex shrink-0 items-center justify-between gap-4 border-t border-border bg-white px-6 py-3.5 [&:not(:has(.ui-modal-hint,.ui-modal-actions>*))]:hidden"
+  >
+    @if (hint()) {
+      <span class="ui-modal-hint text-[12px] text-muted-foreground">{{ hint() }}</span>
+    } @else {
+      <span></span>
+    }
+    <span class="ui-modal-actions flex justify-end gap-2"><ng-content select="[slot=footer]" /></span>
+  </footer>
 </div>
