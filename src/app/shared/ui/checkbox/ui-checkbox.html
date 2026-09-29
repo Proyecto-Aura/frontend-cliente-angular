@@ -1,5 +1,12 @@
-<div class="flex flex-col gap-1.5">
-  <label [for]="id" class="flex cursor-pointer items-center gap-2.5 text-[13px] text-label">
+<div class="flex flex-col gap-2">
+  <label
+    [for]="id"
+    class="inline-flex items-center gap-2.5"
+    [class.cursor-pointer]="!disabled()"
+    [class.cursor-not-allowed]="disabled()"
+    [class.opacity-50]="disabled()"
+    [class.items-start]="!!description()"
+  >
     <input
       [id]="id"
       type="checkbox"
@@ -8,9 +15,30 @@
       [attr.aria-invalid]="visibleError() ? true : null"
       [attr.aria-describedby]="visibleError() || hint() ? id + '-msg' : null"
       (change)="onToggle($event)"
-      class="size-5 shrink-0 cursor-pointer rounded-lg border-[1.25px] border-line accent-brand-600 disabled:cursor-not-allowed"
+      class="peer sr-only"
     />
-    <span><ng-content /></span>
+    <span
+      aria-hidden="true"
+      class="inline-flex size-[22px] shrink-0 items-center justify-center rounded-md border text-white transition-colors duration-[120ms] peer-focus-visible:shadow-focus"
+      [class.border-primary]="value()"
+      [class.bg-primary]="value()"
+      [class.border-border]="!value()"
+      [class.bg-white]="!value()"
+      [class.shadow-field]="!value()"
+      [class.mt-px]="!!description()"
+    >
+      @if (value()) {
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m20 6-11 11-5-5" />
+        </svg>
+      }
+    </span>
+    <span>
+      <span class="text-[14px] text-foreground"><ng-content /></span>
+      @if (description()) {
+        <span class="block text-[12px] text-muted-foreground">{{ description() }}</span>
+      }
+    </span>
   </label>
 
   <app-ui-field-message [for]="id" [hint]="hint()" [error]="visibleError()" />
