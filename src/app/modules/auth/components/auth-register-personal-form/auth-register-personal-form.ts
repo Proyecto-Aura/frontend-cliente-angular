@@ -1,9 +1,8 @@
 import { Component, inject, input, output, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { AuthInput } from '../auth-input/auth-input';
+import { UiAlert, UiButton, UiInput, UiStepProgress } from '../../../../shared/ui';
 import { AuthSectionHeader } from '../auth-section-header/auth-section-header';
-import { AuthStepProgress } from '../auth-step-progress/auth-step-progress';
 import { AuthRegisterUserStep } from '../auth-register-user-step/auth-register-user-step';
 import { AuthRegistroStore } from '../../services/auth-registro-store';
 import { passwordScore, PASSWORD_MIN_SCORE } from '../../utils/password-rules';
@@ -12,13 +11,7 @@ import { RegisterClientePayload } from '../../models/registro.model';
 /** Registro · datos de persona natural (DNI / CE / Pasaporte). Dos pasos internos. */
 @Component({
   selector: 'app-auth-register-personal-form',
-  imports: [
-    ReactiveFormsModule,
-    AuthInput,
-    AuthSectionHeader,
-    AuthStepProgress,
-    AuthRegisterUserStep,
-  ],
+  imports: [ReactiveFormsModule, AuthSectionHeader, AuthRegisterUserStep, UiAlert, UiButton, UiInput, UiStepProgress],
   host: { class: 'block' },
   templateUrl: './auth-register-personal-form.html',
 })

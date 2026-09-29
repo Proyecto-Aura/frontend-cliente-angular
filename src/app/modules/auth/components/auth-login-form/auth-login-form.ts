@@ -2,13 +2,13 @@ import { Component, input, output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
-import { AuthInput } from '../auth-input/auth-input';
+import { UiAlert, UiButton, UiCheckbox, UiInput } from '../../../../shared/ui';
 import { LoginRequest } from '../../models/auth.model';
 
 /** Formulario de inicio de sesión. Emite las credenciales; la API la resuelve el padre. */
 @Component({
   selector: 'app-auth-login-form',
-  imports: [ReactiveFormsModule, RouterLink, AuthInput],
+  imports: [ReactiveFormsModule, RouterLink, UiAlert, UiButton, UiCheckbox, UiInput],
   host: { class: 'block' },
   templateUrl: './auth-login-form.html',
 })

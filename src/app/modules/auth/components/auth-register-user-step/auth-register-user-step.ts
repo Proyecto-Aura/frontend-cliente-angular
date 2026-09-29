@@ -1,13 +1,13 @@
 import { Component, input, output } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
-import { AuthInput } from '../auth-input/auth-input';
+import { UiButton, UiInput } from '../../../../shared/ui';
 import { AuthPasswordStrength } from '../auth-password-strength/auth-password-strength';
 
 /** Paso final compartido del registro: email de acceso + username + contraseña. */
 @Component({
   selector: 'app-auth-register-user-step',
-  imports: [AuthInput, AuthPasswordStrength],
+  imports: [ReactiveFormsModule, AuthPasswordStrength, UiButton, UiInput],
   host: { class: 'block' },
   templateUrl: './auth-register-user-step.html',
 })

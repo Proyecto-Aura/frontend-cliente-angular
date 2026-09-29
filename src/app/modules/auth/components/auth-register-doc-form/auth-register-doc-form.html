@@ -1,43 +1,23 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-5">
   <app-auth-section-header [step]="1" [total]="2" title="Selecciona Documento" />
 
-  <label class="flex flex-col gap-1.5">
-    <span class="text-[13px] font-semibold text-label">Tipo de documento</span>
-    <select
-      formControlName="tipo"
-      class="h-[38px] w-full rounded-lg border border-line bg-surface px-[13px] text-[14px] outline-none transition-colors focus:border-brand-600"
-      [class.text-muted]="!form.controls.tipo.value"
-      [class.text-label]="form.controls.tipo.value"
-    >
-      <option value="" disabled>Selecciona un tipo</option>
-      @for (op of opciones; track op.tipo) {
-        <option [value]="op.tipo">{{ op.label }}</option>
-      }
-    </select>
-  </label>
+  <app-ui-select
+    label="Tipo de documento"
+    placeholder="Selecciona un tipo"
+    [options]="tipoOpciones"
+    formControlName="tipo"
+  />
 
-  <app-auth-input
+  <app-ui-input
     label="Número de documento"
-    [control]="documento"
+    formControlName="documento"
     [placeholder]="opcionActual()?.placeholder ?? 'Selecciona primero un tipo'"
     [hint]="opcionActual()?.ayuda ?? null"
     inputMode="text"
     error="El número no tiene un formato válido para el documento elegido."
   />
 
-  <button
-    type="submit"
-    [disabled]="form.invalid"
-    class="mt-1 h-[38px] w-full rounded-[6px] border text-[15px] font-medium transition duration-150 active:scale-[0.99]"
-    [class.bg-brand-600]="form.valid"
-    [class.border-brand-600]="form.valid"
-    [class.text-white]="form.valid"
-    [class.hover:bg-brand-700]="form.valid"
-    [class.bg-line-soft]="form.invalid"
-    [class.border-line-soft]="form.invalid"
-    [class.text-muted]="form.invalid"
-    [class.cursor-not-allowed]="form.invalid"
-  >
+  <button appButton [block]="true" type="submit" [disabled]="form.invalid" class="mt-1">
     Siguiente
   </button>
 </form>

@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { AuthInput } from '../auth-input/auth-input';
+import { UiButton, UiInput, UiSelect, UiSelectOption } from '../../../../shared/ui';
 import { AuthSectionHeader } from '../auth-section-header/auth-section-header';
 import { AuthRegistroStore } from '../../services/auth-registro-store';
 import {
@@ -15,7 +15,7 @@ import {
 /** Paso 1 del registro: elegir tipo de documento y escribir el número. */
 @Component({
   selector: 'app-auth-register-doc-form',
-  imports: [ReactiveFormsModule, AuthInput, AuthSectionHeader],
+  imports: [ReactiveFormsModule, AuthSectionHeader, UiButton, UiInput, UiSelect],
   host: { class: 'block' },
   templateUrl: './auth-register-doc-form.html',
 })
@@ -24,6 +24,10 @@ export class AuthRegisterDocForm {
   private readonly store = inject(AuthRegistroStore);
 
   protected readonly opciones = OPCIONES_DOCUMENTO;
+  protected readonly tipoOpciones: UiSelectOption[] = OPCIONES_DOCUMENTO.map((o) => ({
+    value: o.tipo,
+    label: o.label,
+  }));
 
   protected readonly form = new FormGroup({
     tipo: new FormControl<TipoDocumento | ''>('', { nonNullable: true, validators: [Validators.required] }),
@@ -46,10 +50,6 @@ export class AuthRegisterDocForm {
       this.form.controls.documento.reset('');
       this.applyDocumentoValidators(tipo);
     });
-  }
-
-  protected get documento(): FormControl<string> {
-    return this.form.controls.documento;
   }
 
   protected onSubmit(): void {
