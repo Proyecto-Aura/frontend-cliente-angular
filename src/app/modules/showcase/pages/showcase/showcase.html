@@ -1,21 +1,24 @@
-<header class="bg-gradient-to-r from-brand-700 to-brand-600 px-6 py-8 lg:px-12">
-  <p class="text-[12px] font-semibold uppercase tracking-widest text-white/70">Franco's · Portal cliente</p>
-  <h1 class="mt-1 font-display text-[28px] font-black text-white">Design system</h1>
-  <p class="mt-1 max-w-[640px] text-[14px] text-white/80">
-    Componentes reutilizables de <code class="rounded bg-white/15 px-1.5 py-0.5 text-[12px]">src/app/shared/ui</code>.
-    Cada bloque muestra el componente en vivo y el código para copiar.
-  </p>
-</header>
+<!-- Sidebar rojo del portal (única superficie con degradado del DS) -->
+<aside
+  class="sticky top-0 hidden h-screen w-64 shrink-0 flex-col bg-[linear-gradient(180deg,#E23A3A_0%,#D22B2B_55%,#C42222_100%)] text-white lg:flex"
+>
+  <div class="flex h-[100px] shrink-0 items-center gap-3 border-b border-white/15 px-5">
+    <img ngSrc="/francos-icon.png" alt="Franco's" width="40" height="40" class="size-10 rounded-lg" />
+    <div>
+      <p class="text-[16px] font-semibold">Franco's</p>
+      <p class="text-[12px] text-white/70">Design system</p>
+    </div>
+  </div>
 
-<div class="flex gap-10 px-6 py-8 lg:px-12">
-  <nav aria-label="Secciones" class="sticky top-6 hidden h-fit w-[200px] shrink-0 lg:block">
+  <nav aria-label="Secciones" class="flex-1 overflow-y-auto px-3 py-4">
+    <p class="px-3 pb-2 text-[11px] font-medium tracking-[0.06em] text-white/70">COMPONENTES</p>
     <ul class="flex flex-col gap-0.5">
       @for (s of sections; track s.id) {
         <li>
           <button
             type="button"
             (click)="scrollTo(s.id)"
-            class="w-full cursor-pointer rounded-lg px-3 py-1.5 text-left text-[13px] font-medium text-ink-soft transition-colors hover:bg-brand-50 hover:text-brand-600"
+            class="flex h-10 w-full cursor-pointer items-center rounded-md px-3 text-left text-[14px] text-white/85 transition-colors duration-[120ms] hover:bg-white/10 hover:text-white focus-visible:shadow-[0_0_0_3px_rgb(255_255_255/0.5)] focus-visible:outline-none"
           >
             {{ s.label }}
           </button>
@@ -23,24 +26,39 @@
       }
     </ul>
   </nav>
+</aside>
 
-  <main class="flex min-w-0 flex-1 flex-col gap-12">
+<div class="flex min-w-0 flex-1 flex-col">
+  <!-- Topbar blanca de 60px -->
+  <header class="sticky top-0 z-10 flex h-[60px] shrink-0 items-center justify-between border-b border-border bg-white px-6 shadow-sm">
+    <p class="text-[14px] font-medium text-foreground">Portal cliente · Componentes</p>
+    <code class="rounded-md bg-background px-2 py-1 text-[12px] text-muted-foreground">src/app/shared/ui</code>
+  </header>
+
+  <main class="flex flex-col gap-4 p-6">
+    <div class="flex flex-col gap-1 pb-2">
+      <h1 class="text-[21px] font-medium text-foreground">Design system</h1>
+      <p class="text-[12px] text-muted-foreground">
+        Mismo diseño que el Portal Empresarial · Cada bloque muestra el componente en vivo y su código
+      </p>
+    </div>
+
     <!-- Tokens -->
     <app-showcase-section
       sectionId="tokens"
       title="Colores y tipografía"
-      description="Tokens definidos con @theme en src/styles.css. Úsalos como clases de Tailwind: bg-brand-600, text-ink-soft, border-line-soft, font-display…"
+      description="Tokens definidos con @theme en src/styles.css. Se usan como clases de Tailwind: bg-primary, text-muted-foreground, border-border, rounded-field, shadow-focus…"
     >
       <div class="flex flex-col gap-6">
         @for (group of colorGroups; track group.title) {
           <div>
-            <h3 class="mb-3 text-[13px] font-semibold text-label">{{ group.title }}</h3>
-            <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-8">
+            <h3 class="mb-3 text-[14px] font-semibold text-foreground">{{ group.title }}</h3>
+            <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-5">
               @for (c of group.colors; track c.name) {
                 <div class="flex flex-col gap-1.5">
-                  <span class="h-12 rounded-xl border border-[#f0f0f0]" [style.background]="c.hex"></span>
-                  <span class="text-[12px] font-semibold text-ink">{{ c.name }}</span>
-                  <span class="text-[11px] text-ink-soft">{{ c.note ? c.hex + ' · ' + c.note : c.hex }}</span>
+                  <span class="h-12 rounded-lg border border-border" [style.background]="c.hex"></span>
+                  <span class="text-[12px] font-medium text-foreground">{{ c.name }}</span>
+                  <span class="text-[12px] text-muted-foreground">{{ c.note ? c.hex + ' · ' + c.note : c.hex }}</span>
                 </div>
               }
             </div>
@@ -48,10 +66,14 @@
         }
 
         <div>
-          <h3 class="mb-3 text-[13px] font-semibold text-label">Tipografía</h3>
-          <div class="flex flex-col gap-3">
-            <p class="font-display text-[28px] font-black text-ink">Montserrat — font-display <span class="text-[13px] font-semibold text-ink-soft">(títulos)</span></p>
-            <p class="font-sans text-[15px] text-ink">DM Sans — font-sans <span class="text-[13px] text-ink-soft">(cuerpo, por defecto)</span></p>
+          <h3 class="mb-3 text-[14px] font-semibold text-foreground">Tipografía · Inter</h3>
+          <div class="flex flex-col divide-y divide-border rounded-lg border border-border">
+            @for (t of typeScale; track t.size) {
+              <div class="flex flex-wrap items-baseline justify-between gap-2 px-4 py-3">
+                <span [style.font-size.px]="t.size" [style.font-weight]="t.weight" class="text-foreground">{{ t.sample }}</span>
+                <span class="text-[12px] text-muted-foreground">{{ t.label }}</span>
+              </div>
+            }
           </div>
         </div>
       </div>
@@ -61,31 +83,31 @@
     <app-showcase-section
       sectionId="button"
       title="Button"
-      description="Directiva appButton sobre un button o un enlace (a) nativo. Variantes: primary, secondary, soft, outline, ghost y danger. Tamaños: sm, md y lg."
+      description="Directiva appButton sobre un button o un enlace (a) nativo. Variantes: primary, secondary, ghost, destructive y link · Alturas 32 / 36 / 40px · Un solo primary por vista."
       [code]="code.button"
     >
       <div class="flex flex-col gap-5">
         <div class="flex flex-wrap items-center gap-3">
-          <button appButton type="button">Primario</button>
-          <button appButton variant="secondary" type="button">Secundario</button>
-          <button appButton variant="soft" type="button">Suave</button>
-          <button appButton variant="outline" type="button">Outline</button>
-          <button appButton variant="ghost" type="button">Ghost</button>
-          <button appButton variant="danger" type="button">Cerrar sesión</button>
+          <button appButton type="button">Guardar</button>
+          <button appButton variant="secondary" type="button">Cancelar</button>
+          <button appButton variant="ghost" type="button">Ver detalle</button>
+          <button appButton variant="destructive" type="button">Eliminar</button>
+          <button appButton variant="link" type="button">Ver todos</button>
         </div>
         <div class="flex flex-wrap items-center gap-3">
-          <button appButton size="sm" type="button">Small</button>
-          <button appButton size="md" type="button">Medium</button>
-          <button appButton size="lg" type="button">Large</button>
+          <button appButton size="sm" type="button">Small · 32</button>
+          <button appButton size="md" type="button">Medium · 36</button>
+          <button appButton size="lg" type="button">Large · 40</button>
           <button appButton type="button" disabled>Deshabilitado</button>
         </div>
-        <div class="max-w-[360px]">
-          <button appButton size="lg" [block]="true" type="button">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" />
-              <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
-            </svg>
-            Agregar al carrito
+        <div class="flex flex-wrap items-center gap-3">
+          <button appButton type="button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+            Nuevo pedido
+          </button>
+          <button appButton variant="secondary" type="button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m7 10 5 5 5-5" /><path d="M12 15V3" /></svg>
+            Exportar
           </button>
         </div>
       </div>
@@ -95,17 +117,16 @@
     <app-showcase-section
       sectionId="input"
       title="Input"
-      description="Campo con etiqueta, hint y error. Funciona con [formControl] / formControlName (el error aparece solo si el campo está tocado e inválido) o con signals vía [(value)]. Con type='password' incluye el botón mostrar/ocultar."
+      description="Campo con etiqueta, hint y error · Alturas 36 / 44 / 48px · Radio 10px · Foco con anillo rojo. Funciona con [formControl] / formControlName (el error aparece solo si el campo está tocado e inválido) o con signals vía [(value)]."
       [code]="code.input"
     >
-      <div class="grid max-w-[720px] gap-5 sm:grid-cols-2">
+      <div class="grid max-w-[760px] gap-5 sm:grid-cols-2">
         <app-ui-input
-          label="Correo electrónico" type="email" placeholder="tu@correo.com"
-          autocomplete="email" [formControl]="email"
-          error="Ingresa un correo válido"
+          label="Correo electrónico" type="email" placeholder="tu@correo.com" [required]="true"
+          autocomplete="email" [formControl]="email" error="Ingresa un correo válido"
         />
         <app-ui-input label="Contraseña" type="password" hint="Mínimo 8 caracteres" [formControl]="password">
-          <button slot="action" type="button" class="cursor-pointer text-[12px] font-semibold text-brand-600 hover:underline">¿Has olvidado tu contraseña?</button>
+          <button slot="action" type="button" class="cursor-pointer text-[12px] font-medium text-primary hover:underline">¿Olvidaste tu contraseña?</button>
         </app-ui-input>
         <app-ui-input
           label="DNI" inputMode="numeric" [maxLength]="8" [formControl]="dni"
@@ -113,6 +134,7 @@
         />
         <app-ui-input label="Deshabilitado" [formControl]="disabledInput" />
         <app-ui-input label="Ciudad (solo lectura)" value="Lima" [readonly]="true" />
+        <app-ui-input label="Filtro · size sm" size="sm" placeholder="Buscar pedido…" />
       </div>
     </app-showcase-section>
 
@@ -120,15 +142,14 @@
     <app-showcase-section
       sectionId="select"
       title="Select"
-      description="Select nativo con estilo del portal. Recibe las opciones como objetos con value y label."
+      description="Select nativo con flecha. Recibe las opciones como objetos con value y label."
       [code]="code.select"
     >
-      <div class="max-w-[340px]">
+      <div class="max-w-[360px]">
         <app-ui-select
-          label="Distrito" placeholder="Selecciona un distrito" hint="Ciudad: Lima, Perú"
+          label="Distrito" placeholder="Selecciona un distrito" hint="Ciudad: Lima, Perú" [required]="true"
           [options]="distritos" [formControl]="distrito"
         />
-        <p class="mt-2 text-[12px] text-muted">Valor: {{ distrito.value || '—' }}</p>
       </div>
     </app-showcase-section>
 
@@ -136,38 +157,41 @@
     <app-showcase-section sectionId="textarea" title="Textarea" [code]="code.textarea">
       <div class="max-w-[480px]">
         <app-ui-textarea
-          label="Motivo de la solicitud" placeholder="Cuéntanos qué pasó…"
+          label="Motivo de la solicitud" placeholder="Describe el problema con el pedido"
           [maxLength]="500" [formControl]="motivo"
-          [hint]="motivo.value.length + '/500'"
+          [hint]="motivo.value.length + ' / 500'"
         />
       </div>
     </app-showcase-section>
 
     <!-- Checkbox -->
-    <app-showcase-section sectionId="checkbox" title="Checkbox" [code]="code.checkbox">
-      <app-ui-checkbox [formControl]="acepta">Acepto los términos y condiciones</app-ui-checkbox>
-      <p class="mt-2 text-[12px] text-muted">Valor: {{ acepta.value }}</p>
+    <app-showcase-section sectionId="checkbox" title="Checkbox" description="Caja de 22px, radio 6px, relleno rojo al marcar." [code]="code.checkbox">
+      <div class="flex flex-col gap-4">
+        <app-ui-checkbox [formControl]="acepta">Acepto los términos y condiciones</app-ui-checkbox>
+        <app-ui-checkbox description="Solo se usa para confirmaciones de pedido">Recibir notificaciones por correo</app-ui-checkbox>
+      </div>
     </app-showcase-section>
 
     <!-- Badge -->
     <app-showcase-section
       sectionId="badge"
       title="Badge"
-      description="Etiquetas de estado (pago, entrega, stock, reembolso). Tonos: success, warning, info, danger y neutral. El icono es opcional."
+      description="Estado de pago, entrega, stock o reembolso. Seis tonos, tamaños sm (24px) y md (32px). El estado se marca con un punto de color, nunca con emoji."
       [code]="code.badge"
     >
-      <div class="flex flex-wrap items-center gap-3">
-        <app-ui-badge tone="success">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /><path d="m9 11 3 3L22 4" /></svg>
-          Pagado
-        </app-ui-badge>
-        <app-ui-badge tone="warning">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
-          Pendiente
-        </app-ui-badge>
-        <app-ui-badge tone="info">En camino</app-ui-badge>
-        <app-ui-badge tone="danger">Rechazado</app-ui-badge>
-        <app-ui-badge tone="neutral">Sin stock</app-ui-badge>
+      <div class="flex flex-col gap-4">
+        <div class="flex flex-wrap items-center gap-3">
+          <app-ui-badge tone="neutral" dot>Borrador</app-ui-badge>
+          <app-ui-badge tone="brand" dot>Nuevo</app-ui-badge>
+          <app-ui-badge tone="success" dot>Pagado</app-ui-badge>
+          <app-ui-badge tone="warning" dot>Pendiente</app-ui-badge>
+          <app-ui-badge tone="danger" dot>Rechazado</app-ui-badge>
+          <app-ui-badge tone="info" dot>En camino</app-ui-badge>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <app-ui-badge tone="success">Entregado</app-ui-badge>
+          <app-ui-badge tone="success" size="md" dot>Entregado</app-ui-badge>
+        </div>
       </div>
     </app-showcase-section>
 
@@ -175,23 +199,23 @@
     <app-showcase-section
       sectionId="alert"
       title="Alert"
-      description="Avisos en línea tal como aparecen en checkout, detalle de producto y login. El icono va como contenido."
+      description="Avisos en línea con los tintes semánticos del DS (fondo tenue y texto oscurecido). El icono va como contenido."
       [code]="code.alert"
     >
       <div class="flex max-w-[560px] flex-col gap-3">
         <app-ui-alert tone="success">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" /><path d="M15 18H9" /><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14" /><circle cx="17" cy="18" r="2" /><circle cx="7" cy="18" r="2" /></svg>
-          <p>Entrega estimada: <strong>2–3 días hábiles</strong> · Envío gratuito en todos los pedidos</p>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" /><path d="M15 18H9" /><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14" /><circle cx="17" cy="18" r="2" /><circle cx="7" cy="18" r="2" /></svg>
+          <p>Entrega estimada: 2–3 días hábiles · Envío gratuito</p>
         </app-ui-alert>
         <app-ui-alert tone="info">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /><path d="m9 11 3 3L22 4" /></svg>
-          <p>Serás redirigido a la pasarela de Culqi para completar el pago de forma segura.</p>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" /></svg>
+          <p>El pago se completa en la pasarela de Culqi</p>
         </app-ui-alert>
         <app-ui-alert tone="warning">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><path d="M12 9v4M12 17h.01" /></svg>
-          <p>Tu pedido quedará reservado. El pago se realiza al momento de la entrega.</p>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><path d="M12 9v4M12 17h.01" /></svg>
+          <p>El pedido queda reservado · El pago se realiza al momento de la entrega</p>
         </app-ui-alert>
-        <app-ui-alert tone="danger">Correo o contraseña incorrectos.</app-ui-alert>
+        <app-ui-alert tone="danger">Correo o contraseña incorrectos</app-ui-alert>
       </div>
     </app-showcase-section>
 
@@ -199,21 +223,21 @@
     <app-showcase-section
       sectionId="card"
       title="Card"
-      description="Contenedor base. Variantes: default, danger (zonas sensibles) e interactive (con hover). Padding: none, sm y md."
+      description="Fondo blanco, borde 1px, radio 8px. Cabecera opcional con título, subtítulo y acciones; pie opcional sobre gris. Padding del cuerpo: 20px."
       [code]="code.card"
     >
-      <div class="grid gap-4 md:grid-cols-3">
-        <app-ui-card>
-          <h3 class="font-display text-[15px] font-extrabold text-ink">Default</h3>
-          <p class="mt-1 text-[13px] text-ink-soft">Datos personales, resumen de pedido…</p>
+      <div class="grid gap-4 lg:grid-cols-2">
+        <app-ui-card title="Resumen del pedido" subtitle="3 productos · actualizado hace 2 h">
+          <button slot="actions" appButton variant="secondary" size="sm" type="button">Editar</button>
+          <p class="text-[14px] text-muted-foreground">Contenido de la card.</p>
+          <div slot="footer" class="flex justify-end gap-2">
+            <button appButton variant="secondary" size="sm" type="button">Cancelar</button>
+            <button appButton size="sm" type="button">Confirmar</button>
+          </div>
         </app-ui-card>
-        <app-ui-card variant="danger">
-          <h3 class="font-display text-[15px] font-extrabold text-brand-700">Danger</h3>
-          <p class="mt-1 text-[13px] text-ink-soft">Eliminar cuenta, acciones irreversibles.</p>
-        </app-ui-card>
-        <app-ui-card variant="interactive" padding="sm">
-          <h3 class="font-display text-[15px] font-extrabold text-ink">Interactive</h3>
-          <p class="mt-1 text-[13px] text-ink-soft">Pasa el cursor: cards de producto.</p>
+        <app-ui-card bodyClass="gap-2">
+          <p class="text-[16px] font-medium text-foreground">Solo cuerpo</p>
+          <p class="text-[14px] text-muted-foreground">Sin cabecera ni pie; el espaciado interno se da con bodyClass.</p>
         </app-ui-card>
       </div>
     </app-showcase-section>
@@ -222,20 +246,25 @@
     <app-showcase-section
       sectionId="modal"
       title="Modal"
-      description="Se cierra con Escape, con el botón X o al hacer clic en el fondo. Al abrir mueve el foco al panel. Las acciones van en slot=&quot;footer&quot;."
+      description="Cabecera roja con título y descripción, cuerpo con padding de 24px y pie con acciones. Se cierra con Escape, con ✕ o con clic en el fondo."
       [code]="code.modal"
     >
       <button appButton type="button" (click)="modalOpen.set(true)">Abrir modal</button>
       @if (modalOpen()) {
-        <app-ui-modal title="Nueva dirección" (closed)="modalOpen.set(false)">
+        <app-ui-modal
+          title="Nueva dirección"
+          description="Se usará para tus envíos"
+          hint="Los campos con * son obligatorios"
+          (closed)="modalOpen.set(false)"
+        >
           <div class="flex flex-col gap-4">
-            <app-ui-input label="Nombre de la dirección" placeholder="Casa, Oficina…" />
-            <app-ui-select label="Distrito" placeholder="Selecciona un distrito" [options]="distritos" />
+            <app-ui-input label="Nombre de la dirección" placeholder="Casa, Oficina…" [required]="true" />
+            <app-ui-select label="Distrito" placeholder="Selecciona un distrito" [options]="distritos" [required]="true" />
           </div>
-          <div slot="footer" class="flex gap-3">
+          <ng-container slot="footer">
             <button appButton variant="secondary" type="button" (click)="modalOpen.set(false)">Cancelar</button>
             <button appButton type="button" (click)="modalOpen.set(false); toast.success('Dirección guardada')">Guardar</button>
-          </div>
+          </ng-container>
         </app-ui-modal>
       }
     </app-showcase-section>
@@ -244,15 +273,16 @@
     <app-showcase-section
       sectionId="confirm"
       title="Confirm dialog"
-      description="Confirmación antes de una acción destructiva."
+      description="Confirmación antes de una acción irreversible, sobre el modal del DS."
       [code]="code.confirm"
     >
-      <button appButton variant="outline" type="button" (click)="confirmOpen.set(true)">Cancelar pedido</button>
+      <button appButton variant="secondary" type="button" (click)="confirmOpen.set(true)">Cancelar pedido</button>
       @if (confirmOpen()) {
         <app-confirm-dialog
-          title="¿Cancelar pedido?"
-          message="Esta acción no se puede deshacer."
-          confirmLabel="Sí, cancelar"
+          title="Cancelar pedido"
+          message="El pedido PED-1042 será cancelado. Esta acción no se puede deshacer."
+          confirmLabel="Cancelar pedido"
+          cancelLabel="Mantener"
           (confirmed)="confirmOpen.set(false); toast.info('Pedido cancelado')"
           (cancelled)="confirmOpen.set(false)"
         />
@@ -263,14 +293,14 @@
     <app-showcase-section
       sectionId="toast"
       title="Toast"
-      description="Notificaciones temporales (4 s) abajo a la derecha. El toaster ya está montado en app.html; solo se inyecta ToastService."
+      description="Notificación temporal (4 s) abajo a la derecha. El toaster ya está montado en app.html; solo se inyecta ToastService."
       [code]="code.toast"
     >
       <div class="flex flex-wrap gap-3">
         <button appButton variant="secondary" type="button" (click)="toast.success('Producto agregado', 'Papas clásicas x2')">Success</button>
-        <button appButton variant="secondary" type="button" (click)="toast.warning('Stock bajo', 'Solo quedan 3 unidades')">Warning</button>
+        <button appButton variant="secondary" type="button" (click)="toast.warning('Stock bajo', 'Quedan 3 unidades')">Warning</button>
         <button appButton variant="secondary" type="button" (click)="toast.error('No se pudo guardar')">Error</button>
-        <button appButton variant="secondary" type="button" (click)="toast.info('Tu pedido está en camino')">Info</button>
+        <button appButton variant="secondary" type="button" (click)="toast.info('Pedido en camino')">Info</button>
       </div>
     </app-showcase-section>
 
@@ -278,12 +308,12 @@
     <app-showcase-section
       sectionId="quantity"
       title="Quantity"
-      description="Selector −/+ con two-way binding [(value)] y límites min / max."
+      description="Selector − / + con two-way binding [(value)] y límites min / max. Misma altura y borde que los campos (44px)."
       [code]="code.quantity"
     >
       <div class="flex items-center gap-4">
         <app-ui-quantity [(value)]="cantidad" [min]="1" [max]="5" label="Cantidad de Papas clásicas" />
-        <span class="text-[13px] text-ink-soft">Cantidad: {{ cantidad() }} (máx. 5)</span>
+        <span class="text-[12px] text-muted-foreground">Cantidad: {{ cantidad() }} · máx. 5</span>
       </div>
     </app-showcase-section>
 
@@ -296,7 +326,7 @@
     >
       <div class="flex max-w-[420px] flex-col gap-4">
         <app-ui-step-progress [step]="paso()" [total]="3" />
-        <div class="flex gap-3">
+        <div class="flex gap-2">
           <button appButton variant="secondary" size="sm" type="button" [disabled]="paso() <= 1" (click)="paso.set(paso() - 1)">Anterior</button>
           <button appButton size="sm" type="button" [disabled]="paso() >= 3" (click)="paso.set(paso() + 1)">Siguiente</button>
         </div>

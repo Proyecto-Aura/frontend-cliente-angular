@@ -3,16 +3,17 @@
 export const SNIPPETS = {
   button: `import { UiButton } from '../../../../shared/ui';   // imports: [UiButton]
 
-<button appButton type="button">Primario</button>
-<button appButton variant="secondary" type="button">Secundario</button>
-<button appButton variant="soft" type="button">Suave</button>
-<button appButton variant="outline" size="sm" type="button">Outline</button>
-<button appButton variant="ghost" type="button">Ghost</button>
-<button appButton variant="danger" type="button">Cerrar sesión</button>
+<!-- variant: primary · secondary · ghost · destructive · link   |   size: sm (32) · md (36) · lg (40) -->
+<button appButton type="button">Guardar</button>
+<button appButton variant="secondary" type="button">Cancelar</button>
+<button appButton variant="ghost" type="button">Ver detalle</button>
+<button appButton variant="destructive" type="button">Eliminar</button>
+<button appButton variant="link" type="button">Ver todos</button>
 
-<!-- Tamaños: sm (30px) · md (38px, por defecto) · lg (44px) -->
+<!-- Con icono (16px, currentColor) y ancho completo -->
 <button appButton size="lg" [block]="true" type="submit" [disabled]="form.invalid">
-  Continuar
+  <svg width="16" height="16" …></svg>
+  Nuevo pedido
 </button>
 
 <!-- También sobre enlaces -->
@@ -20,8 +21,9 @@ export const SNIPPETS = {
 
   input: `import { UiInput } from '../../../../shared/ui';   // imports: [UiInput, ReactiveFormsModule]
 
+<!-- size: sm (36, barra de filtros) · md (44, por defecto) · lg (48) -->
 <app-ui-input label="Correo electrónico" type="email" placeholder="tu@correo.com"
-  autocomplete="email" [formControl]="email" />
+  [required]="true" autocomplete="email" [formControl]="email" />
 
 <app-ui-input label="Contraseña" type="password" [formControl]="password"
   hint="Mínimo 8 caracteres">
@@ -56,64 +58,66 @@ distritos: UiSelectOption[] = [
 
   checkbox: `import { UiCheckbox } from '../../../../shared/ui';   // imports: [UiCheckbox, ReactiveFormsModule]
 
-<app-ui-checkbox [formControl]="acepta">
-  Acepto los términos y condiciones
+<app-ui-checkbox [formControl]="acepta">Acepto los términos y condiciones</app-ui-checkbox>
+
+<!-- Con texto secundario -->
+<app-ui-checkbox [formControl]="avisos" description="Solo se usa para confirmaciones de pedido">
+  Recibir notificaciones por correo
 </app-ui-checkbox>`,
 
   badge: `import { UiBadge } from '../../../../shared/ui';   // imports: [UiBadge]
 
-<!-- tone: success · warning · info · danger · neutral -->
-<app-ui-badge tone="success">Pagado</app-ui-badge>
-<app-ui-badge tone="warning">Pendiente</app-ui-badge>
-<app-ui-badge tone="info">En camino</app-ui-badge>
-<app-ui-badge tone="danger">Rechazado</app-ui-badge>
-<app-ui-badge tone="neutral">Sin stock</app-ui-badge>
-
-<!-- Con icono: el svg va como contenido -->
-<app-ui-badge tone="success">
-  <svg width="10" height="10" …></svg>
-  Entregado
-</app-ui-badge>`,
+<!-- tone: neutral · brand · success · warning · danger · info   |   size: sm (24) · md (32) -->
+<app-ui-badge tone="success" dot>Pagado</app-ui-badge>
+<app-ui-badge tone="warning" dot>Pendiente</app-ui-badge>
+<app-ui-badge tone="info" dot>En camino</app-ui-badge>
+<app-ui-badge tone="danger" dot>Rechazado</app-ui-badge>
+<app-ui-badge tone="success" size="md">Entregado</app-ui-badge>`,
 
   alert: `import { UiAlert } from '../../../../shared/ui';   // imports: [UiAlert]
 
-<!-- tone: success · info · warning · danger. El icono va como contenido -->
+<!-- tone: success · info · warning · danger. El icono (16px, currentColor) va como contenido -->
 <app-ui-alert tone="success">
-  <svg width="14" height="14" … class="shrink-0"></svg>
-  <p>Entrega estimada: <strong>2–3 días hábiles</strong></p>
+  <svg width="16" height="16" … stroke="currentColor" class="shrink-0"></svg>
+  <p>Entrega estimada: 2–3 días hábiles</p>
 </app-ui-alert>
 
-<app-ui-alert tone="warning">
-  <svg width="13" height="13" … class="shrink-0"></svg>
-  <p>Tu pedido quedará reservado. El pago se realiza al momento de la entrega.</p>
-</app-ui-alert>
-
-<!-- Error de formulario (login / registro) -->
+<!-- Error de formulario -->
 @if (error()) {
   <app-ui-alert tone="danger">{{ error() }}</app-ui-alert>
 }`,
 
-  card: `import { UiCard } from '../../../../shared/ui';   // imports: [UiCard]
+  card: `import { UiCard, UiButton } from '../../../../shared/ui';   // imports: [UiCard, UiButton]
 
-<!-- variant: default · danger · interactive   |   padding: none · sm · md
-     Es flex en columna: el espaciado interno va con class="gap-4" -->
-<app-ui-card>…contenido…</app-ui-card>
-<app-ui-card variant="danger">Zona de riesgo</app-ui-card>
-<app-ui-card variant="interactive" padding="none">…card de producto…</app-ui-card>`,
+<!-- Con cabecera, acciones y pie -->
+<app-ui-card title="Resumen del pedido" subtitle="3 productos · actualizado hace 2 h">
+  <button slot="actions" appButton variant="secondary" size="sm" type="button">Editar</button>
+  …contenido…
+  <div slot="footer" class="flex justify-end gap-2">…botones…</div>
+</app-ui-card>
+
+<!-- Solo cuerpo: el layout interno va en bodyClass. padding: none · sm (16) · md (20) -->
+<app-ui-card bodyClass="gap-4">…</app-ui-card>
+<app-ui-card padding="none">…tabla…</app-ui-card>`,
 
   modal: `import { UiModal, UiButton } from '../../../../shared/ui';   // imports: [UiModal, UiButton]
 
 abierto = signal(false);
 
-<button appButton type="button" (click)="abierto.set(true)">Abrir modal</button>
+<button appButton type="button" (click)="abierto.set(true)">Nueva dirección</button>
 
 @if (abierto()) {
-  <app-ui-modal title="Nueva dirección" (closed)="abierto.set(false)">
-    …contenido del modal…
-    <div slot="footer" class="flex gap-3">
+  <app-ui-modal
+    title="Nueva dirección"
+    description="Se usará para tus envíos"
+    hint="Los campos con * son obligatorios"
+    (closed)="abierto.set(false)"
+  >
+    …contenido…
+    <ng-container slot="footer">
       <button appButton variant="secondary" type="button" (click)="abierto.set(false)">Cancelar</button>
       <button appButton type="button" (click)="guardar()">Guardar</button>
-    </div>
+    </ng-container>
   </app-ui-modal>
 }`,
 

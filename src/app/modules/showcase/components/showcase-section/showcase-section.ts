@@ -1,9 +1,12 @@
 import { Component, input, signal } from '@angular/core';
 
+import { UiButton } from '../../../../shared/ui';
+
 /** Bloque del showcase: título, demo en vivo (contenido) y código listo para copiar. */
 @Component({
   selector: 'app-showcase-section',
-  host: { class: 'block scroll-mt-6', '[id]': 'sectionId()' },
+  imports: [UiButton],
+  host: { class: 'block scroll-mt-20', '[id]': 'sectionId()' },
   templateUrl: './showcase-section.html',
 })
 export class ShowcaseSection {

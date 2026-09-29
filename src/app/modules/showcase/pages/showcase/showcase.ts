@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import {
@@ -27,6 +28,7 @@ import { SNIPPETS } from './showcase.snippets';
 @Component({
   selector: 'app-showcase',
   imports: [
+    NgOptimizedImage,
     ReactiveFormsModule,
     ShowcaseSection,
     ConfirmDialog,
@@ -42,7 +44,7 @@ import { SNIPPETS } from './showcase.snippets';
     UiStepProgress,
     UiTextarea,
   ],
-  host: { class: 'block min-h-full bg-canvas' },
+  host: { class: 'flex min-h-screen bg-background' },
   templateUrl: './showcase.html',
 })
 export class Showcase {
@@ -68,41 +70,45 @@ export class Showcase {
 
   protected readonly colorGroups = [
     {
-      title: 'Marca',
+      title: 'Marca y estados',
       colors: [
-        { name: 'brand-50', hex: '#fff5f5' },
-        { name: 'brand-100', hex: '#ffe2e2' },
-        { name: 'brand-400', hex: '#ef4444' },
-        { name: 'brand-500', hex: '#dc2626' },
-        { name: 'brand-600', hex: '#d22b2b', note: 'primario' },
-        { name: 'brand-700', hex: '#b91c1c', note: 'hover' },
-        { name: 'brand-800', hex: '#991b1b', note: 'active' },
+        { name: 'primary', hex: '#D22B2B', note: 'botones, links, foco' },
+        { name: 'primary-hover', hex: '#B92525' },
+        { name: 'primary-active', hex: '#A32020' },
+        { name: 'accent', hex: 'rgba(210,43,43,0.08)', note: 'hover de ítems' },
+        { name: 'destructive', hex: '#E53935' },
       ],
     },
     {
       title: 'Neutros',
       colors: [
-        { name: 'ink', hex: '#212121', note: 'texto fuerte' },
-        { name: 'label', hex: '#424242', note: 'labels' },
-        { name: 'ink-soft', hex: '#616161', note: 'secundario' },
-        { name: 'muted', hex: '#9e9e9e', note: 'tenue' },
-        { name: 'line', hex: '#bdbdbd', note: 'bordes' },
-        { name: 'line-soft', hex: '#e0e0e0', note: 'separadores' },
-        { name: 'surface', hex: '#ffffff' },
-        { name: 'canvas', hex: '#f9f9f9', note: 'fondo' },
+        { name: 'white', hex: '#FFFFFF', note: 'cards, inputs' },
+        { name: 'background', hex: '#F5F5F5', note: 'fondo de página' },
+        { name: 'border', hex: '#E0E0E0', note: 'bordes y divisores' },
+        { name: 'muted-foreground', hex: '#757575', note: 'texto secundario' },
+        { name: 'foreground', hex: '#212121', note: 'texto' },
       ],
     },
     {
       title: 'Semánticos',
       colors: [
-        { name: 'success-50', hex: '#f0fdf4' },
-        { name: 'success-600', hex: '#16a34a' },
-        { name: 'success-700', hex: '#15803d' },
-        { name: 'warning-600', hex: '#f59e0b' },
-        { name: 'info-50', hex: '#e3f2fd' },
-        { name: 'info-600', hex: '#1565c0' },
+        { name: 'success', hex: '#43A047' },
+        { name: 'warning', hex: '#FB8C00' },
+        { name: 'destructive', hex: '#E53935' },
+        { name: 'info', hex: '#1E88E5' },
       ],
     },
+  ];
+
+  /** Escala tipográfica del DS (Inter, base 14px, interlineado 1.5). */
+  protected readonly typeScale = [
+    { size: 26, weight: 600, label: '26 · KPI', sample: 'S/ 148,320' },
+    { size: 21, weight: 500, label: '21 · Título de página', sample: 'Mis pedidos' },
+    { size: 18, weight: 500, label: '18 · Título de sección', sample: 'Datos personales' },
+    { size: 16, weight: 500, label: '16 · Título de card', sample: 'Resumen del pedido' },
+    { size: 14, weight: 400, label: '14 · Cuerpo e inputs', sample: 'Ingresa con tu cuenta' },
+    { size: 12, weight: 400, label: '12 · Leyendas', sample: '240 registros · actualizado hace 2 h' },
+    { size: 11, weight: 500, label: '11 · Overline', sample: 'OPERACIÓN' },
   ];
 
   // --- Demos de formulario ---

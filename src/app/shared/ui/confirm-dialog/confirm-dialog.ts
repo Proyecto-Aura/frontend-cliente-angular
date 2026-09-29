@@ -1,14 +1,15 @@
 import { Component, input, output } from '@angular/core';
 
 import { UiButton } from '../button/ui-button';
+import { UiModal } from '../modal/ui-modal';
 
 /**
- * Diálogo de confirmación genérico (reemplaza al AlertDialog de shadcn).
- * El padre lo renderiza con `@if` cuando quiere pedir confirmación.
+ * Diálogo de confirmación genérico sobre `app-ui-modal` (DS): cabecera roja, mensaje
+ * y acciones Cancelar / Confirmar en el pie. El padre lo renderiza con `@if`.
  */
 @Component({
   selector: 'app-confirm-dialog',
-  imports: [UiButton],
+  imports: [UiButton, UiModal],
   host: { class: 'block' },
   templateUrl: './confirm-dialog.html',
 })
