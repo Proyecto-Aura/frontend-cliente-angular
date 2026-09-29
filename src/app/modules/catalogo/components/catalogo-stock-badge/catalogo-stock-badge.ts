@@ -1,8 +1,11 @@
 import { Component, computed, input } from '@angular/core';
 
+import { UiBadge } from '../../../../shared/ui';
+
 /** Etiqueta de stock: sin stock / pocas unidades / en stock. */
 @Component({
   selector: 'app-catalogo-stock-badge',
+  imports: [UiBadge],
   host: { class: 'inline-flex' },
   templateUrl: './catalogo-stock-badge.html',
 })

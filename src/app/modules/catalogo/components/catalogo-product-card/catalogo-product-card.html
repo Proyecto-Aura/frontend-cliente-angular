@@ -1,6 +1,5 @@
-<article
-  class="group flex flex-col overflow-hidden rounded-2xl border border-[#f0f0f0] bg-surface transition-all duration-200 hover:border-[#e8e8e8] hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)]"
->
+<app-ui-card variant="interactive" padding="none" class="group h-full">
+<article class="flex h-full flex-col">
   <div class="relative flex h-[180px] items-center justify-center overflow-hidden bg-[#fafafa]">
     <div class="relative h-[150px] w-[85%] transition-transform duration-300 group-hover:scale-105">
       <img
@@ -63,11 +62,7 @@
         S/ {{ product().price | number: '1.2-2' }}
       </span>
       <div class="flex items-center gap-1.5">
-        <button
-          type="button"
-          (click)="detail.emit(product())"
-          class="h-[30px] cursor-pointer rounded-lg border border-line-soft px-2.5 text-[11px] font-semibold text-ink-soft transition-colors hover:border-brand-600 hover:text-brand-600"
-        >
+        <button appButton variant="outline" size="sm" type="button" (click)="detail.emit(product())">
           Ver detalle
         </button>
         <button
@@ -90,3 +85,4 @@
     </div>
   </div>
 </article>
+</app-ui-card>

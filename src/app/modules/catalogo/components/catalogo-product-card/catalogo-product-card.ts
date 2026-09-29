@@ -3,12 +3,12 @@ import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 
 import { Producto } from '../../models/producto.model';
 import { CarritoStore } from '../../../carrito/services/carrito-store';
-import { ToastService } from '../../../../shared/ui/toast/toast-service';
+import { ToastService, UiButton, UiCard } from '../../../../shared/ui';
 
 /** Tarjeta de producto del catálogo: imagen, datos, precio y acciones. */
 @Component({
   selector: 'app-catalogo-product-card',
-  imports: [NgOptimizedImage, DecimalPipe],
+  imports: [NgOptimizedImage, DecimalPipe, UiButton, UiCard],
   host: { class: 'block' },
   templateUrl: './catalogo-product-card.html',
 })
