@@ -1,6 +1,7 @@
 import { Component, computed, inject, input, linkedSignal, output, signal } from '@angular/core';
 
 import { CuentaApi } from '../../services/cuenta-api';
+import { UiAlert, UiButton, UiTextarea } from '../../../../shared/ui';
 import { SolicitudReembolso } from '../../models/solicitud-reembolso.model';
 
 type SolicitudData = Pick<
@@ -11,6 +12,7 @@ type SolicitudData = Pick<
 /** Modal para crear una solicitud de reembolso sobre un pedido pagado. */
 @Component({
   selector: 'app-cuenta-solicitud-modal',
+  imports: [UiAlert, UiButton, UiTextarea],
   host: { class: 'block' },
   templateUrl: './cuenta-solicitud-modal.html',
 })

@@ -1,6 +1,7 @@
 import { Component, computed, input, output } from '@angular/core';
 
 import { EstadoSolicitud, SolicitudReembolso } from '../../models/solicitud-reembolso.model';
+import { UiButton } from '../../../../shared/ui';
 
 const MENSAJES: Record<EstadoSolicitud, { title: string; desc: string; tone: string }> = {
   pending: {
@@ -23,6 +24,7 @@ const MENSAJES: Record<EstadoSolicitud, { title: string; desc: string; tone: str
 /** Detalle (solo lectura) de una solicitud de reembolso. */
 @Component({
   selector: 'app-cuenta-ticket-modal',
+  imports: [UiButton],
   host: { class: 'block' },
   templateUrl: './cuenta-ticket-modal.html',
 })

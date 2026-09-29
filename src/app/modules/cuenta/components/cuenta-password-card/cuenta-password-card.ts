@@ -1,10 +1,12 @@
 import { Component, computed, inject, signal } from '@angular/core';
 
 import { ToastService } from '../../../../shared/ui/toast/toast-service';
+import { UiButton, UiCard, UiInput } from '../../../../shared/ui';
 
 /** Cambiar contraseña. Sin backend: solo valida en el cliente. */
 @Component({
   selector: 'app-cuenta-password-card',
+  imports: [UiButton, UiCard, UiInput],
   host: { class: 'block' },
   templateUrl: './cuenta-password-card.html',
 })
@@ -14,9 +16,6 @@ export class CuentaPasswordCard {
   protected readonly actual = signal('');
   protected readonly nueva = signal('');
   protected readonly confirmar = signal('');
-  protected readonly verActual = signal(false);
-  protected readonly verNueva = signal(false);
-  protected readonly verConfirmar = signal(false);
   protected readonly guardado = signal(false);
 
   protected readonly noCoincide = computed(

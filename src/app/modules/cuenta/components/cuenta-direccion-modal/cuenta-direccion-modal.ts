@@ -1,5 +1,6 @@
 import { Component, computed, input, linkedSignal, output } from '@angular/core';
 
+import { UiButton, UiInput, UiModal, UiSelect, UiSelectOption } from '../../../../shared/ui';
 import { DISTRITOS } from '../../../../shared/utils/constants';
 import { Direccion } from '../../models/direccion.model';
 
@@ -8,6 +9,7 @@ type DireccionData = Pick<Direccion, 'nombre' | 'linea1' | 'linea2'>;
 /** Modal para crear o editar una dirección de entrega. */
 @Component({
   selector: 'app-cuenta-direccion-modal',
+  imports: [UiButton, UiInput, UiModal, UiSelect],
   host: { class: 'block' },
   templateUrl: './cuenta-direccion-modal.html',
 })
@@ -16,7 +18,7 @@ export class CuentaDireccionModal {
   readonly close = output<void>();
   readonly save = output<DireccionData>();
 
-  protected readonly distritos = DISTRITOS;
+  protected readonly distritoOpciones: UiSelectOption[] = DISTRITOS.map((d) => ({ value: d, label: d }));
 
   protected readonly nombre = linkedSignal(() => this.initial()?.nombre ?? '');
   protected readonly linea1 = linkedSignal(() => this.initial()?.linea1 ?? '');

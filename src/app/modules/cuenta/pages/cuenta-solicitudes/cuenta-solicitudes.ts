@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CuentaApi } from '../../services/cuenta-api';
 import { SolicitudReembolso } from '../../models/solicitud-reembolso.model';
 import { ToastService } from '../../../../shared/ui/toast/toast-service';
+import { UiButton } from '../../../../shared/ui';
 import { CuentaReembolsoBadge } from '../../components/cuenta-reembolso-badge/cuenta-reembolso-badge';
 import { CuentaSolicitudModal } from '../../components/cuenta-solicitud-modal/cuenta-solicitud-modal';
 import { CuentaTicketModal } from '../../components/cuenta-ticket-modal/cuenta-ticket-modal';
@@ -11,7 +12,7 @@ import { CuentaTicketModal } from '../../components/cuenta-ticket-modal/cuenta-t
 /** "Mis Solicitudes" de reembolso: listado + crear + ver detalle. Hija de cuenta-layout. */
 @Component({
   selector: 'app-cuenta-solicitudes',
-  imports: [CuentaReembolsoBadge, CuentaSolicitudModal, CuentaTicketModal],
+  imports: [CuentaReembolsoBadge, CuentaSolicitudModal, CuentaTicketModal, UiButton],
   host: { class: 'block' },
   templateUrl: './cuenta-solicitudes.html',
 })

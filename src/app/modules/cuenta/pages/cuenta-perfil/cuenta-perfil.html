@@ -8,7 +8,7 @@
   </div>
 
   <!-- Datos personales -->
-  <div class="flex flex-col gap-5 rounded-2xl border border-[#fca5a5] bg-surface p-6">
+  <app-ui-card variant="danger" class="gap-5">
     <div class="flex items-center gap-3">
       <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#fecaca] text-brand-600">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
@@ -20,30 +20,14 @@
     </div>
 
     <div class="grid grid-cols-1 gap-x-14 gap-y-4 sm:grid-cols-2">
-      <label class="flex flex-col gap-1.5">
-        <span class="text-[13px] font-semibold text-label">Nombre</span>
-        <input [value]="nombre()" (input)="set(nombre, $event)" class="h-[40px] w-full rounded-xl border border-line-soft bg-surface px-4 text-[13px] text-label outline-none transition-colors focus:border-brand-600" />
-      </label>
-      <label class="flex flex-col gap-1.5">
-        <span class="text-[13px] font-semibold text-label">Apellido</span>
-        <input [value]="apellido()" (input)="set(apellido, $event)" class="h-[40px] w-full rounded-xl border border-line-soft bg-surface px-4 text-[13px] text-label outline-none transition-colors focus:border-brand-600" />
-      </label>
-      <label class="flex flex-col gap-1.5">
-        <span class="text-[13px] font-semibold text-label">Correo</span>
-        <input [value]="email()" (input)="set(email, $event)" class="h-[40px] w-full rounded-xl border border-line-soft bg-surface px-4 text-[13px] text-label outline-none transition-colors focus:border-brand-600" />
-      </label>
-      <label class="flex flex-col gap-1.5">
-        <span class="text-[13px] font-semibold text-label">Teléfono</span>
-        <input [value]="telefono()" (input)="set(telefono, $event)" class="h-[40px] w-full rounded-xl border border-line-soft bg-surface px-4 text-[13px] text-label outline-none transition-colors focus:border-brand-600" />
-      </label>
+      <app-ui-input label="Nombre" [(value)]="nombre" />
+      <app-ui-input label="Apellido" [(value)]="apellido" />
+      <app-ui-input label="Correo" [(value)]="email" />
+      <app-ui-input label="Teléfono" [(value)]="telefono" />
     </div>
 
     <div class="flex justify-end">
-      <button
-        type="button"
-        (click)="guardarPerfil()"
-        class="flex h-[34px] items-center gap-2 rounded-lg bg-brand-600 px-5 text-[13px] font-semibold text-white transition-colors hover:bg-brand-700"
-      >
+      <button appButton type="button" (click)="guardarPerfil()">
         @if (guardado()) {
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335" /><path d="m9 11 3 3L22 4" /></svg>
           Guardado
@@ -52,7 +36,7 @@
         }
       </button>
     </div>
-  </div>
+  </app-ui-card>
 
   <!-- Direcciones -->
   <div class="flex flex-col gap-4">
@@ -105,11 +89,7 @@
               Eliminar
             </button>
             @if (!addr.predeterminada) {
-              <button
-                type="button"
-                (click)="api.marcarPredeterminada(addr.id)"
-                class="ml-auto rounded-lg border border-line-soft px-2.5 py-1 text-[11px] font-semibold text-ink-soft transition-colors hover:border-brand-600 hover:text-brand-600"
-              >
+              <button appButton variant="outline" size="sm" type="button" (click)="api.marcarPredeterminada(addr.id)" class="ml-auto">
                 Predeterminar
               </button>
             }

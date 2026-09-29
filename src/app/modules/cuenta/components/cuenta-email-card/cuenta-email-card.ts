@@ -1,6 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 
 import { ToastService } from '../../../../shared/ui/toast/toast-service';
+import { UiAlert, UiButton, UiCard, UiInput } from '../../../../shared/ui';
 
 /**
  * Cambiar y verificar el correo (2 pasos: pedir código → verificar).
@@ -8,6 +9,7 @@ import { ToastService } from '../../../../shared/ui/toast/toast-service';
  */
 @Component({
   selector: 'app-cuenta-email-card',
+  imports: [UiAlert, UiButton, UiCard, UiInput],
   host: { class: 'block' },
   templateUrl: './cuenta-email-card.html',
 })

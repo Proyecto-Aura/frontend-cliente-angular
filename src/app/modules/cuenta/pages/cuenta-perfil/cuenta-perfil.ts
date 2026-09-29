@@ -4,6 +4,7 @@ import { CuentaApi } from '../../services/cuenta-api';
 import { Direccion } from '../../models/direccion.model';
 import { ToastService } from '../../../../shared/ui/toast/toast-service';
 import { ConfirmDialog } from '../../../../shared/ui/confirm-dialog/confirm-dialog';
+import { UiButton, UiCard, UiInput } from '../../../../shared/ui';
 import { CuentaDireccionModal } from '../../components/cuenta-direccion-modal/cuenta-direccion-modal';
 import { CuentaEmailCard } from '../../components/cuenta-email-card/cuenta-email-card';
 import { CuentaPasswordCard } from '../../components/cuenta-password-card/cuenta-password-card';
@@ -11,7 +12,7 @@ import { CuentaPasswordCard } from '../../components/cuenta-password-card/cuenta
 /** "Mi Perfil": datos personales, direcciones, correo y contraseña. Hija de cuenta-layout. */
 @Component({
   selector: 'app-cuenta-perfil',
-  imports: [ConfirmDialog, CuentaDireccionModal, CuentaEmailCard, CuentaPasswordCard],
+  imports: [ConfirmDialog, CuentaDireccionModal, CuentaEmailCard, CuentaPasswordCard, UiButton, UiCard, UiInput],
   host: { class: 'block' },
   templateUrl: './cuenta-perfil.html',
 })
@@ -29,10 +30,6 @@ export class CuentaPerfil {
   protected readonly modalAbierto = signal(false);
   protected readonly editando = signal<Direccion | null>(null);
   protected readonly confirmEliminarId = signal<string | null>(null);
-
-  protected set(sig: { set(v: string): void }, ev: Event): void {
-    sig.set((ev.target as HTMLInputElement).value);
-  }
 
   protected guardarPerfil(): void {
     this.guardado.set(true);

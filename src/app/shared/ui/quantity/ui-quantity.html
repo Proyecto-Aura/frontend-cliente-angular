@@ -1,0 +1,21 @@
+<div role="group" [attr.aria-label]="label()" class="flex h-[44px] items-center overflow-hidden rounded-xl bg-[#f5f5f5]">
+  <button
+    type="button"
+    (click)="decrease()"
+    [disabled]="!canDecrease()"
+    aria-label="Restar"
+    class="flex h-full w-[44px] cursor-pointer items-center justify-center text-[20px] font-bold text-ink-soft transition-colors hover:bg-[#e8e8e8] disabled:cursor-not-allowed disabled:opacity-40"
+  >
+    −
+  </button>
+  <span aria-live="polite" class="w-10 text-center text-[15px] font-bold text-ink">{{ value() }}</span>
+  <button
+    type="button"
+    (click)="increase()"
+    [disabled]="!canIncrease()"
+    aria-label="Sumar"
+    class="flex h-full w-[44px] cursor-pointer items-center justify-center text-[20px] font-bold text-ink-soft transition-colors hover:bg-[#e8e8e8] disabled:cursor-not-allowed disabled:opacity-40"
+  >
+    +
+  </button>
+</div>

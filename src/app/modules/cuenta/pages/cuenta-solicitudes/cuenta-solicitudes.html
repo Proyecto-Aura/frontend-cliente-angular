@@ -7,11 +7,7 @@
       </h1>
       <p class="text-[13px] text-muted">Solicita y rastrea tus reembolsos de pedidos pagados.</p>
     </div>
-    <button
-      type="button"
-      (click)="abrirNueva()"
-      class="flex h-[38px] items-center gap-2 rounded-xl bg-brand-600 px-5 text-[13px] font-semibold text-white transition-colors hover:bg-brand-700"
-    >
+    <button appButton type="button" (click)="abrirNueva()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" /></svg>
       Nueva solicitud
     </button>
@@ -47,11 +43,7 @@
 
         <div class="flex shrink-0 flex-col items-end justify-between gap-2">
           <app-cuenta-reembolso-badge [status]="ticket.status" />
-          <button
-            type="button"
-            (click)="detalle.set(ticket)"
-            class="h-[30px] rounded-lg border border-line-soft px-3 text-[12px] font-semibold text-ink-soft transition-colors hover:border-brand-600 hover:text-brand-600"
-          >
+          <button appButton variant="outline" size="sm" type="button" (click)="detalle.set(ticket)">
             Ver detalle
           </button>
         </div>
@@ -65,11 +57,7 @@
           <p class="text-[14px] font-semibold text-ink-soft">Sin solicitudes aún</p>
           <p class="text-[12px] text-line">Cuando tengas un problema con un pedido, crea una solicitud aquí.</p>
         </div>
-        <button
-          type="button"
-          (click)="abrirNueva()"
-          class="flex h-[36px] items-center gap-2 rounded-xl bg-brand-600 px-5 text-[12px] font-semibold text-white transition-colors hover:bg-brand-700"
-        >
+        <button appButton type="button" (click)="abrirNueva()" class="text-[12px]">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" /></svg>
           Crear primera solicitud
         </button>

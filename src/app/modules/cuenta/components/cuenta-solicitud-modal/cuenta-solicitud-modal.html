@@ -58,12 +58,10 @@
           }
         </div>
         @if (selectedOrder(); as o) {
-          <div class="mt-1 flex items-center gap-2 rounded-xl border border-[#bbf7d0] bg-success-50 px-3 py-2">
+          <app-ui-alert tone="success" class="mt-1">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><path d="M21.801 10A10 10 0 1 1 17 3.335" /><path d="m9 11 3 3L22 4" /></svg>
-            <p class="text-[12px] font-medium text-success-700">
-              Pedido elegible · {{ o.items }} artículos · Pagado el {{ o.date }}
-            </p>
-          </div>
+            <p>Pedido elegible · {{ o.items }} artículos · Pagado el {{ o.date }}</p>
+          </app-ui-alert>
         }
       </div>
 
@@ -101,44 +99,28 @@
 
       <!-- Descripción -->
       <div class="flex flex-col gap-1.5">
-        <label class="text-[12px] font-semibold text-label">
-          Descripción detallada * <span class="font-normal text-line">(mín. 10 caracteres)</span>
-        </label>
-        <textarea
-          [value]="descripcion()" (input)="descripcion.set($any($event.target).value)"
-          rows="4"
+        <app-ui-textarea
+          label="Descripción detallada * (mín. 10 caracteres)"
           placeholder="Describe detalladamente el problema con tu pedido..."
-          class="w-full resize-none rounded-xl border border-line-soft px-4 py-3 text-[13px] text-label outline-none transition-colors placeholder:text-[#c0c0c0] focus:border-brand-600"
-        ></textarea>
+          [rows]="4"
+          [(value)]="descripcion"
+        />
         <p class="text-right text-[11px]" [class.text-success-700]="descripcion().length >= 10" [class.text-line]="descripcion().length < 10">
           {{ descripcion().length }} caracteres
         </p>
       </div>
 
-      <div class="flex items-start gap-2 rounded-xl border border-[#fde68a] bg-[#fefce8] px-4 py-3">
+      <app-ui-alert tone="warning">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><path d="M12 9v4M12 17h.01" /></svg>
-        <p class="text-[12px] leading-relaxed text-[#92400e]">
-          Tu solicitud será revisada en un plazo de <strong>2–5 días hábiles</strong>. Te
-          notificaremos por email con el resultado.
-        </p>
-      </div>
+        <p>Tu solicitud será revisada en un plazo de <strong>2–5 días hábiles</strong>. Te notificaremos por email con el resultado.</p>
+      </app-ui-alert>
     </div>
 
     <div class="flex gap-3 px-7 pb-6">
-      <button
-        type="button"
-        (click)="close.emit()"
-        class="h-[44px] flex-1 rounded-xl border border-line-soft text-[13px] font-semibold text-ink-soft transition-colors hover:bg-[#f5f5f5]"
-      >
+      <button appButton variant="secondary" size="lg" type="button" (click)="close.emit()" class="flex-1">
         Cancelar
       </button>
-      <button
-        type="button"
-        (click)="enviar()"
-        [disabled]="!canSubmit()"
-        [class]="canSubmit() ? 'bg-brand-600 text-white hover:bg-brand-700' : 'bg-line-soft text-muted cursor-not-allowed'"
-        class="flex h-[44px] flex-1 items-center justify-center gap-2 rounded-xl text-[14px] font-semibold transition-colors"
-      >
+      <button appButton size="lg" type="button" (click)="enviar()" [disabled]="!canSubmit()" class="flex-1 px-4">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" /></svg>
         Enviar solicitud
       </button>

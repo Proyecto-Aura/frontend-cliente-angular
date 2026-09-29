@@ -46,11 +46,7 @@
     </div>
 
     <div class="px-6 pb-6">
-      <button
-        type="button"
-        (click)="close.emit()"
-        class="h-[42px] w-full rounded-xl bg-[#f5f5f5] text-[13px] font-semibold text-ink-soft transition-colors hover:bg-[#eeeeee]"
-      >
+      <button appButton variant="soft" size="lg" [block]="true" type="button" (click)="close.emit()">
         Cerrar
       </button>
     </div>
