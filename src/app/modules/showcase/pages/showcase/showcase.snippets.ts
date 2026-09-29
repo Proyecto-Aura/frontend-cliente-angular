@@ -26,9 +26,12 @@ export const SNIPPETS = {
 <app-ui-input label="Contraseña" type="password" [formControl]="password"
   hint="Mínimo 8 caracteres" />
 
-<!-- El padre decide cuándo mostrar el error -->
+<!-- Con formularios, el error solo se ve cuando el campo está touched e inválido -->
 <app-ui-input label="DNI" inputMode="numeric" [maxLength]="8" [formControl]="dni"
-  [error]="dni.touched && dni.invalid ? 'Ingresa un DNI válido' : null" />`,
+  error="Ingresa un DNI válido" />
+
+<!-- Sin formulario, con un signal: nombre = signal('') -->
+<app-ui-input label="Nombre de la dirección" placeholder="Casa, Oficina…" [(value)]="nombre" />`,
 
   select: `import { UiSelect, UiSelectOption } from '../../../../shared/ui';   // imports: [UiSelect, ReactiveFormsModule]
 

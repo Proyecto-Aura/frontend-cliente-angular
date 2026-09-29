@@ -1,5 +1,4 @@
-import { Component, forwardRef, input } from '@angular/core';
-import { NG_VALUE_ACCESSOR } from '@angular/forms';
+import { Component, input } from '@angular/core';
 
 import { UI_FIELD_CLASSES, UiControl } from '../forms/ui-control';
 import { UiFieldMessage } from '../forms/ui-field-message';
@@ -10,14 +9,13 @@ export interface UiSelectOption {
 }
 
 /**
- * Select nativo con etiqueta y flecha.
+ * Select nativo con etiqueta.
  * Uso: `<app-ui-select label="Distrito" placeholder="Selecciona…" [options]="distritos" [formControl]="distrito" />`.
  */
 @Component({
   selector: 'app-ui-select',
   imports: [UiFieldMessage],
   host: { class: 'block' },
-  providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => UiSelect), multi: true }],
   templateUrl: './ui-select.html',
 })
 export class UiSelect extends UiControl<string> {

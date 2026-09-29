@@ -13,15 +13,15 @@
       [attr.autocomplete]="autocomplete()"
       [attr.inputmode]="inputMode()"
       [attr.maxlength]="maxLength()"
-      [attr.aria-invalid]="error() ? true : null"
-      [attr.aria-describedby]="error() || hint() ? id + '-msg' : null"
+      [attr.aria-invalid]="visibleError() ? true : null"
+      [attr.aria-describedby]="visibleError() || hint() ? id + '-msg' : null"
       (input)="onInput($event)"
       (blur)="onTouched()"
       [class]="fieldClasses"
       class="h-[40px]"
       [class.pr-10]="type() === 'password'"
-      [class.border-brand-600]="!!error()"
-      [class.border-line-soft]="!error()"
+      [class.border-brand-600]="!!visibleError()"
+      [class.border-line-soft]="!visibleError()"
     />
 
     @if (type() === 'password') {
@@ -48,5 +48,5 @@
     }
   </span>
 
-  <app-ui-field-message [for]="id" [hint]="hint()" [error]="error()" />
+  <app-ui-field-message [for]="id" [hint]="hint()" [error]="visibleError()" />
 </div>

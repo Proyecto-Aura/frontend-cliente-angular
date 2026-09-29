@@ -1,5 +1,4 @@
-import { Component, computed, forwardRef, input, signal } from '@angular/core';
-import { NG_VALUE_ACCESSOR } from '@angular/forms';
+import { Component, computed, input, signal } from '@angular/core';
 
 import { UI_FIELD_CLASSES, UiControl } from '../forms/ui-control';
 import { UiFieldMessage } from '../forms/ui-field-message';
@@ -12,7 +11,6 @@ import { UiFieldMessage } from '../forms/ui-field-message';
   selector: 'app-ui-input',
   imports: [UiFieldMessage],
   host: { class: 'block' },
-  providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => UiInput), multi: true }],
   templateUrl: './ui-input.html',
 })
 export class UiInput extends UiControl<string> {

@@ -5,13 +5,13 @@
       type="checkbox"
       [checked]="value()"
       [disabled]="disabled()"
-      [attr.aria-invalid]="error() ? true : null"
-      [attr.aria-describedby]="error() || hint() ? id + '-msg' : null"
+      [attr.aria-invalid]="visibleError() ? true : null"
+      [attr.aria-describedby]="visibleError() || hint() ? id + '-msg' : null"
       (change)="onToggle($event)"
       class="size-5 shrink-0 cursor-pointer rounded-lg border-[1.25px] border-line accent-brand-600 disabled:cursor-not-allowed"
     />
     <span><ng-content /></span>
   </label>
 
-  <app-ui-field-message [for]="id" [hint]="hint()" [error]="error()" />
+  <app-ui-field-message [for]="id" [hint]="hint()" [error]="visibleError()" />
 </div>

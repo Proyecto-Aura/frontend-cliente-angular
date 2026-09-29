@@ -1,5 +1,4 @@
-import { Component, forwardRef } from '@angular/core';
-import { NG_VALUE_ACCESSOR } from '@angular/forms';
+import { Component } from '@angular/core';
 
 import { UiControl } from '../forms/ui-control';
 import { UiFieldMessage } from '../forms/ui-field-message';
@@ -12,7 +11,6 @@ import { UiFieldMessage } from '../forms/ui-field-message';
   selector: 'app-ui-checkbox',
   imports: [UiFieldMessage],
   host: { class: 'block' },
-  providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => UiCheckbox), multi: true }],
   templateUrl: './ui-checkbox.html',
 })
 export class UiCheckbox extends UiControl<boolean> {

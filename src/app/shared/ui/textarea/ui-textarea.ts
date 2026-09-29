@@ -1,5 +1,4 @@
-import { Component, forwardRef, input } from '@angular/core';
-import { NG_VALUE_ACCESSOR } from '@angular/forms';
+import { Component, input } from '@angular/core';
 
 import { UI_FIELD_CLASSES, UiControl } from '../forms/ui-control';
 import { UiFieldMessage } from '../forms/ui-field-message';
@@ -9,7 +8,6 @@ import { UiFieldMessage } from '../forms/ui-field-message';
   selector: 'app-ui-textarea',
   imports: [UiFieldMessage],
   host: { class: 'block' },
-  providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => UiTextarea), multi: true }],
   templateUrl: './ui-textarea.html',
 })
 export class UiTextarea extends UiControl<string> {

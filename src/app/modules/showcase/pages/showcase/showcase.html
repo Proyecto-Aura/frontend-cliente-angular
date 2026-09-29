@@ -95,19 +95,19 @@
     <app-showcase-section
       sectionId="input"
       title="Input"
-      description="Campo con etiqueta, hint y error. Funciona con [formControl], formControlName o ngModel. Con type='password' incluye el botón mostrar/ocultar."
+      description="Campo con etiqueta, hint y error. Funciona con [formControl] / formControlName (el error aparece solo si el campo está tocado e inválido) o con signals vía [(value)]. Con type='password' incluye el botón mostrar/ocultar."
       [code]="code.input"
     >
       <div class="grid max-w-[720px] gap-5 sm:grid-cols-2">
         <app-ui-input
           label="Correo electrónico" type="email" placeholder="tu@correo.com"
           autocomplete="email" [formControl]="email"
-          [error]="email.touched && email.invalid ? 'Ingresa un correo válido' : null"
+          error="Ingresa un correo válido"
         />
         <app-ui-input label="Contraseña" type="password" hint="Mínimo 8 caracteres" [formControl]="password" />
         <app-ui-input
           label="DNI" inputMode="numeric" [maxLength]="8" [formControl]="dni"
-          [error]="dni.touched && dni.invalid ? 'Ingresa un DNI válido (8 dígitos)' : null"
+          error="Ingresa un DNI válido (8 dígitos)"
         />
         <app-ui-input label="Deshabilitado" [formControl]="disabledInput" />
       </div>

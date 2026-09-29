@@ -10,15 +10,15 @@
     [disabled]="disabled()"
     [placeholder]="placeholder()"
     [attr.maxlength]="maxLength()"
-    [attr.aria-invalid]="error() ? true : null"
-    [attr.aria-describedby]="error() || hint() ? id + '-msg' : null"
+    [attr.aria-invalid]="visibleError() ? true : null"
+    [attr.aria-describedby]="visibleError() || hint() ? id + '-msg' : null"
     (input)="onInput($event)"
     (blur)="onTouched()"
     [class]="fieldClasses"
     class="resize-none py-3"
-    [class.border-brand-600]="!!error()"
-    [class.border-line-soft]="!error()"
+    [class.border-brand-600]="!!visibleError()"
+    [class.border-line-soft]="!visibleError()"
   ></textarea>
 
-  <app-ui-field-message [for]="id" [hint]="hint()" [error]="error()" />
+  <app-ui-field-message [for]="id" [hint]="hint()" [error]="visibleError()" />
 </div>

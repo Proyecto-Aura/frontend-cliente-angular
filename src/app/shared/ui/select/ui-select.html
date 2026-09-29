@@ -6,14 +6,14 @@
   <select
     [id]="id"
     [disabled]="disabled()"
-    [attr.aria-invalid]="error() ? true : null"
-    [attr.aria-describedby]="error() || hint() ? id + '-msg' : null"
+    [attr.aria-invalid]="visibleError() ? true : null"
+    [attr.aria-describedby]="visibleError() || hint() ? id + '-msg' : null"
     (change)="onChangeEvent($event)"
     (blur)="onTouched()"
     [class]="fieldClasses"
     class="h-[40px] cursor-pointer appearance-none"
-    [class.border-brand-600]="!!error()"
-    [class.border-line-soft]="!error()"
+    [class.border-brand-600]="!!visibleError()"
+    [class.border-line-soft]="!visibleError()"
   >
     @if (placeholder()) {
       <option value="" disabled [selected]="value() === ''">{{ placeholder() }}</option>
@@ -23,5 +23,5 @@
     }
   </select>
 
-  <app-ui-field-message [for]="id" [hint]="hint()" [error]="error()" />
+  <app-ui-field-message [for]="id" [hint]="hint()" [error]="visibleError()" />
 </div>
