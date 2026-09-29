@@ -8,9 +8,9 @@
 >
   @for (i of segments(); track i) {
     <span
-      class="h-[4px] flex-1 rounded-full transition-colors"
-      [class.bg-brand-600]="i < step()"
-      [class.bg-line-soft]="i >= step()"
+      class="h-1 flex-1 rounded-full transition-colors duration-[120ms]"
+      [class.bg-primary]="i < step()"
+      [class.bg-border]="i >= step()"
     ></span>
   }
 </div>

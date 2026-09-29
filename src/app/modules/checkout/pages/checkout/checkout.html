@@ -1,6 +1,6 @@
 @if (carrito.items().length === 0) {
   <div class="flex flex-1 items-center justify-center px-6 py-16">
-    <app-ui-card padding="none" class="max-w-[420px] items-center gap-4 px-10 py-16 text-center">
+    <app-ui-card padding="none" class="max-w-[420px]" bodyClass="items-center gap-4 px-10 py-16 text-center">
       <span class="flex size-16 items-center justify-center rounded-full bg-[#f0f0f0]">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#bdbdbd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" /></svg>
       </span>
@@ -52,7 +52,7 @@
     <!-- Columna izquierda: formularios -->
     <div class="flex flex-col gap-6">
       <!-- Dirección de entrega -->
-      <app-ui-card class="gap-5">
+      <app-ui-card bodyClass="gap-5">
         <div class="flex items-center gap-2.5">
           <span class="flex size-8 items-center justify-center rounded-xl bg-[#fff0f0] text-brand-600">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /><circle cx="12" cy="10" r="3" /></svg>
@@ -113,7 +113,7 @@
       </app-ui-card>
 
       <!-- Comprobante -->
-      <app-ui-card class="gap-5">
+      <app-ui-card bodyClass="gap-5">
         <div class="flex items-center gap-2.5">
           <span class="flex size-8 items-center justify-center rounded-xl bg-[#fff0f0] text-brand-600">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" /><path d="M14 2v4a2 2 0 0 0 2 2h4" /><path d="M10 9H8" /><path d="M16 13H8" /><path d="M16 17H8" /></svg>
@@ -165,7 +165,7 @@
       </app-ui-card>
 
       <!-- Método de pago -->
-      <app-ui-card class="gap-5">
+      <app-ui-card bodyClass="gap-5">
         <div class="flex items-center gap-2.5">
           <span class="flex size-8 items-center justify-center rounded-xl bg-[#fff0f0] text-brand-600">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2" /><line x1="2" x2="22" y1="10" y2="10" /></svg>
@@ -228,7 +228,7 @@
 
     <!-- Resumen -->
     <div class="flex flex-col gap-4 lg:sticky lg:top-6">
-      <app-ui-card padding="sm" class="gap-4">
+      <app-ui-card padding="sm" bodyClass="gap-4">
         <h2 class="font-display text-[15px] font-bold text-ink">Resumen del pedido</h2>
 
         <div class="flex max-h-[300px] flex-col gap-3 overflow-y-auto">
