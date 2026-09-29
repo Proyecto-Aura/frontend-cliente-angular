@@ -32,7 +32,12 @@
                   class="relative block size-12 overflow-hidden rounded-lg border-2 border-white bg-[#fafafa] shadow-sm"
                   [style.margin-left.px]="$index > 0 ? -10 : 0"
                 >
-                  <img [src]="thumb" alt="" class="absolute inset-0 size-full object-contain" />
+                  <img
+                    [ngSrc]="thumb"
+                    [alt]="nombreProducto(thumb)"
+                    fill
+                    class="object-contain"
+                  />
                 </span>
               }
             </div>
