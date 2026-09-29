@@ -4,10 +4,24 @@ import { Subscription } from 'rxjs';
 
 let seq = 0;
 
-/** Clases comunes de input / select / textarea del portal. */
+export type UiFieldSize = 'sm' | 'md' | 'lg';
+
+/** Alturas del DS para campos: sm 36 (barra de filtros) · md 44 · lg 48. */
+export const UI_FIELD_HEIGHTS: Record<UiFieldSize, string> = {
+  sm: 'h-9',
+  md: 'h-11',
+  lg: 'h-12',
+};
+
+/** Clases comunes de input / select / textarea del DS (radio 10px, borde 1px, anillo de foco rojo). */
 export const UI_FIELD_CLASSES =
-  'w-full rounded-xl border bg-surface px-4 text-[13px] text-label outline-none transition-colors ' +
-  'placeholder:text-[#c0c0c0] focus:border-brand-600 disabled:cursor-not-allowed disabled:bg-[#fafafa] disabled:text-muted';
+  'w-full rounded-field border bg-white px-3.5 text-[14px] text-foreground shadow-field outline-none ' +
+  'transition-[border-color,box-shadow,background-color] duration-[120ms] placeholder:text-muted-foreground ' +
+  'focus:border-primary focus:shadow-focus ' +
+  'disabled:cursor-not-allowed disabled:bg-background disabled:text-muted-foreground';
+
+/** Estado inválido del DS: borde destructivo y fondo rojo al 4%. */
+export const UI_FIELD_INVALID = '!border-destructive !bg-[rgb(210_43_43/0.04)]';
 
 /**
  * Base de los controles de formulario de `shared/ui`: etiqueta, hint y error.
@@ -21,6 +35,8 @@ export abstract class UiControl<T> implements ControlValueAccessor, DoCheck {
   readonly label = input<string | null>(null);
   readonly hint = input<string | null>(null);
   readonly error = input<string | null>(null);
+  /** Marca el campo como obligatorio: asterisco rojo junto a la etiqueta. */
+  readonly required = input(false);
   readonly value = model<T>(this.emptyValue());
 
   protected readonly id = `ui-field-${++seq}`;
