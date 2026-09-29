@@ -1,4 +1,4 @@
-<app-ui-card variant="interactive" padding="none" class="group h-full">
+<app-ui-card padding="none" class="group h-full">
 <article class="flex h-full flex-col">
   <div class="relative flex h-[180px] items-center justify-center overflow-hidden bg-[#fafafa]">
     <div class="relative h-[150px] w-[85%] transition-transform duration-300 group-hover:scale-105">
@@ -62,7 +62,7 @@
         S/ {{ product().price | number: '1.2-2' }}
       </span>
       <div class="flex items-center gap-1.5">
-        <button appButton variant="outline" size="sm" type="button" (click)="detail.emit(product())">
+        <button appButton variant="secondary" size="sm" type="button" (click)="detail.emit(product())">
           Ver detalle
         </button>
         <button

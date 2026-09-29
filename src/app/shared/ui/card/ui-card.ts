@@ -1,36 +1,32 @@
 import { Component, computed, input } from '@angular/core';
 
-export type UiCardVariant = 'default' | 'danger' | 'interactive';
 export type UiCardPadding = 'none' | 'sm' | 'md';
-
-const VARIANTS: Record<UiCardVariant, string> = {
-  default: 'border-[#f0f0f0]',
-  danger: 'border-[#fca5a5]',
-  interactive:
-    'border-[#f0f0f0] transition-all duration-200 hover:border-[#e8e8e8] hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)]',
-};
 
 const PADDINGS: Record<UiCardPadding, string> = {
   none: '',
-  sm: 'p-5',
-  md: 'p-6',
+  sm: 'p-4',
+  md: 'p-5',
 };
 
 /**
- * Contenedor blanco con borde suave y esquinas redondeadas.
- * `danger` es para zonas sensibles (ej. eliminar cuenta); `interactive` para cards clicables.
+ * Card del DS: fondo blanco, borde 1px, radio 8px y sombra casi invisible.
+ * Cabecera opcional (`title`, `subtitle` y acciones con `slot="actions"`), cuerpo con
+ * padding de 20px y pie opcional sobre gris (`slot="footer"`). El layout interno del
+ * cuerpo se da con `bodyClass` (ej. `bodyClass="gap-4"`). Las tablas van con `padding="none"`.
  */
 @Component({
   selector: 'app-ui-card',
-  host: { '[class]': 'classes()' },
+  host: { class: 'flex flex-col overflow-hidden rounded-lg border border-border bg-white shadow-xs' },
   templateUrl: './ui-card.html',
 })
 export class UiCard {
-  readonly variant = input<UiCardVariant>('default');
+  readonly title = input<string | null>(null);
+  readonly subtitle = input<string | null>(null);
   readonly padding = input<UiCardPadding>('md');
+  /** Clases extra del cuerpo (es flex en columna): `gap-*`, `items-center`, etc. */
+  readonly bodyClass = input('');
 
-  protected readonly classes = computed(
-    () =>
-      `block overflow-hidden rounded-2xl border bg-surface ${VARIANTS[this.variant()]} ${PADDINGS[this.padding()]}`,
+  protected readonly bodyClasses = computed(
+    () => `flex flex-1 flex-col ${PADDINGS[this.padding()]} ${this.bodyClass()}`,
   );
 }

@@ -1,6 +1,6 @@
-<div class="flex flex-col gap-1.5">
+<div class="flex flex-col gap-2">
   @if (label()) {
-    <label [for]="id" class="text-[13px] font-semibold text-label">{{ label() }}</label>
+    <app-ui-field-label [for]="id" [required]="required()">{{ label() }}</app-ui-field-label>
   }
 
   <textarea
@@ -8,16 +8,15 @@
     [rows]="rows()"
     [value]="value()"
     [disabled]="disabled()"
+    [required]="required()"
     [placeholder]="placeholder()"
     [attr.maxlength]="maxLength()"
     [attr.aria-invalid]="visibleError() ? true : null"
     [attr.aria-describedby]="visibleError() || hint() ? id + '-msg' : null"
     (input)="onInput($event)"
     (blur)="onTouched()"
-    [class]="fieldClasses"
-    class="resize-none py-3"
-    [class.border-brand-600]="!!visibleError()"
-    [class.border-line-soft]="!visibleError()"
+    [class]="fieldClass()"
+    class="resize-y py-3"
   ></textarea>
 
   <app-ui-field-message [for]="id" [hint]="hint()" [error]="visibleError()" />
