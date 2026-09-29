@@ -1,0 +1,16 @@
+<div
+  role="progressbar"
+  [attr.aria-valuenow]="step()"
+  aria-valuemin="0"
+  [attr.aria-valuemax]="total()"
+  [attr.aria-label]="'Paso ' + step() + ' de ' + total()"
+  class="flex gap-2"
+>
+  @for (i of segments(); track i) {
+    <span
+      class="h-[4px] flex-1 rounded-full transition-colors"
+      [class.bg-brand-600]="i < step()"
+      [class.bg-line-soft]="i >= step()"
+    ></span>
+  }
+</div>

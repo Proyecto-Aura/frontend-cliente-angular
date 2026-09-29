@@ -16,7 +16,7 @@
   class="grid grid-cols-1 items-start gap-8 px-6 py-10 sm:px-12 lg:grid-cols-[1fr_420px] lg:gap-10 lg:px-20 lg:py-12"
 >
   <!-- Formulario -->
-  <div class="flex flex-col gap-5 rounded-2xl border border-[#f0f0f0] bg-surface p-6 sm:p-8">
+  <app-ui-card class="gap-5 sm:p-8">
     <h2 class="font-display text-[18px] font-bold text-ink sm:text-[20px]">Envíanos un mensaje</h2>
 
     @if (enviado()) {
@@ -34,70 +34,36 @@
       </div>
     } @else {
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <label class="flex flex-col gap-1.5">
-          <span class="text-[11px] font-semibold uppercase tracking-wide text-muted">Nombre completo *</span>
-          <input
-            [value]="nombre()" (input)="set(nombre, $event)"
-            placeholder="Ej: Juan García"
-            class="h-[42px] w-full rounded-xl border border-line-soft bg-surface px-4 text-[13px] text-label outline-none transition-colors placeholder:text-[#c0c0c0] focus:border-brand-600"
-          />
-        </label>
-        <label class="flex flex-col gap-1.5">
-          <span class="text-[11px] font-semibold uppercase tracking-wide text-muted">Email *</span>
-          <input
-            type="email"
-            [value]="email()" (input)="set(email, $event)"
-            placeholder="tu@correo.com"
-            class="h-[42px] w-full rounded-xl border border-line-soft bg-surface px-4 text-[13px] text-label outline-none transition-colors placeholder:text-[#c0c0c0] focus:border-brand-600"
-          />
-        </label>
+        <app-ui-input label="Nombre completo *" placeholder="Ej: Juan García" [(value)]="nombre" />
+        <app-ui-input label="Email *" type="email" placeholder="tu@correo.com" [(value)]="email" />
       </div>
-      <label class="flex flex-col gap-1.5">
-        <span class="text-[11px] font-semibold uppercase tracking-wide text-muted">Asunto *</span>
-        <input
-          [value]="asunto()" (input)="set(asunto, $event)"
-          placeholder="Ej: Consulta sobre mi pedido"
-          class="h-[42px] w-full rounded-xl border border-line-soft bg-surface px-4 text-[13px] text-label outline-none transition-colors placeholder:text-[#c0c0c0] focus:border-brand-600"
-        />
-      </label>
-      <label class="flex flex-col gap-1.5">
-        <span class="text-[11px] font-semibold uppercase tracking-wide text-muted">Mensaje *</span>
-        <textarea
-          [value]="mensaje()" (input)="set(mensaje, $event)"
-          rows="5"
-          placeholder="Escribe tu mensaje aquí..."
-          class="w-full resize-none rounded-xl border border-line-soft bg-surface px-4 py-3 text-[13px] text-label outline-none transition-colors placeholder:text-[#c0c0c0] focus:border-brand-600"
-        ></textarea>
-      </label>
-      <button
-        type="button"
-        (click)="enviar()"
-        [disabled]="!puedeEnviar()"
-        [class]="puedeEnviar() ? 'bg-brand-600 text-white hover:bg-brand-700' : 'bg-line-soft text-muted cursor-not-allowed'"
-        class="h-[44px] rounded-xl text-[14px] font-semibold transition-colors"
-      >
+      <app-ui-input label="Asunto *" placeholder="Ej: Consulta sobre mi pedido" [(value)]="asunto" />
+      <app-ui-textarea label="Mensaje *" placeholder="Escribe tu mensaje aquí..." [rows]="5" [(value)]="mensaje" />
+      <button appButton size="lg" [block]="true" type="button" (click)="enviar()" [disabled]="!puedeEnviar()">
         Enviar mensaje
       </button>
     }
-  </div>
+  </app-ui-card>
 
   <!-- Datos de contacto -->
   <div class="flex flex-col gap-4">
     @for (item of info; track item.title) {
-      <div class="flex items-start gap-4 rounded-2xl border border-[#f0f0f0] bg-surface p-5">
-        <span class="flex size-10 shrink-0 items-center justify-center rounded-xl" [class]="item.tone">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /></svg>
-        </span>
-        <div>
-          <p class="mb-0.5 text-[13px] font-bold text-ink">{{ item.title }}</p>
-          @for (l of item.lines; track l) {
-            <p class="text-[12px] text-muted">{{ l }}</p>
-          }
+      <app-ui-card padding="sm">
+        <div class="flex items-start gap-4">
+          <span class="flex size-10 shrink-0 items-center justify-center rounded-xl" [class]="item.tone">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /></svg>
+          </span>
+          <div>
+            <p class="mb-0.5 text-[13px] font-bold text-ink">{{ item.title }}</p>
+            @for (l of item.lines; track l) {
+              <p class="text-[12px] text-muted">{{ l }}</p>
+            }
+          </div>
         </div>
-      </div>
+      </app-ui-card>
     }
 
-    <div class="rounded-2xl border border-[#f0f0f0] bg-surface p-5">
+    <app-ui-card padding="sm">
       <p class="mb-3 text-[13px] font-bold text-ink">Síguenos</p>
       <div class="flex gap-2">
         @for (red of redes; track red.label) {
@@ -109,6 +75,6 @@
           </span>
         }
       </div>
-    </div>
+    </app-ui-card>
   </div>
 </div>

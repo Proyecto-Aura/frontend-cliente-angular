@@ -1,10 +1,12 @@
-import { Component, WritableSignal, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 
 import { ToastService } from '../../../shared/ui/toast/toast-service';
+import { UiButton, UiCard, UiInput, UiTextarea } from '../../../shared/ui';
 
 /** Página "Contacto": formulario + datos de contacto. Hija de store-layout. */
 @Component({
   selector: 'app-contacto',
+  imports: [UiButton, UiCard, UiInput, UiTextarea],
   host: { class: 'block' },
   templateUrl: './contacto.html',
 })
@@ -37,10 +39,6 @@ export class Contacto {
     { label: 'Instagram', tone: 'bg-[#e1306c]' },
     { label: 'LinkedIn', tone: 'bg-[#0a66c2]' },
   ];
-
-  protected set(sig: WritableSignal<string>, ev: Event): void {
-    sig.set((ev.target as HTMLInputElement | HTMLTextAreaElement).value);
-  }
 
   protected enviar(): void {
     if (!this.puedeEnviar()) return;
