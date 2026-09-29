@@ -68,13 +68,21 @@ distritos: UiSelectOption[] = [
 
   alert: `import { UiAlert } from '../../../../shared/ui';   // imports: [UiAlert]
 
-<app-ui-alert tone="warning">
-  Tu solicitud será revisada en un plazo de <strong>2–5 días hábiles</strong>.
+<!-- tone: success · info · warning · danger. El icono va como contenido -->
+<app-ui-alert tone="success">
+  <svg width="14" height="14" … class="shrink-0"></svg>
+  <p>Entrega estimada: <strong>2–3 días hábiles</strong></p>
 </app-ui-alert>
 
-<app-ui-alert tone="danger" title="No pudimos iniciar sesión">
-  Correo o contraseña incorrectos.
-</app-ui-alert>`,
+<app-ui-alert tone="warning">
+  <svg width="13" height="13" … class="shrink-0"></svg>
+  <p>Tu pedido quedará reservado. El pago se realiza al momento de la entrega.</p>
+</app-ui-alert>
+
+<!-- Error de formulario (login / registro) -->
+@if (error()) {
+  <app-ui-alert tone="danger">{{ error() }}</app-ui-alert>
+}`,
 
   card: `import { UiCard } from '../../../../shared/ui';   // imports: [UiCard]
 

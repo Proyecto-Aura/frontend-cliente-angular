@@ -1,34 +1,29 @@
 import { Component, computed, input } from '@angular/core';
 
-import { UiTone } from '../badge/ui-badge';
+export type UiAlertTone = 'success' | 'info' | 'warning' | 'danger';
 
-const TONES: Record<UiTone, string> = {
-  success: 'border-[#bbf7d0] bg-success-50 text-success-700',
-  warning: 'border-[#fde68a] bg-[#fefce8] text-[#92400e]',
-  info: 'border-[#c7d7fd] bg-[#f0f4ff] text-[#1d4ed8]',
-  danger: 'border-[#fca5a5] bg-brand-50 text-brand-700',
-  neutral: 'border-line-soft bg-canvas text-ink-soft',
+const TONES: Record<UiAlertTone, string> = {
+  success: 'gap-2.5 rounded-xl border border-[#bbf7d0] bg-success-50 px-4 py-2.5 text-[12px] font-medium text-success-700',
+  info: 'gap-2 rounded-xl border border-[#c7d7fd] bg-[#f0f4ff] px-4 py-2.5 text-[12px] font-medium text-[#4338ca]',
+  warning: 'gap-2 rounded-xl border border-[#fcd34d] bg-[#fef3c7] px-4 py-2.5 text-[12px] font-medium text-[#92400e]',
+  danger: 'rounded-lg bg-brand-50 px-4 py-3 text-[13px] text-brand-700',
 };
 
 /**
- * Aviso en línea con icono según el tono. El texto va como contenido:
- * `<app-ui-alert tone="warning">Tu solicitud será revisada…</app-ui-alert>`.
- * Los tonos `danger` y `warning` se anuncian como `alert` a lectores de pantalla.
+ * Aviso en línea (entrega estimada, pasarela de pago, stock bajo, error de formulario).
+ * El icono, si lleva, va como contenido junto al texto:
+ * `<app-ui-alert tone="success"><svg …/> Entrega estimada…</app-ui-alert>`.
  */
 @Component({
   selector: 'app-ui-alert',
   host: {
     '[class]': 'classes()',
-    '[attr.role]': "tone() === 'danger' || tone() === 'warning' ? 'alert' : 'status'",
+    '[attr.role]': "tone() === 'danger' ? 'alert' : 'status'",
   },
   templateUrl: './ui-alert.html',
 })
 export class UiAlert {
-  readonly tone = input<UiTone>('info');
-  readonly title = input<string | null>(null);
+  readonly tone = input<UiAlertTone>('info');
 
-  protected readonly classes = computed(
-    () =>
-      `animate-fade-in flex items-start gap-2.5 rounded-xl border px-4 py-3 text-[12px] leading-relaxed ${TONES[this.tone()]}`,
-  );
+  protected readonly classes = computed(() => `animate-fade-in flex items-center ${TONES[this.tone()]}`);
 }

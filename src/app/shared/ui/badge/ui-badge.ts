@@ -7,7 +7,7 @@ const TONES: Record<UiTone, string> = {
   warning: 'bg-[#fefce8] text-[#a16207]',
   info: 'bg-[#eff6ff] text-[#1d4ed8]',
   danger: 'bg-[#fee2e2] text-brand-700',
-  neutral: 'bg-line-soft text-ink-soft',
+  neutral: 'bg-line-soft text-muted',
 };
 
 /**

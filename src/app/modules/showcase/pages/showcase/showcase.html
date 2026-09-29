@@ -172,16 +172,23 @@
     <app-showcase-section
       sectionId="alert"
       title="Alert"
-      description="Avisos en línea. danger y warning se anuncian a lectores de pantalla (role=alert)."
+      description="Avisos en línea tal como aparecen en checkout, detalle de producto y login. El icono va como contenido."
       [code]="code.alert"
     >
       <div class="flex max-w-[560px] flex-col gap-3">
-        <app-ui-alert tone="info">Los pedidos se entregan de lunes a sábado.</app-ui-alert>
-        <app-ui-alert tone="success">Tu dirección se guardó correctamente.</app-ui-alert>
-        <app-ui-alert tone="warning">
-          Tu solicitud será revisada en un plazo de <strong>2–5 días hábiles</strong>.
+        <app-ui-alert tone="success">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" /><path d="M15 18H9" /><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14" /><circle cx="17" cy="18" r="2" /><circle cx="7" cy="18" r="2" /></svg>
+          <p>Entrega estimada: <strong>2–3 días hábiles</strong> · Envío gratuito en todos los pedidos</p>
         </app-ui-alert>
-        <app-ui-alert tone="danger" title="No pudimos iniciar sesión">Correo o contraseña incorrectos.</app-ui-alert>
+        <app-ui-alert tone="info">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335" /><path d="m9 11 3 3L22 4" /></svg>
+          <p>Serás redirigido a la pasarela de Culqi para completar el pago de forma segura.</p>
+        </app-ui-alert>
+        <app-ui-alert tone="warning">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><path d="M12 9v4M12 17h.01" /></svg>
+          <p>Tu pedido quedará reservado. El pago se realiza al momento de la entrega.</p>
+        </app-ui-alert>
+        <app-ui-alert tone="danger">Correo o contraseña incorrectos.</app-ui-alert>
       </div>
     </app-showcase-section>
 
