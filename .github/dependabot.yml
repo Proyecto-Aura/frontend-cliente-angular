@@ -13,7 +13,20 @@ updates:
       actions:
         patterns: ["*"]
 
-  # 2. Dependencias npm
+  # 2. Actions de nuestra composite action (Dependabot solo mira /.github/workflows
+  #    y el action.yml de la raiz, asi que esta ruta necesita su propia entrada)
+  - package-ecosystem: github-actions
+    directory: /.github/actions/setup
+    target-branch: develop
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: ci
+    groups:
+      actions:
+        patterns: ["*"]
+
+  # 3. Dependencias npm
   - package-ecosystem: npm
     directory: /
     target-branch: develop

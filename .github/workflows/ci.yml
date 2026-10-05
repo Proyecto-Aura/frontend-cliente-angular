@@ -25,6 +25,9 @@ jobs:
     name: build
     runs-on: ubuntu-latest
     steps:
+      - name: Descargar codigo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
       - name: Preparar entorno
         uses: ./.github/actions/setup
 
@@ -37,6 +40,9 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true # no bloqueante hasta que las features corrijan sus errores de lint
     steps:
+      - name: Descargar codigo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
       - name: Preparar entorno
         uses: ./.github/actions/setup
 
@@ -48,6 +54,9 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Descargar codigo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
       - name: Preparar entorno
         uses: ./.github/actions/setup
 
