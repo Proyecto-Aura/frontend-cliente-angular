@@ -1,0 +1,48 @@
+version: 2
+
+updates:
+  # 1. Actions de los workflows (checkout, setup-node — ancladas a SHA)
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: ci
+    groups:
+      actions:
+        patterns: ["*"]
+
+  # 2. Actions de nuestra composite action (Dependabot solo mira /.github/workflows
+  #    y el action.yml de la raiz, asi que esta ruta necesita su propia entrada)
+  - package-ecosystem: github-actions
+    directory: /.github/actions/setup
+    target-branch: develop
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: ci
+    groups:
+      actions:
+        patterns: ["*"]
+
+  # 3. Dependencias npm
+  - package-ecosystem: npm
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore
+    groups:
+      angular:
+        patterns: ["@angular/*"]
+      linting:
+        patterns: ["eslint", "@eslint/*", "angular-eslint", "typescript-eslint"]
+      produccion:
+        dependency-type: production
+        update-types: ["minor", "patch"]
+      desarrollo:
+        dependency-type: development
+        update-types: ["minor", "patch"]
