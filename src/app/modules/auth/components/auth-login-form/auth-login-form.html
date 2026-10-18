@@ -1,0 +1,59 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-8">
+  @if (error()) {
+    <p
+      class="animate-fade-in rounded-lg bg-brand-50 px-4 py-3 text-[13px] text-brand-700"
+      role="alert"
+    >
+      {{ error() }}
+    </p>
+  }
+
+  <div class="flex flex-col gap-5">
+    <app-auth-input
+      label="Usuario"
+      [control]="identificador"
+      placeholder="Correo o nombre de usuario"
+      autocomplete="username"
+      error="Ingresa tu correo o nombre de usuario"
+    />
+
+    <app-auth-input
+      label="Contraseña"
+      type="password"
+      [control]="password"
+      placeholder="••••••••"
+      autocomplete="current-password"
+      error="Ingresa tu contraseña"
+    >
+      <a
+        slot="action"
+        routerLink="/auth/recuperar"
+        class="text-[12px] font-semibold text-brand-600 hover:underline"
+      >
+        ¿Has olvidado tu contraseña?
+      </a>
+    </app-auth-input>
+  </div>
+
+  <label class="flex cursor-pointer items-center gap-3 text-[14px] font-medium text-label">
+    <input
+      type="checkbox"
+      formControlName="recordar"
+      class="size-5 rounded-lg border-[1.25px] border-line accent-brand-600"
+    />
+    Recordar sesión por 30 días
+  </label>
+
+  <button
+    type="submit"
+    [disabled]="enviando()"
+    class="h-[38px] w-full rounded-[6px] border border-brand-600 bg-brand-600 text-[15px] font-medium text-white transition duration-150 hover:bg-brand-700 active:scale-[0.99] active:bg-brand-800 disabled:opacity-60"
+  >
+    {{ enviando() ? 'Ingresando…' : 'Iniciar Sesión' }}
+  </button>
+
+  <p class="flex items-center gap-1 text-[14px] font-medium text-muted">
+    ¿No tienes una cuenta?
+    <a routerLink="/auth/registro" class="text-brand-600 hover:underline">Regístrate</a>
+  </p>
+</form>
