@@ -1,0 +1,13 @@
+@if (store.esEmpresa()) {
+  <app-auth-register-empresa-form
+    [enviando]="enviando()"
+    [error]="error()"
+    (submitted)="submitted.emit($event)"
+  />
+} @else {
+  <app-auth-register-personal-form
+    [enviando]="enviando()"
+    [error]="error()"
+    (submitted)="submitted.emit($event)"
+  />
+}

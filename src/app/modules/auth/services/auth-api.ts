@@ -8,8 +8,10 @@ import {
   LoginRequest,
   LoginResponse,
   ROL_CLIENTE,
+  RegistroResponse,
   SinAccesoAlPortalError,
 } from '../models/auth.model';
+import { RegisterClientePayload } from '../models/registro.model';
 
 /** Cliente HTTP del módulo Auth del backend (`/api/v1/auth`). */
 @Injectable({ providedIn: 'root' })
@@ -31,6 +33,14 @@ export class AuthApi {
         switchMap((res) => (res.roles.includes(ROL_CLIENTE) ? of(res) : this.rechazarSinAcceso())),
         tap((res) => this.session.start(res.access_token, res.roles)),
       );
+  }
+
+  /**
+   * HU-B-002: crea la cuenta del cliente. El backend la deja sin verificar y
+   * envía el correo de verificación; no inicia sesión.
+   */
+  registrarCliente(body: RegisterClientePayload): Observable<RegistroResponse> {
+    return this.http.post<RegistroResponse>(`${this.base}/register`, body);
   }
 
   // Revoca el refresh token recién creado; si falla, igual no se deja entrar.

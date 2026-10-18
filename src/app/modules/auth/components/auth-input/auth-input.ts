@@ -24,6 +24,10 @@ export class AuthInput {
   readonly hint = input<string | null>(null);
   /** Mensaje a mostrar cuando el control esté `touched` e inválido. */
   readonly error = input<string | null>(null);
+  /** Mensajes por tipo de error (p. ej. `{ fechaFutura: '…' }`); si no hay, se usa `error`. */
+  readonly errores = input<Record<string, string>>({});
+  /** Para `type="date"`: fecha máxima elegible en el calendario (YYYY-MM-DD). */
+  readonly max = input<string | null>(null);
 
   protected readonly show = signal(false);
   protected readonly resolvedType = computed(() =>
@@ -33,6 +37,21 @@ export class AuthInput {
   /** Método (no computed): depende de `touched`/`invalid`, que no son señales. */
   protected showError(): boolean {
     const c = this.control();
-    return !!this.error() && c.touched && c.invalid;
+    return !!this.mensajeError() && c.touched && c.invalid;
+  }
+
+  protected mensajeError(): string | null {
+    const claves = Object.keys(this.control().errors ?? {});
+    const especifico = claves.map((k) => this.errores()[k]).find(Boolean);
+    return especifico ?? this.error();
+  }
+
+  /** Abre el calendario del navegador (no todos soportan `showPicker`). */
+  protected abrirCalendario(input: HTMLInputElement): void {
+    try {
+      input.showPicker();
+    } catch {
+      input.focus();
+    }
   }
 }

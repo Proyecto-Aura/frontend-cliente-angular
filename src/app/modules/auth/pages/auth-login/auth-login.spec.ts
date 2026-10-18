@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router, provideRouter } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 
 import { environment } from '../../../../../environments/environment';
 import { AuthLogin } from './auth-login';
@@ -91,5 +91,31 @@ describe('AuthLogin', () => {
     fixture.detectChanges();
 
     expect(alerta()).toContain('No se pudo conectar con el servidor');
+  });
+
+  it('shows no registration notice when arriving normally', () => {
+    expect(raiz().querySelector('[role="status"]')).toBeNull();
+  });
+});
+
+describe('AuthLogin after signing up (HU-B-002, RF-B10)', () => {
+  it('tells the client to verify the email before the first login', () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { queryParamMap: convertToParamMap({ registrado: '1' }) } },
+        },
+      ],
+    });
+    const fixture = TestBed.createComponent(AuthLogin);
+    fixture.detectChanges();
+
+    const aviso = (fixture.nativeElement as HTMLElement).querySelector('[role="status"]');
+    expect(aviso?.textContent).toContain('Te enviamos un correo de verificación');
+    expect(aviso?.textContent).toContain('antes de tu primer ingreso');
   });
 });
