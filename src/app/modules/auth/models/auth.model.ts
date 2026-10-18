@@ -16,6 +16,15 @@ export interface LoginResponse {
   debe_cambiar_contrasena: boolean;
 }
 
+/** POST /auth/register — respuesta. La cuenta nace con el correo sin verificar. */
+export interface RegistroResponse {
+  id: string;
+  email: string;
+  username: string;
+  email_verificado: boolean;
+  debe_cambiar_contrasena: boolean;
+}
+
 /** Rol que da acceso a este portal; los roles de la empresa entran al otro. */
 export const ROL_CLIENTE = 'cliente';
 

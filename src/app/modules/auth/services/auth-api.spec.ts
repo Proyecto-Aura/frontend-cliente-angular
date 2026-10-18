@@ -77,6 +77,30 @@ describe('AuthApi', () => {
     expect(session.isAuthenticated()).toBe(false);
   });
 
+  it('registers a client without starting a session (HU-B-002)', () => {
+    api
+      .registrarCliente({
+        nombres: 'Ana',
+        apellido_paterno: 'Torres',
+        apellido_materno: 'Vega',
+        tipo_documento: 'dni',
+        numero_documento: '12345678',
+        tipo_cliente: 'persona_natural',
+        categoria_cliente: 'minorista',
+        email: 'ana@francos.test',
+        username: 'anatorres',
+        password: 'Clave1234',
+      })
+      .subscribe();
+
+    const req = httpMock.expectOne(`${AUTH}/register`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toMatchObject({ numero_documento: '12345678' });
+    req.flush({ id: 'u-1', email_verificado: false });
+
+    expect(session.isAuthenticated()).toBe(false);
+  });
+
   it('passes the API error through when the credentials are wrong', () => {
     let status: number | undefined;
     api

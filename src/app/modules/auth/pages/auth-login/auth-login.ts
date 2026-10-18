@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { AuthLoginForm } from '../../components/auth-login-form/auth-login-form';
 import { AuthApi } from '../../services/auth-api';
@@ -17,6 +17,9 @@ export class AuthLogin {
   private readonly api = inject(AuthApi);
   private readonly router = inject(Router);
 
+  /** HU-B-002 (RF-B10): llega desde el registro con `?registrado=1`. */
+  protected readonly recienRegistrado =
+    inject(ActivatedRoute).snapshot.queryParamMap.get('registrado') === '1';
   protected readonly enviando = signal(false);
   protected readonly error = signal<string | null>(null);
 

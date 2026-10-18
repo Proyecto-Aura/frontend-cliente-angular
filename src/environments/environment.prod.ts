@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
-  // TODO: URL real de la API cuando el backend la defina.
-  apiUrl: '/api',
+  // El backend sirve todo bajo el prefijo global `api/v1`. Ajustar el dominio
+  // cuando exista el despliegue.
+  apiUrl: '/api/v1',
 };
