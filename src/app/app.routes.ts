@@ -1,4 +1,5 @@
-import { Routes } from '@angular/router';
+import { inject } from '@angular/core';
+import { Router, Routes } from '@angular/router';
 
 // Esqueleto de rutas. Cada módulo expone su `<m>.route.ts` con `export const <M>_ROUTES`.
 // Todo menos `auth` va envuelto en `layouts/store-layout` (header + footer); `cuenta`
@@ -7,6 +8,13 @@ export const routes: Routes = [
   {
     path: 'auth',
     loadChildren: () => import('./modules/auth/auth.route').then((m) => m.AUTH_ROUTES),
+  },
+  {
+    // Enlace del correo de recuperación (lo arma el backend): /reset-password?token=…
+    path: 'reset-password',
+    // Una redirección simple descartaría el ?token=; se pasa tal cual.
+    redirectTo: ({ queryParams }) =>
+      inject(Router).createUrlTree(['/auth/restablecer'], { queryParams }),
   },
   {
     path: '',
