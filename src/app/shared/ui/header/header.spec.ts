@@ -60,7 +60,7 @@ describe('Header', () => {
     raiz().querySelector<HTMLButtonElement>('button[aria-haspopup="menu"]')!.click();
     harness.detectChanges();
 
-    expect(enlace('Mi perfil')?.getAttribute('href')).toBe('/mi-cuenta');
+    expect(enlace('Mi perfil')?.getAttribute('href')).toBe('/mi-cuenta/perfil');
   });
 
   it('logs out from the "Mi cuenta" menu and goes to the login (HU-B-004)', async () => {

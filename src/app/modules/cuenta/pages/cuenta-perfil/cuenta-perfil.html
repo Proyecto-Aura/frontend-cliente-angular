@@ -1,0 +1,145 @@
+<div>
+  <div class="font-heading text-[10.5px] font-extrabold tracking-[0.08em] text-primary">CUENTA</div>
+  <h1
+    class="mt-1 mb-1.5 font-heading text-[clamp(24px,2.4vw,28px)] leading-[1.15] font-extrabold tracking-[-0.01em] text-[#1f1f1f]"
+  >
+    Mi Perfil
+  </h1>
+  <p class="m-0 text-[12.5px] text-[#8a8a8a]">
+    Gestiona tu información personal y preferencias de entrega.
+  </p>
+</div>
+
+<section class="rounded-xl border-[1.5px] border-[#f3b5b5] bg-white px-5 py-[18px]">
+  <div class="flex flex-wrap items-center gap-3">
+    <span
+      class="flex size-[34px] shrink-0 items-center justify-center rounded-full bg-[#fde4e4] text-primary"
+    >
+      <app-icon name="user" [size]="16" />
+    </span>
+    <div class="min-w-[180px] flex-1">
+      <h2 class="m-0 font-heading text-sm font-extrabold text-[#1f1f1f]">Datos Personales</h2>
+      <div class="mt-px text-[11px] text-[#8a8a8a]">
+        Esta información es privada y se usa para tus envíos.
+      </div>
+    </div>
+  </div>
+
+  @if (cargando()) {
+    <div
+      class="mt-4 grid animate-pulse gap-x-11 gap-y-3.5 sm:grid-cols-2"
+      aria-label="Cargando perfil"
+    >
+      @for (i of [1, 2, 3]; track i) {
+        <div class="h-[58px] rounded-lg bg-[#f5f5f5]"></div>
+      }
+    </div>
+  } @else if (errorCarga()) {
+    <div role="alert" class="mt-4 flex flex-wrap items-center gap-3 text-[13px] text-foreground">
+      {{ errorCarga() }}
+      <button
+        type="button"
+        class="h-8 cursor-pointer rounded-md border-0 bg-primary px-3.5 text-xs font-bold text-white hover:bg-[#b71c1c]"
+        (click)="cargar()"
+      >
+        Reintentar
+      </button>
+    </div>
+  } @else {
+    <form [formGroup]="form" novalidate (ngSubmit)="guardar()">
+      <div
+        class="mt-4 grid grid-cols-[repeat(auto-fit,minmax(min(100%,240px),1fr))] gap-x-11 gap-y-3.5"
+      >
+        <div class="flex flex-col gap-1.5">
+          <label for="pf-nombre" class="text-xs font-bold text-[#1f1f1f]">Nombre</label>
+          <input
+            id="pf-nombre"
+            type="text"
+            formControlName="nombres"
+            autocomplete="given-name"
+            maxlength="100"
+            class="h-9 w-full rounded-lg border bg-white px-3 text-[13px] text-foreground outline-none transition focus:border-primary focus:shadow-[0_0_0_3px_rgba(210,43,43,0.15)]"
+            [class]="error('nombres') ? 'border-destructive' : 'border-border'"
+            [attr.aria-invalid]="!!error('nombres')"
+          />
+          @if (error('nombres'); as mensaje) {
+            <span class="text-[11px] text-destructive">{{ mensaje }}</span>
+          }
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="pf-correo" class="text-xs font-bold text-[#1f1f1f]">Correo</label>
+          <input
+            id="pf-correo"
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            maxlength="150"
+            class="h-9 w-full rounded-lg border bg-white px-3 text-[13px] text-foreground outline-none transition focus:border-primary focus:shadow-[0_0_0_3px_rgba(210,43,43,0.15)]"
+            [class]="error('email') ? 'border-destructive' : 'border-border'"
+            [attr.aria-invalid]="!!error('email')"
+            (input)="limpiarCorreoEnUso()"
+          />
+          @if (error('email'); as mensaje) {
+            <span class="text-[11px] text-destructive">{{ mensaje }}</span>
+          }
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="pf-telefono" class="text-xs font-bold text-[#1f1f1f]">Teléfono</label>
+          <input
+            id="pf-telefono"
+            type="tel"
+            formControlName="telefono"
+            autocomplete="tel"
+            inputmode="numeric"
+            maxlength="9"
+            placeholder="987654321"
+            class="h-9 w-full rounded-lg border bg-white px-3 text-[13px] text-foreground outline-none transition focus:border-primary focus:shadow-[0_0_0_3px_rgba(210,43,43,0.15)]"
+            [class]="error('telefono') ? 'border-destructive' : 'border-border'"
+            [attr.aria-invalid]="!!error('telefono')"
+          />
+          @if (error('telefono'); as mensaje) {
+            <span class="text-[11px] text-destructive">{{ mensaje }}</span>
+          }
+        </div>
+      </div>
+
+      @if (guardado()) {
+        <div role="status" class="mt-4 rounded-md bg-accent px-3 py-2 text-[13px] text-primary">
+          Tus datos personales se guardaron.
+        </div>
+      }
+
+      @if (errorGuardar()) {
+        <div role="alert" class="mt-4 rounded-md bg-accent px-3 py-2 text-[13px] text-destructive">
+          {{ errorGuardar() }}
+        </div>
+      }
+
+      <div class="mt-4 flex items-center justify-end gap-3">
+        @if (form.dirty) {
+          <button
+            type="button"
+            class="h-8 cursor-pointer border-0 bg-transparent px-3 text-xs text-[#8a8a8a] hover:text-primary"
+            (click)="descartar()"
+          >
+            Descartar
+          </button>
+        }
+        <button
+          type="submit"
+          class="h-8 rounded-md border-0 px-4 text-xs font-bold whitespace-nowrap text-white transition"
+          [class]="
+            form.dirty && !guardando()
+              ? 'cursor-pointer bg-primary hover:brightness-95'
+              : 'cursor-not-allowed bg-[#e8a3a3]'
+          "
+          [attr.aria-disabled]="!form.dirty || guardando()"
+        >
+          {{ guardando() ? 'Guardando…' : 'Guardar Cambios' }}
+        </button>
+      </div>
+    </form>
+  }
+</section>
