@@ -62,14 +62,24 @@ describe('CatalogoProductCard', () => {
     expect(chip('1kg').getAttribute('aria-pressed')).toBe('true');
   });
 
-  it('asks to open the detail; "Agregar" waits for the cart', () => {
+  it('asks to open the detail or to add to the cart from the chosen presentation', () => {
     crear();
-    let abierto: number | undefined;
-    fixture.componentInstance.verDetalle.subscribe((id) => (abierto = id));
+    let detalle: number | undefined;
+    let agregar: number | undefined;
+    fixture.componentInstance.verDetalle.subscribe((id) => (detalle = id));
+    fixture.componentInstance.agregar.subscribe((id) => (agregar = id));
 
     boton('Ver detalle').click();
+    chip('1kg').click();
+    boton('Agregar').click();
 
-    expect(abierto).toBe(10);
+    expect(detalle).toBe(10);
+    expect(agregar).toBe(102);
+  });
+
+  it('disables "Agregar" when no presentation has stock', () => {
+    crear(agruparPorProducto(ITEMS)[1]);
+
     expect(boton('Agregar').disabled).toBe(true);
   });
 });

@@ -1,0 +1,56 @@
+<div class="absolute inset-0 bg-[rgba(33,33,33,0.38)]" aria-hidden="true" (click)="cerrar()"></div>
+
+<aside
+  role="dialog"
+  aria-modal="true"
+  aria-label="Tu carrito"
+  class="animate-slide-in absolute inset-y-0 right-0 flex w-[min(400px,100%)] flex-col bg-white shadow-[-12px_0_32px_rgba(33,33,33,0.16)]"
+>
+  <div class="flex items-center gap-2.5 border-b border-[#f0f0f0] px-[18px] py-4">
+    <h2 class="m-0 font-heading text-base font-extrabold whitespace-nowrap text-[#1f1f1f]">
+      Tu carrito
+    </h2>
+    @if (carrito.unidades()) {
+      <span
+        class="flex h-5 min-w-5 items-center justify-center rounded-[10px] bg-primary px-1.5 text-[11px] font-extrabold text-white"
+        >{{ carrito.unidades() }}</span
+      >
+    }
+    <button
+      type="button"
+      aria-label="Cerrar carrito"
+      class="ml-auto flex size-[30px] cursor-pointer items-center justify-center rounded-md border-0 bg-transparent text-[#616161] transition-colors hover:bg-[#f5f5f5] hover:text-primary"
+      (click)="cerrar()"
+    >
+      <app-icon name="x" [size]="18" />
+    </button>
+  </div>
+
+  @if (carrito.items().length) {
+    <div class="flex flex-1 flex-col gap-2.5 overflow-auto px-3.5 py-3">
+      @for (item of carrito.items(); track item.presentacionId) {
+        <app-carrito-item [item]="item" />
+      }
+    </div>
+    <app-carrito-resumen (seguirComprando)="alCatalogo()" />
+  } @else {
+    <div class="flex flex-1 flex-col items-center justify-center gap-1.5 p-6 text-center">
+      <span
+        class="mb-2 flex size-11 items-center justify-center rounded-full bg-[#f5f5f5] text-[#9e9e9e]"
+      >
+        <app-icon name="shopping-cart" [size]="20" />
+      </span>
+      <div class="font-heading text-[13px] font-extrabold text-[#1f1f1f]">
+        Tu carrito está vacío
+      </div>
+      <div class="text-[11px] text-[#9e9e9e]">Agrega productos del catálogo para comenzar</div>
+      <button
+        type="button"
+        class="mt-2.5 h-8 cursor-pointer rounded-md border-0 bg-primary px-5 text-xs font-bold whitespace-nowrap text-white hover:bg-[#b71c1c]"
+        (click)="alCatalogo()"
+      >
+        Ver catálogo
+      </button>
+    </div>
+  }
+</aside>

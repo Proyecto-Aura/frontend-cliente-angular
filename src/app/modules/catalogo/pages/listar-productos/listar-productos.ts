@@ -3,6 +3,7 @@ import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
 
 import { Icon } from '../../../../shared/ui/icon/icon';
+import { CarritoAgregar } from '../../../carrito/components/carrito-agregar/carrito-agregar';
 import { apiErrorMessage } from '../../../../shared/utils/api-error';
 import {
   CatalogoFilterDropdown,
@@ -10,7 +11,7 @@ import {
 } from '../../components/catalogo-filter-dropdown/catalogo-filter-dropdown';
 import { CatalogoProductCard } from '../../components/catalogo-product-card/catalogo-product-card';
 import { CatalogoProductDetail } from '../../components/catalogo-product-detail/catalogo-product-detail';
-import { OrdenCatalogo } from '../../models/catalogo.model';
+import { OrdenCatalogo, ProductoCatalogo } from '../../models/catalogo.model';
 import { CatalogoApi } from '../../services/catalogo-api';
 import { CatalogoCategorias } from '../../services/catalogo-categorias';
 import { PARAM, agruparPorProducto, filtrosDesdeQuery } from '../../utils/catalogo.utils';
@@ -23,7 +24,14 @@ type Filtro = 'categoria' | 'orden';
  */
 @Component({
   selector: 'app-listar-productos',
-  imports: [RouterLink, Icon, CatalogoFilterDropdown, CatalogoProductCard, CatalogoProductDetail],
+  imports: [
+    RouterLink,
+    Icon,
+    CatalogoFilterDropdown,
+    CatalogoProductCard,
+    CatalogoProductDetail,
+    CarritoAgregar,
+  ],
   host: { class: 'block bg-[#f7f7f7]' },
   templateUrl: './listar-productos.html',
 })
@@ -37,6 +45,11 @@ export class ListarProductos {
   protected readonly filtroAbierto = signal<Filtro | null>(null);
   /** Producto abierto en el modal "Ver detalle". */
   protected readonly detalleId = signal<number | null>(null);
+  /** Producto abierto en la ventana "Agregar" (HU-B-006). */
+  protected readonly agregando = signal<{
+    producto: ProductoCatalogo;
+    presentacionId: number;
+  } | null>(null);
 
   private readonly categorias = inject(CatalogoCategorias).lista;
   protected readonly opcionesCategoria = computed<OpcionFiltro<number>[]>(() =>

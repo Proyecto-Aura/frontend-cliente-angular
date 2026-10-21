@@ -1,0 +1,15 @@
+<div role="status" aria-live="polite">
+  @if (avisos.actual(); as aviso) {
+    <div
+      class="animate-fade-in fixed top-3 left-4 z-[70] flex w-[min(340px,calc(100vw-32px))] items-start gap-2.5 rounded-[10px] border border-[#a9e2bc] bg-[#eefbf2] px-3.5 py-2.5 shadow-[0_8px_22px_rgba(33,33,33,0.12)]"
+    >
+      <span class="flex pt-px text-[#2e9e5b]"><app-icon name="circle-check" [size]="18" /></span>
+      <div class="min-w-0">
+        <div class="text-xs font-bold text-[#1f6b3f]">{{ aviso.titulo }}</div>
+        @if (aviso.detalle) {
+          <div class="mt-0.5 text-[11px] text-[#2e7d4f]">{{ aviso.detalle }}</div>
+        }
+      </div>
+    </div>
+  }
+</div>

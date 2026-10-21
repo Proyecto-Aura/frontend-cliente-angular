@@ -82,18 +82,29 @@
             (elegir)="elegir($event)"
           />
 
-          <div class="mt-4 text-right">
-            <div class="font-heading text-xl font-extrabold text-[#1f1f1f]">
-              {{ precio(a.precio_final) }}
-            </div>
-            <div class="text-[11px] text-[#9e9e9e]">
-              @if (!a.disponible) {
-                <span class="font-semibold text-primary">No disponible</span>
-              } @else if (a.precio_final < a.precio) {
-                Antes <span class="line-through">{{ precio(a.precio) }}</span>
-              } @else {
-                Precio por unidad
-              }
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+            @if (a.disponible) {
+              <app-cantidad-stepper
+                class="h-[34px] border border-border px-1"
+                [cantidad]="cantidad()"
+                [maximo]="maximo"
+                (cambiar)="cantidad.set($event)"
+              />
+            }
+            <div class="ml-auto text-right">
+              <div class="font-heading text-xl font-extrabold text-[#1f1f1f]">
+                {{ precio(a.precio_final * cantidad()) }}
+              </div>
+              <div class="text-[11px] text-[#9e9e9e]">
+                @if (!a.disponible) {
+                  <span class="font-semibold text-primary">No disponible</span>
+                } @else if (a.precio_final < a.precio) {
+                  {{ precio(a.precio_final) }} c/u · antes
+                  <span class="line-through">{{ precio(a.precio) }}</span>
+                } @else {
+                  {{ precio(a.precio_final) }} c/u
+                }
+              </div>
             </div>
           </div>
         </div>
@@ -111,9 +122,9 @@
     </button>
     <button
       type="button"
-      disabled
-      title="Disponible próximamente"
-      class="flex h-9 cursor-not-allowed items-center gap-1.5 rounded-md bg-primary px-3.5 text-[13px] font-bold whitespace-nowrap text-white opacity-60"
+      class="flex h-9 items-center gap-1.5 rounded-md bg-primary px-3.5 text-[13px] font-bold whitespace-nowrap text-white transition-colors enabled:cursor-pointer enabled:hover:bg-[#b71c1c] disabled:cursor-not-allowed disabled:opacity-60"
+      [disabled]="!actual()?.disponible"
+      (click)="agregar()"
     >
       <app-icon name="shopping-cart" [size]="16" />Agregar al carrito
     </button>

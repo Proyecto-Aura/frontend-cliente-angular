@@ -1,12 +1,15 @@
 import { Component, input } from '@angular/core';
 
 export type IconName =
+  | 'arrow-left'
   | 'check'
+  | 'circle-check'
   | 'chevron-down'
   | 'chevron-right'
   | 'log-out'
   | 'mail'
   | 'map-pin'
+  | 'minus'
   | 'phone'
   | 'plus'
   | 'search'

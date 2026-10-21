@@ -1,3 +1,7 @@
 <app-header />
 <main class="flex-1"><router-outlet /></main>
 <app-footer />
+@if (carrito.abierto()) {
+  <app-carrito-drawer />
+}
+<app-aviso />
