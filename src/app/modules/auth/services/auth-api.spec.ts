@@ -77,6 +77,32 @@ describe('AuthApi', () => {
     expect(session.isAuthenticated()).toBe(false);
   });
 
+  it('logs out: the API revokes the session and the local session is cleared (HU-B-004)', () => {
+    session.start('jwt', ['cliente']);
+    let terminado = false;
+    api.cerrarSesion().subscribe(() => (terminado = true));
+
+    const req = httpMock.expectOne(`${AUTH}/logout`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.withCredentials).toBe(true);
+    req.flush({ message: 'Sesión cerrada' });
+
+    expect(terminado).toBe(true);
+    expect(session.isAuthenticated()).toBe(false);
+    expect(localStorage.getItem('francos.access_token')).toBeNull();
+  });
+
+  it('clears the local session even if the logout call fails', () => {
+    session.start('jwt', ['cliente']);
+    let terminado = false;
+    api.cerrarSesion().subscribe(() => (terminado = true));
+
+    httpMock.expectOne(`${AUTH}/logout`).flush(null, { status: 500, statusText: 'Error' });
+
+    expect(terminado).toBe(true);
+    expect(session.isAuthenticated()).toBe(false);
+  });
+
   it('registers a client without starting a session (HU-B-002)', () => {
     api
       .registrarCliente({

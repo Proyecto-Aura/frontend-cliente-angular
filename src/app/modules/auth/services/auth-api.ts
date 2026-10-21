@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, catchError, of, switchMap, tap, throwError } from 'rxjs';
+import { Observable, catchError, map, of, switchMap, tap, throwError } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
 import { Session } from '../../../shared/auth/session';
@@ -41,6 +41,18 @@ export class AuthApi {
    */
   registrarCliente(body: RegisterClientePayload): Observable<RegistroResponse> {
     return this.http.post<RegistroResponse>(`${this.base}/register`, body);
+  }
+
+  /**
+   * HU-B-004: el backend revoca la sesión de la cookie y con ella el JWT, que
+   * deja de servir. La sesión local se borra aunque la llamada falle: el
+   * cliente quiere salir y no debe quedar dentro.
+   */
+  cerrarSesion(): Observable<void> {
+    return this.http.post(`${this.base}/logout`, {}, { withCredentials: true }).pipe(
+      catchError(() => of(null)),
+      map(() => this.session.clear()),
+    );
   }
 
   // Revoca el refresh token recién creado; si falla, igual no se deja entrar.
