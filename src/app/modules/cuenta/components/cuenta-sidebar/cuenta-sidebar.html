@@ -1,22 +1,42 @@
-<button
-  type="button"
-  class="flex h-10 cursor-pointer items-center gap-3.5 rounded-md px-3.5 text-base text-primary hover:bg-accent disabled:cursor-wait disabled:opacity-60"
-  [disabled]="cerrando()"
-  (click)="cerrarSesion()"
->
-  <svg
-    aria-hidden="true"
-    class="size-[18px]"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
+<div class="flex items-center gap-3 border-b border-[#f3dada] px-1.5 pt-1 pb-[18px]">
+  <span
+    class="flex size-10 shrink-0 items-center justify-center rounded-[9px] bg-primary font-heading text-sm font-extrabold text-white"
   >
-    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-    <polyline points="16 17 21 12 16 7" />
-    <line x1="21" x2="9" y1="12" y2="12" />
-  </svg>
-  {{ cerrando() ? 'Cerrando sesión…' : 'Cerrar Sesión' }}
-</button>
+    @if (perfil.iniciales()) {
+      {{ perfil.iniciales() }}
+    } @else {
+      <app-icon name="user" [size]="18" />
+    }
+  </span>
+  <div class="min-w-0 flex-1">
+    <div class="font-heading text-sm font-extrabold wrap-anywhere text-[#1f1f1f]">
+      {{ perfil.nombreVisible() || 'Mi cuenta' }}
+    </div>
+    @if (perfil.tipoVisible()) {
+      <div class="mt-px text-[11px] text-[#8a8a8a]">{{ perfil.tipoVisible() }}</div>
+    }
+  </div>
+</div>
+
+<nav aria-label="Mi cuenta" class="flex flex-col gap-1 pt-4">
+  <a
+    routerLink="/mi-cuenta/perfil"
+    routerLinkActive="bg-[#fdecec] font-bold text-primary"
+    ariaCurrentWhenActive="page"
+    class="flex h-9 items-center gap-2.5 rounded-lg px-3 text-[13px] whitespace-nowrap text-[#424242] no-underline transition-colors hover:bg-[#fdecec]"
+  >
+    <app-icon name="user" [size]="16" />Mi perfil
+  </a>
+</nav>
+
+<div class="mt-auto border-t border-[#f3dada] pt-[18px]">
+  <button
+    type="button"
+    class="flex h-9 w-full cursor-pointer items-center gap-2.5 rounded-lg border-0 bg-transparent px-3 text-[13px] font-semibold text-primary hover:bg-[#fdecec] disabled:cursor-wait disabled:opacity-60"
+    [disabled]="cerrando()"
+    (click)="cerrarSesion()"
+  >
+    <app-icon name="log-out" [size]="16" />
+    {{ cerrando() ? 'Cerrando sesión…' : 'Cerrar Sesión' }}
+  </button>
+</div>
