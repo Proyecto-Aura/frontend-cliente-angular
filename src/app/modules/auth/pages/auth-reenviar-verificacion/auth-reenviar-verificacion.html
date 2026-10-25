@@ -1,0 +1,64 @@
+<section
+  class="flex w-full flex-col gap-8 rounded-[25px] bg-surface px-[30px] py-[50px] shadow-[0px_8px_32px_rgba(0,0,0,0.12)]"
+>
+  <div class="flex flex-col gap-2">
+    <h1 class="font-display text-[36px] font-extrabold leading-tight tracking-[-0.96px] text-black">
+      Reenviar verificación
+    </h1>
+    <p class="text-[15px] font-medium text-ink-soft">
+      Ingresa el correo de tu cuenta y te enviaremos un enlace nuevo para verificarlo.
+    </p>
+  </div>
+
+  <form [formGroup]="form" class="flex flex-col gap-8" novalidate (ngSubmit)="enviar()">
+    @if (enviado(); as mensaje) {
+      <div
+        class="animate-fade-in flex flex-col gap-1 rounded-lg bg-success-50 px-4 py-3 text-[13px] text-success-700"
+        role="status"
+      >
+        <strong class="font-semibold">{{ mensaje }}.</strong>
+        <span>Revisa tu bandeja de entrada y la carpeta de spam. El enlace vence en 24 horas.</span>
+      </div>
+    }
+
+    @if (error()) {
+      <p
+        class="animate-fade-in rounded-lg bg-brand-50 px-4 py-3 text-[13px] text-brand-700"
+        role="alert"
+      >
+        {{ error() }}
+      </p>
+    }
+
+    <app-auth-input
+      label="Correo electrónico"
+      type="email"
+      [control]="form.controls.email"
+      placeholder="tucorreo@ejemplo.com"
+      autocomplete="email"
+      [errores]="{
+        required: 'Ingresa tu correo electrónico',
+        email: 'Ingresa un correo electrónico válido',
+        maxlength: 'El correo no puede pasar de 150 caracteres',
+      }"
+    />
+
+    <button
+      type="submit"
+      [disabled]="enviando() || restante() > 0"
+      class="h-[38px] w-full rounded-[6px] border border-brand-600 bg-brand-600 text-[15px] font-medium text-white transition duration-150 hover:bg-brand-700 active:scale-[0.99] active:bg-brand-800 disabled:opacity-60"
+    >
+      @if (enviando()) {
+        Enviando…
+      } @else if (restante() > 0) {
+        Reenviar en {{ restante() }} s
+      } @else {
+        {{ enviado() ? 'Reenviar enlace' : 'Enviar enlace' }}
+      }
+    </button>
+  </form>
+
+  <p class="flex items-center gap-1 text-[14px] font-medium text-muted">
+    <a routerLink="/auth/login" class="text-brand-600 hover:underline">Volver a iniciar sesión</a>
+  </p>
+</section>

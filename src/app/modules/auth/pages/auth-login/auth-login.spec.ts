@@ -118,4 +118,103 @@ describe('AuthLogin after signing up (HU-B-002, RF-B10)', () => {
     expect(aviso?.textContent).toContain('Te enviamos un correo de verificación');
     expect(aviso?.textContent).toContain('antes de tu primer ingreso');
   });
+
+  it('offers to resend the verification email (HU-A-005)', () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { queryParamMap: convertToParamMap({ registrado: '1' }) } },
+        },
+      ],
+    });
+    const fixture = TestBed.createComponent(AuthLogin);
+    fixture.detectChanges();
+
+    const enlace = (fixture.nativeElement as HTMLElement).querySelector('[role="status"] a');
+    expect(enlace?.textContent).toContain('¿No te llegó? Reenviar');
+    expect(enlace?.getAttribute('href')).toBe('/auth/reenviar-verificacion');
+  });
+});
+
+describe('AuthLogin with an unverified email (HU-A-005)', () => {
+  const AUTH = `${environment.apiUrl}/auth`;
+  const MENSAJE =
+    'Debes verificar tu correo electrónico antes de iniciar sesión. Revisa tu bandeja o solicita un nuevo enlace';
+  let fixture: ComponentFixture<AuthLogin>;
+  let httpMock: HttpTestingController;
+
+  const raiz = () => fixture.nativeElement as HTMLElement;
+  const alerta = () => raiz().querySelector('[role="alert"]');
+  const enlaceReenvio = () => alerta()?.querySelector('a');
+  const iniciarSesion = (identificador: string) => {
+    const escribir = (autocomplete: string, valor: string) => {
+      const input = raiz().querySelector<HTMLInputElement>(
+        `input[autocomplete="${autocomplete}"]`,
+      )!;
+      input.value = valor;
+      input.dispatchEvent(new Event('input'));
+    };
+    escribir('username', identificador);
+    escribir('current-password', 'Clave123');
+    raiz().querySelector<HTMLButtonElement>('button[type="submit"]')!.click();
+    fixture.detectChanges();
+  };
+  const rechazar = (status: number, message: string) => {
+    httpMock
+      .expectOne(`${AUTH}/login`)
+      .flush({ statusCode: status, message }, { status, statusText: 'Error' });
+    fixture.detectChanges();
+  };
+
+  beforeEach(() => {
+    localStorage.clear();
+    TestBed.configureTestingModule({
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+    });
+    httpMock = TestBed.inject(HttpTestingController);
+    vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    fixture = TestBed.createComponent(AuthLogin);
+    fixture.detectChanges();
+  });
+
+  afterEach(() => httpMock.verify());
+
+  it('shows the backend message and a resend link carrying the email the client typed', () => {
+    iniciarSesion('rosa@francos.test');
+    rechazar(403, MENSAJE);
+
+    expect(alerta()?.textContent).toContain(MENSAJE);
+    expect(enlaceReenvio()?.textContent).toContain('Reenviar correo de verificación');
+    expect(enlaceReenvio()?.getAttribute('href')).toBe(
+      '/auth/reenviar-verificacion?email=rosa@francos.test',
+    );
+  });
+
+  it('links to the resend page without an email when the client logged in with a username', () => {
+    iniciarSesion('rosa');
+    rechazar(403, MENSAJE);
+
+    expect(enlaceReenvio()?.getAttribute('href')).toBe('/auth/reenviar-verificacion');
+  });
+
+  it('does not offer to resend on wrong credentials (401)', () => {
+    iniciarSesion('rosa@francos.test');
+    rechazar(401, 'Credenciales inválidas');
+
+    expect(alerta()?.textContent).toContain('Credenciales inválidas');
+    expect(enlaceReenvio()).toBeNull();
+  });
+
+  it('removes the resend link on the next attempt', () => {
+    iniciarSesion('rosa@francos.test');
+    rechazar(403, MENSAJE);
+    iniciarSesion('rosa@francos.test');
+    rechazar(401, 'Credenciales inválidas');
+
+    expect(enlaceReenvio()).toBeNull();
+  });
 });
