@@ -1,0 +1,121 @@
+<div
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="detalle-producto-titulo"
+  class="animate-scale-in flex max-h-[90vh] w-full max-w-[520px] flex-col gap-[18px] overflow-auto rounded-lg bg-white p-7 shadow-[0_20px_48px_rgba(33,33,33,0.24)]"
+>
+  <div class="flex items-center justify-between">
+    <h2 id="detalle-producto-titulo" class="m-0 min-w-0 flex-1 truncate text-xl font-semibold">
+      Detalle del producto
+    </h2>
+    <button
+      type="button"
+      aria-label="Cerrar"
+      class="flex size-8 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent text-muted-foreground transition-colors hover:bg-accent hover:text-primary"
+      (click)="cerrar.emit()"
+    >
+      <app-icon name="x" [size]="18" />
+    </button>
+  </div>
+
+  @if (producto.isLoading()) {
+    <div class="flex animate-pulse gap-5" aria-label="Cargando producto">
+      <div class="size-40 shrink-0 rounded-[10px] bg-[#f3f3f3]"></div>
+      <div class="flex flex-1 flex-col gap-3">
+        <div class="h-3 w-20 rounded bg-[#f3f3f3]"></div>
+        <div class="h-5 w-3/4 rounded bg-[#f3f3f3]"></div>
+        <div class="h-10 rounded bg-[#f3f3f3]"></div>
+      </div>
+    </div>
+  } @else if (producto.error()) {
+    <div role="alert" class="flex flex-col items-center gap-3 py-6 text-center">
+      <p class="m-0 text-sm text-foreground">{{ mensajeError() }}</p>
+      <button
+        type="button"
+        class="h-9 cursor-pointer rounded-md bg-primary px-4 text-[13px] font-bold text-white hover:bg-primary-hover"
+        (click)="producto.reload()"
+      >
+        Reintentar
+      </button>
+    </div>
+  } @else if (producto.value(); as p) {
+    @if (actual(); as a) {
+      <div class="flex flex-wrap items-start gap-5">
+        <div
+          class="relative flex size-40 shrink-0 items-center justify-center overflow-hidden rounded-[10px] border border-[#ececec] bg-white"
+        >
+          @if (a.imagen_url; as url) {
+            <img [src]="url" [alt]="p.nombre" class="size-full object-contain" />
+          } @else {
+            <span class="text-[11px] text-[#9e9e9e]">Sin imagen</span>
+          }
+          @if (a.promocion; as vigente) {
+            <span
+              class="absolute top-0 left-0 rounded-br-lg bg-[#f9a825] px-2.5 py-1.5 font-heading text-[11px] leading-none font-extrabold text-[#3e2700]"
+              >{{ promo(vigente) }}</span
+            >
+          }
+        </div>
+
+        <div class="flex min-w-0 flex-[1_1_200px] flex-col">
+          <div class="text-[10px] font-bold tracking-[0.04em] text-primary uppercase">
+            {{ p.categoria.nombre }}
+          </div>
+          <h3 class="mt-[3px] mb-0 font-heading text-lg font-extrabold text-[#1f1f1f]">
+            {{ p.nombre }}
+          </h3>
+          @if (p.descripcion) {
+            <p class="mt-1 mb-0 text-[13px] text-[#8a8a8a]">{{ p.descripcion }}</p>
+          }
+          @if (a.promocion; as vigente) {
+            <div class="mt-2.5 w-fit rounded-md bg-[#fff4d6] px-2.5 py-1.5 text-xs text-[#3e2700]">
+              {{ vigente.nombre }}: {{ vigente.descripcion }} en {{ etiqueta(a) }}. Válida hasta el
+              {{ dia(vigente.fecha_fin) }}.
+            </div>
+          }
+
+          <div class="mt-3.5 text-xs font-bold text-[#424242]">Presentación</div>
+          <app-catalogo-presentacion-chips
+            class="mt-2"
+            [presentaciones]="p.presentaciones"
+            [seleccionadaId]="a.id"
+            (elegir)="elegir($event)"
+          />
+
+          <div class="mt-4 text-right">
+            <div class="font-heading text-xl font-extrabold text-[#1f1f1f]">
+              {{ precio(a.precio_final) }}
+            </div>
+            <div class="text-[11px] text-[#9e9e9e]">
+              @if (!a.disponible) {
+                <span class="font-semibold text-primary">No disponible</span>
+              } @else if (a.precio_final < a.precio) {
+                Antes <span class="line-through">{{ precio(a.precio) }}</span>
+              } @else {
+                Precio por unidad
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  }
+
+  <div class="flex justify-end gap-2">
+    <button
+      type="button"
+      class="h-9 cursor-pointer rounded-md border border-border bg-white px-3.5 text-[13px]"
+      (click)="cerrar.emit()"
+    >
+      Cerrar
+    </button>
+    <button
+      type="button"
+      disabled
+      title="Disponible próximamente"
+      class="flex h-9 cursor-not-allowed items-center gap-1.5 rounded-md bg-primary px-3.5 text-[13px] font-bold whitespace-nowrap text-white opacity-60"
+    >
+      <app-icon name="shopping-cart" [size]="16" />Agregar al carrito
+    </button>
+  </div>
+</div>

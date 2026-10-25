@@ -1,0 +1,110 @@
+@if (menuAbierto()) {
+  <div class="fixed inset-0 z-0" aria-hidden="true" (click)="menuAbierto.set(false)"></div>
+}
+<div
+  class="relative z-[1] mx-auto flex min-h-16 max-w-[1440px] flex-wrap items-center gap-x-[22px] gap-y-2.5 px-[clamp(16px,3vw,40px)] py-2.5"
+>
+  <a routerLink="/catalogo" class="flex items-center gap-2.5 text-white no-underline">
+    <span
+      class="flex size-[34px] shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/35 bg-white/18"
+    >
+      <img ngSrc="/francos-mark.png" width="30" height="28" alt="" class="object-contain" />
+    </span>
+    <span class="font-heading text-[19px] font-extrabold tracking-[-0.01em] whitespace-nowrap"
+      >Franco's</span
+    >
+  </a>
+
+  <nav aria-label="Principal" class="flex flex-wrap gap-1.5">
+    @for (item of navItems; track item.ruta) {
+      <a
+        [routerLink]="item.ruta"
+        routerLinkActive="bg-white/22"
+        ariaCurrentWhenActive="page"
+        class="flex h-[34px] items-center rounded-lg px-3.5 font-heading text-sm font-bold whitespace-nowrap text-white no-underline transition-colors hover:bg-white/16"
+        >{{ item.label }}</a
+      >
+    }
+  </nav>
+
+  <div class="ml-auto flex min-w-0 flex-[1_1_320px] items-center justify-end gap-3.5">
+    <div class="relative min-w-[110px] flex-[0_1_240px]">
+      <span class="pointer-events-none absolute top-[11px] left-3 flex text-white/85">
+        <app-icon name="search" [size]="15" />
+      </span>
+      <input
+        type="search"
+        placeholder="Buscar productos..."
+        aria-label="Buscar productos"
+        maxlength="200"
+        class="h-[37px] w-full rounded-lg border border-white/50 bg-white/14 pr-3 pl-9 text-[13px] text-white outline-none transition-colors placeholder:text-white/80 focus:border-white focus:bg-white/22"
+        [value]="busqueda() ?? ''"
+        (input)="buscar($any($event.target).value)"
+      />
+    </div>
+
+    <a
+      routerLink="/carrito"
+      aria-label="Carrito de compras"
+      class="flex rounded-lg p-1.5 text-white transition-colors hover:bg-white/14"
+    >
+      <app-icon name="shopping-cart" [size]="22" />
+    </a>
+
+    @if (session.isAuthenticated()) {
+      <div class="relative">
+        <button
+          type="button"
+          aria-haspopup="menu"
+          [attr.aria-expanded]="menuAbierto()"
+          class="flex h-10 cursor-pointer items-center gap-2 rounded-[10px] border border-white/55 bg-white/10 pr-2.5 pl-[5px] font-heading text-[13px] font-bold whitespace-nowrap text-white transition-colors hover:bg-white/20"
+          (click)="menuAbierto.set(!menuAbierto())"
+        >
+          <span class="flex size-7 items-center justify-center rounded-full bg-white/25">
+            <app-icon name="user" [size]="16" />
+          </span>
+          Mi cuenta
+          <span class="flex transition-transform duration-200" [class.rotate-180]="menuAbierto()">
+            <app-icon name="chevron-down" [size]="14" />
+          </span>
+        </button>
+        @if (menuAbierto()) {
+          <div
+            role="menu"
+            class="animate-fade-in absolute top-12 right-0 flex min-w-[210px] flex-col gap-0.5 rounded-[10px] border border-[#ececec] bg-white p-1.5 shadow-[0_14px_34px_rgba(33,33,33,0.14)]"
+          >
+            <a
+              role="menuitem"
+              routerLink="/mi-cuenta"
+              class="flex h-9 items-center gap-2.5 rounded-lg px-3 text-[13px] whitespace-nowrap text-foreground no-underline hover:bg-[#fdecec] hover:text-primary"
+              (click)="menuAbierto.set(false)"
+            >
+              <app-icon name="user" [size]="16" />Mi perfil
+            </a>
+            <button
+              type="button"
+              role="menuitem"
+              class="flex h-9 cursor-pointer items-center gap-2.5 rounded-lg border-0 bg-transparent px-3 text-left text-[13px] whitespace-nowrap text-primary hover:bg-[#fdecec] disabled:cursor-wait disabled:opacity-60"
+              [disabled]="cerrando()"
+              (click)="cerrarSesion()"
+            >
+              <app-icon name="log-out" [size]="16" />{{
+                cerrando() ? 'Cerrando sesión…' : 'Cerrar sesión'
+              }}
+            </button>
+          </div>
+        }
+      </div>
+    } @else {
+      <a
+        routerLink="/auth/login"
+        class="flex h-10 items-center gap-2 rounded-[10px] border border-white/55 bg-white/10 pr-3 pl-[5px] font-heading text-[13px] font-bold whitespace-nowrap text-white no-underline transition-colors hover:bg-white/20"
+      >
+        <span class="flex size-7 items-center justify-center rounded-full bg-white/25">
+          <app-icon name="user" [size]="16" />
+        </span>
+        Iniciar sesión
+      </a>
+    }
+  </div>
+</div>

@@ -6,7 +6,7 @@
    empresarial): Inter, rojo #D22B2B, rampa neutra de 5 pasos, radios 6/8/10px,
    sombras mínimas y anillo de foco rojo al 30%. */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap');
 @import 'tailwindcss';
 
 @theme {
@@ -66,6 +66,8 @@
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
   --font-display:
     'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  /* Títulos, menú y precios de la tienda (prototipo del portal cliente). */
+  --font-heading: 'Montserrat', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
   /* --- Radios (DS: sm 4 · md 6 botones · lg 8 cards/modales · field 10 inputs) --- */
   --radius-sm: 4px;
