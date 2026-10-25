@@ -43,13 +43,21 @@
       />
     </div>
 
-    <a
-      routerLink="/carrito"
+    <button
+      type="button"
       aria-label="Carrito de compras"
-      class="flex rounded-lg p-1.5 text-white transition-colors hover:bg-white/14"
+      class="relative flex cursor-pointer rounded-lg border-0 bg-transparent p-1.5 text-white transition-colors hover:bg-white/14"
+      [attr.aria-expanded]="carrito.abierto()"
+      (click)="abrirCarrito()"
     >
       <app-icon name="shopping-cart" [size]="22" />
-    </a>
+      @if (carrito.unidades()) {
+        <span
+          class="absolute -top-[3px] -right-[5px] flex h-[18px] min-w-[18px] items-center justify-center rounded-[9px] bg-white px-[5px] text-[11px] font-bold text-[#c62828]"
+          >{{ carrito.unidades() }}</span
+        >
+      }
+    </button>
 
     @if (session.isAuthenticated()) {
       <div class="relative">

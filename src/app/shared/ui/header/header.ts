@@ -5,6 +5,7 @@ import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/ro
 import { filter, map } from 'rxjs';
 
 import { AuthApi } from '../../../modules/auth/services/auth-api';
+import { CarritoStore } from '../../../modules/carrito/services/carrito-store';
 import { Session } from '../../auth/session';
 import { Icon } from '../icon/icon';
 
@@ -13,8 +14,8 @@ export const ESPERA_BUSQUEDA_MS = 300;
 
 /**
  * Header de la tienda (prototipo del portal cliente): marca, menú, buscador
- * del catálogo, carrito y "Mi cuenta". El contador del carrito llega con la
- * HU-B-006; el resto del menú de la cuenta, con sus HU.
+ * del catálogo, carrito con su contador (HU-B-006) y "Mi cuenta". El resto del
+ * menú de la cuenta llega con sus HU.
  */
 @Component({
   selector: 'app-header',
@@ -28,6 +29,7 @@ export const ESPERA_BUSQUEDA_MS = 300;
 export class Header {
   private readonly router = inject(Router);
   protected readonly session = inject(Session);
+  protected readonly carrito = inject(CarritoStore);
 
   protected readonly navItems = [
     { label: 'Nosotros', ruta: '/nosotros' },
@@ -63,6 +65,11 @@ export class Header {
       this.menuAbierto.set(false);
       void this.router.navigate(['/auth/login'], { replaceUrl: true });
     });
+  }
+
+  protected abrirCarrito(): void {
+    this.menuAbierto.set(false);
+    this.carrito.abierto.set(true);
   }
 
   /** Busca en el catálogo cuando se deja de escribir (lleva al catálogo si hace falta). */

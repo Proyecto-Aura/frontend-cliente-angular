@@ -11,8 +11,8 @@ import { CatalogoPresentacionChips } from '../catalogo-presentacion-chips/catalo
 
 /**
  * Tarjeta de un producto del catálogo (HU-B-005, prototipo). La presentación
- * elegida cambia imagen, precio y promoción. "Agregar" queda deshabilitado
- * hasta la HU-B-006 (carrito).
+ * elegida cambia imagen, precio y promoción. "Agregar" abre la ventana para
+ * elegir presentación y cantidad (HU-B-006).
  */
 @Component({
   selector: 'app-catalogo-product-card',
@@ -26,6 +26,8 @@ import { CatalogoPresentacionChips } from '../catalogo-presentacion-chips/catalo
 export class CatalogoProductCard {
   readonly producto = input.required<ProductoCatalogo>();
   readonly verDetalle = output<number>();
+  /** Pide agregar al carrito, partiendo de la presentación elegida. */
+  readonly agregar = output<number>();
 
   /** Elegida por el cliente; si no eligió, la primera con stock. */
   private readonly elegida = signal<number | null>(null);
@@ -33,6 +35,9 @@ export class CatalogoProductCard {
     () => this.elegida() ?? presentacionInicial(this.producto().presentaciones),
   );
   protected readonly actual = computed(() => this.producto().presentaciones[this.indice()]);
+  protected readonly hayStock = computed(() =>
+    this.producto().presentaciones.some((p) => p.disponible),
+  );
   /** "Desde" en la primera presentación, como en el prototipo. */
   protected readonly etiquetaPrecio = computed(() => (this.indice() === 0 ? 'Desde' : 'Precio'));
 

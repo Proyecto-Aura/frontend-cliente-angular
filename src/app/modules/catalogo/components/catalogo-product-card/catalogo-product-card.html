@@ -52,9 +52,10 @@
       </button>
       <button
         type="button"
-        disabled
-        title="Disponible próximamente"
-        class="flex h-[30px] cursor-not-allowed items-center gap-[5px] rounded-md bg-primary px-3 text-[11.5px] font-bold whitespace-nowrap text-white opacity-60"
+        class="flex h-[30px] items-center gap-[5px] rounded-md bg-primary px-3 text-[11.5px] font-bold whitespace-nowrap text-white transition-colors enabled:cursor-pointer enabled:hover:bg-[#b71c1c] disabled:cursor-not-allowed disabled:opacity-60"
+        [disabled]="!hayStock()"
+        [title]="hayStock() ? 'Agregar al carrito' : 'Producto agotado'"
+        (click)="agregar.emit(actual().id)"
       >
         <app-icon name="plus" [size]="14" />Agregar
       </button>

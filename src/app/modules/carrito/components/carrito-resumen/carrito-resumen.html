@@ -1,0 +1,33 @@
+<div class="flex justify-between text-[11.5px]">
+  <span class="whitespace-nowrap text-[#9e9e9e]">{{ etiquetaSubtotal() }}</span>
+  <span class="font-semibold whitespace-nowrap">{{ precio(carrito.subtotal()) }}</span>
+</div>
+@if (carrito.descuento() > 0) {
+  <div class="flex justify-between text-[11.5px]">
+    <span class="whitespace-nowrap text-[#9e9e9e]">Promociones</span>
+    <span class="font-semibold whitespace-nowrap text-[#2e9e5b]"
+      >- {{ precio(carrito.descuento()) }}</span
+    >
+  </div>
+}
+<div class="flex items-baseline justify-between border-t border-[#f0f0f0] pt-2.5 pb-1.5">
+  <span class="font-heading text-[13px] font-extrabold">Total</span>
+  <span class="font-heading text-lg font-extrabold text-[#1f1f1f]">{{
+    precio(carrito.total())
+  }}</span>
+</div>
+<button
+  type="button"
+  disabled
+  title="Disponible próximamente"
+  class="flex h-9 cursor-not-allowed items-center justify-center gap-[7px] rounded-lg border-0 bg-primary text-[12.5px] font-bold whitespace-nowrap text-white opacity-60"
+>
+  <app-icon name="shopping-cart" [size]="15" />Finalizar compra
+</button>
+<button
+  type="button"
+  class="flex h-8 cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-border bg-white text-xs font-semibold whitespace-nowrap text-[#424242] transition-colors hover:border-primary hover:text-primary"
+  (click)="seguirComprando.emit()"
+>
+  <app-icon name="arrow-left" [size]="14" />Seguir comprando
+</button>

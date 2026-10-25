@@ -88,6 +88,7 @@
   --animate-fade-in: fade-in 0.2s ease-out both;
   --animate-fade-up: fade-up 0.26s ease-out both;
   --animate-scale-in: scale-in 0.16s ease-out both;
+  --animate-slide-in: slide-in 0.22s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   --animate-drift-a: drift-a 22s ease-in-out infinite;
   --animate-drift-b: drift-b 27s ease-in-out infinite;
 }
@@ -98,6 +99,15 @@
   }
   to {
     opacity: 1;
+  }
+}
+/* Panel lateral que entra desde la derecha (carrito). */
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: none;
   }
 }
 @keyframes fade-up {
