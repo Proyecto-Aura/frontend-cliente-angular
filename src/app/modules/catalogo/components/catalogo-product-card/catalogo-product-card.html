@@ -1,0 +1,63 @@
+<div class="flex h-[190px] items-center justify-center bg-white pt-4 pb-1">
+  @if (actual().imagen_url; as url) {
+    <img [src]="url" [alt]="producto().nombre" loading="lazy" class="size-[150px] object-contain" />
+  } @else {
+    <span
+      class="flex size-[150px] items-center justify-center rounded-lg bg-[#f5f5f5] text-[11px] text-[#9e9e9e]"
+      >Sin imagen</span
+    >
+  }
+</div>
+
+@if (actual().promocion; as p) {
+  <span
+    class="absolute top-0 left-0 rounded-br-lg bg-[#f9a825] px-2.5 py-1.5 font-heading text-[11px] leading-none font-extrabold text-[#3e2700]"
+    >{{ promo(p) }}</span
+  >
+}
+
+<div class="flex flex-1 flex-col px-4 pt-3.5 pb-4">
+  <div class="text-[10px] font-bold tracking-[0.04em] text-primary uppercase">
+    {{ producto().categoria.nombre }}
+  </div>
+  <h3 class="mt-[3px] mb-0 font-heading text-base leading-[1.3] font-extrabold text-[#1f1f1f]">
+    {{ producto().nombre }}
+  </h3>
+  @if (producto().descripcion) {
+    <p class="mt-[3px] mb-0 text-[11.5px] leading-[1.45] text-[#8a8a8a]">
+      {{ producto().descripcion }}
+    </p>
+  }
+  <app-catalogo-presentacion-chips
+    class="mt-2.5"
+    [presentaciones]="producto().presentaciones"
+    [seleccionadaId]="actual().id"
+    (elegir)="elegir($event)"
+  />
+
+  <div class="mt-auto flex flex-wrap items-center gap-2 pt-3.5">
+    <div class="mr-auto flex items-baseline gap-1.5 whitespace-nowrap">
+      <span class="text-[10px] text-[#9e9e9e]">{{ etiquetaPrecio() }}</span>
+      <span class="font-heading text-[19px] font-extrabold text-[#1f1f1f]">{{
+        precio(actual().precio_final)
+      }}</span>
+    </div>
+    <div class="ml-auto flex gap-1.5">
+      <button
+        type="button"
+        class="h-[30px] cursor-pointer rounded-md border border-border bg-white px-2.5 text-[11.5px] font-semibold whitespace-nowrap text-[#424242] transition-colors hover:border-primary hover:text-primary"
+        (click)="verDetalle.emit(producto().id)"
+      >
+        Ver detalle
+      </button>
+      <button
+        type="button"
+        disabled
+        title="Disponible próximamente"
+        class="flex h-[30px] cursor-not-allowed items-center gap-[5px] rounded-md bg-primary px-3 text-[11.5px] font-bold whitespace-nowrap text-white opacity-60"
+      >
+        <app-icon name="plus" [size]="14" />Agregar
+      </button>
+    </div>
+  </div>
+</div>
