@@ -17,6 +17,12 @@ export const routes: Routes = [
       inject(Router).createUrlTree(['/auth/restablecer'], { queryParams }),
   },
   {
+    // Enlace del correo de verificación (lo arma el backend): /verify-email?token=…
+    path: 'verify-email',
+    redirectTo: ({ queryParams }) =>
+      inject(Router).createUrlTree(['/auth/verificar-correo'], { queryParams }),
+  },
+  {
     path: '',
     loadComponent: () => import('./layouts/store-layout/store-layout').then((m) => m.StoreLayout),
     children: [

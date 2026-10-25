@@ -152,6 +152,27 @@ describe('AuthApi', () => {
     expect(session.isAuthenticated()).toBe(false);
   });
 
+  it('verifies the email by POSTing the token to /auth/verify-email (HU-A-005)', () => {
+    let mensaje: string | undefined;
+    api.verificarCorreo('abc123').subscribe((res) => (mensaje = res.message));
+
+    const req = httpMock.expectOne(`${AUTH}/verify-email`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ token: 'abc123' });
+    req.flush({ message: 'Correo verificado correctamente' });
+
+    expect(mensaje).toBe('Correo verificado correctamente');
+  });
+
+  it('asks for a new verification link by POSTing the email to /auth/resend-verification', () => {
+    api.reenviarVerificacion('ana@francos.test').subscribe();
+
+    const req = httpMock.expectOne(`${AUTH}/resend-verification`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ email: 'ana@francos.test' });
+    req.flush({ message: 'Si el correo está registrado, recibirás un enlace de verificación' });
+  });
+
   it('passes the API error through when the credentials are wrong', () => {
     let status: number | undefined;
     api

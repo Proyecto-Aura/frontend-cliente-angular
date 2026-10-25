@@ -1,11 +1,12 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-8">
   @if (error()) {
-    <p
-      class="animate-fade-in rounded-lg bg-brand-50 px-4 py-3 text-[13px] text-brand-700"
+    <div
+      class="animate-fade-in flex flex-col gap-1 rounded-lg bg-brand-50 px-4 py-3 text-[13px] text-brand-700"
       role="alert"
     >
-      {{ error() }}
-    </p>
+      <span>{{ error() }}</span>
+      <ng-content select="[slot=error-action]" />
+    </div>
   }
 
   <div class="flex flex-col gap-5">

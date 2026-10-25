@@ -15,6 +15,9 @@
     >
       Tu cuenta fue creada. Te enviamos un correo de verificación: debes verificar tu email antes de
       tu primer ingreso.
+      <a routerLink="/auth/reenviar-verificacion" class="font-semibold underline"
+        >¿No te llegó? Reenviar</a
+      >
     </p>
   }
 
@@ -27,5 +30,15 @@
     </p>
   }
 
-  <app-auth-login-form [enviando]="enviando()" [error]="error()" (submitted)="onLogin($event)" />
+  <app-auth-login-form [enviando]="enviando()" [error]="error()" (submitted)="onLogin($event)">
+    @if (sinVerificar()) {
+      <a
+        slot="error-action"
+        routerLink="/auth/reenviar-verificacion"
+        [queryParams]="emailSugerido() ? { email: emailSugerido() } : null"
+        class="w-fit font-semibold text-brand-600 hover:underline"
+        >Reenviar correo de verificación</a
+      >
+    }
+  </app-auth-login-form>
 </section>

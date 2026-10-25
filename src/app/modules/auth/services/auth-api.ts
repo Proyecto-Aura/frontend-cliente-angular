@@ -70,6 +70,23 @@ export class AuthApi {
     return this.http.post<MensajeResponse>(`${this.base}/reset-password`, body);
   }
 
+  /**
+   * HU-A-005: confirma el correo con el token del enlace del mensaje (vence en
+   * 24 h y se usa una sola vez). 400 si es inválido, venció o ya se usó.
+   */
+  verificarCorreo(token: string): Observable<MensajeResponse> {
+    return this.http.post<MensajeResponse>(`${this.base}/verify-email`, { token });
+  }
+
+  /**
+   * HU-A-005: pide un enlace de verificación nuevo (invalida el anterior). El
+   * backend responde 200 con el mismo mensaje exista o no el correo, y no envía
+   * otro si se pidió hace menos de 60 s.
+   */
+  reenviarVerificacion(email: string): Observable<MensajeResponse> {
+    return this.http.post<MensajeResponse>(`${this.base}/resend-verification`, { email });
+  }
+
   // Revoca el refresh token recién creado; si falla, igual no se deja entrar.
   private rechazarSinAcceso(): Observable<never> {
     return this.http.post(`${this.base}/logout`, {}, { withCredentials: true }).pipe(
