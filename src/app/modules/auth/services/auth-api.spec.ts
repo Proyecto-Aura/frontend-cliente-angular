@@ -103,6 +103,31 @@ describe('AuthApi', () => {
     expect(session.isAuthenticated()).toBe(false);
   });
 
+  it('asks for the password recovery link (HU-B-003)', () => {
+    let mensaje = '';
+    api.solicitarRecuperacion('rosa@francos.test').subscribe((r) => (mensaje = r.message));
+
+    const req = httpMock.expectOne(`${AUTH}/forgot-password`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ email: 'rosa@francos.test' });
+    req.flush({ message: 'Si el correo está registrado, recibirás un enlace' });
+
+    expect(mensaje).toContain('Si el correo está registrado');
+  });
+
+  it('sets the new password with the token of the link (HU-B-003)', () => {
+    const body = {
+      token: 'abc123',
+      nueva_contrasena: 'Clave1234',
+      confirmar_contrasena: 'Clave1234',
+    };
+    api.restablecerContrasena(body).subscribe();
+
+    const req = httpMock.expectOne(`${AUTH}/reset-password`);
+    expect(req.request.body).toEqual(body);
+    req.flush({ message: 'Contraseña restablecida correctamente' });
+  });
+
   it('registers a client without starting a session (HU-B-002)', () => {
     api
       .registrarCliente({

@@ -18,8 +18,10 @@ export class AuthLogin {
   private readonly router = inject(Router);
 
   /** HU-B-002 (RF-B10): llega desde el registro con `?registrado=1`. */
-  protected readonly recienRegistrado =
-    inject(ActivatedRoute).snapshot.queryParamMap.get('registrado') === '1';
+  private readonly query = inject(ActivatedRoute).snapshot.queryParamMap;
+  protected readonly recienRegistrado = this.query.get('registrado') === '1';
+  /** HU-B-003 (RF-B13): llega tras cambiar la contraseña con `?restablecida=1`. */
+  protected readonly contrasenaRestablecida = this.query.get('restablecida') === '1';
   protected readonly enviando = signal(false);
   protected readonly error = signal<string | null>(null);
 

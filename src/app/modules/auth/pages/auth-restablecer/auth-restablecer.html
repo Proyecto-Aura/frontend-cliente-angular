@@ -1,0 +1,77 @@
+<section
+  class="flex w-full flex-col gap-8 rounded-[25px] bg-surface px-[30px] py-[50px] shadow-[0px_8px_32px_rgba(0,0,0,0.12)]"
+>
+  <div class="flex flex-col gap-2">
+    <h1 class="font-display text-[36px] font-extrabold leading-tight tracking-[-0.96px] text-black">
+      Nueva contraseña
+    </h1>
+    <p class="text-[15px] font-medium text-ink-soft">
+      Escribe tu nueva contraseña y confírmala para volver a ingresar a tu cuenta.
+    </p>
+  </div>
+
+  @if (!token) {
+    <p class="rounded-lg bg-brand-50 px-4 py-3 text-[13px] text-brand-700" role="alert">
+      El enlace no es válido. Pide uno nuevo para restablecer tu contraseña.
+    </p>
+    <a
+      routerLink="/auth/recuperar"
+      class="flex h-[38px] w-full items-center justify-center rounded-[6px] border border-brand-600 bg-brand-600 text-[15px] font-medium text-white no-underline transition duration-150 hover:bg-brand-700"
+    >
+      Pedir un nuevo enlace
+    </a>
+  } @else {
+    <form [formGroup]="form" class="flex flex-col gap-8" novalidate (ngSubmit)="guardar()">
+      @if (error()) {
+        <div
+          class="animate-fade-in flex flex-col gap-1 rounded-lg bg-brand-50 px-4 py-3 text-[13px] text-brand-700"
+          role="alert"
+        >
+          <span>{{ error() }}</span>
+          <a routerLink="/auth/recuperar" class="w-fit font-semibold text-brand-600 hover:underline"
+            >Pedir un nuevo enlace</a
+          >
+        </div>
+      }
+
+      <div class="flex flex-col gap-5">
+        <app-auth-input
+          label="Nueva contraseña"
+          type="password"
+          [control]="form.controls.nueva"
+          placeholder="••••••••"
+          autocomplete="new-password"
+          [hint]="'Mínimo ' + minimo + ' caracteres'"
+          [errores]="{
+            required: 'Ingresa tu nueva contraseña',
+            minlength: 'Debe tener al menos ' + minimo + ' caracteres',
+            maxlength: 'Es demasiado larga',
+          }"
+        />
+        <app-auth-input
+          label="Confirmar contraseña"
+          type="password"
+          [control]="form.controls.confirmar"
+          placeholder="••••••••"
+          autocomplete="new-password"
+          [errores]="{
+            required: 'Confirma tu nueva contraseña',
+            noCoincide: 'Las contraseñas no coinciden',
+          }"
+        />
+      </div>
+
+      <button
+        type="submit"
+        [disabled]="enviando()"
+        class="h-[38px] w-full rounded-[6px] border border-brand-600 bg-brand-600 text-[15px] font-medium text-white transition duration-150 hover:bg-brand-700 active:scale-[0.99] active:bg-brand-800 disabled:opacity-60"
+      >
+        {{ enviando() ? 'Guardando…' : 'Cambiar contraseña' }}
+      </button>
+    </form>
+  }
+
+  <p class="flex items-center gap-1 text-[14px] font-medium text-muted">
+    <a routerLink="/auth/login" class="text-brand-600 hover:underline">Volver a iniciar sesión</a>
+  </p>
+</section>

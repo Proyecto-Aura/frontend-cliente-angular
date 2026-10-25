@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 
 import { AuthRegistroStore } from './services/auth-registro-store';
 
-// AUTH_ROUTES — hijos de auth-layout. Falta auth-recuperar (HU-B-003).
+// AUTH_ROUTES — hijos de auth-layout.
 export const AUTH_ROUTES: Routes = [
   {
     path: '',
@@ -33,6 +33,17 @@ export const AUTH_ROUTES: Routes = [
           },
           { path: '', redirectTo: 'documento', pathMatch: 'full' },
         ],
+      },
+      {
+        // HU-B-003: pedir el enlace y, desde el correo, crear la nueva contraseña.
+        path: 'recuperar',
+        loadComponent: () =>
+          import('./pages/auth-recuperar/auth-recuperar').then((m) => m.AuthRecuperar),
+      },
+      {
+        path: 'restablecer',
+        loadComponent: () =>
+          import('./pages/auth-restablecer/auth-restablecer').then((m) => m.AuthRestablecer),
       },
       { path: '', redirectTo: 'login', pathMatch: 'full' },
     ],

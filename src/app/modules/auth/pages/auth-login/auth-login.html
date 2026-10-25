@@ -18,5 +18,14 @@
     </p>
   }
 
+  @if (contrasenaRestablecida) {
+    <p
+      class="animate-fade-in rounded-lg bg-success-50 px-4 py-3 text-[13px] text-success-700"
+      role="status"
+    >
+      Tu contraseña se cambió correctamente. Inicia sesión con tu nueva contraseña.
+    </p>
+  }
+
   <app-auth-login-form [enviando]="enviando()" [error]="error()" (submitted)="onLogin($event)" />
 </section>

@@ -7,6 +7,8 @@ import { Session } from '../../../shared/auth/session';
 import {
   LoginRequest,
   LoginResponse,
+  MensajeResponse,
+  RestablecerContrasenaRequest,
   ROL_CLIENTE,
   RegistroResponse,
   SinAccesoAlPortalError,
@@ -53,6 +55,19 @@ export class AuthApi {
       catchError(() => of(null)),
       map(() => this.session.clear()),
     );
+  }
+
+  /**
+   * HU-B-003 (RF-B11): pide el enlace para restablecer la contraseña. El
+   * backend responde lo mismo exista o no el correo, para no revelar cuentas.
+   */
+  solicitarRecuperacion(email: string): Observable<MensajeResponse> {
+    return this.http.post<MensajeResponse>(`${this.base}/forgot-password`, { email });
+  }
+
+  /** HU-B-003 (RF-B12): nueva contraseña con el token del enlace del correo. */
+  restablecerContrasena(body: RestablecerContrasenaRequest): Observable<MensajeResponse> {
+    return this.http.post<MensajeResponse>(`${this.base}/reset-password`, body);
   }
 
   // Revoca el refresh token recién creado; si falla, igual no se deja entrar.

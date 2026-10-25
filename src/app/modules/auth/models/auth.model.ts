@@ -25,6 +25,18 @@ export interface RegistroResponse {
   debe_cambiar_contrasena: boolean;
 }
 
+/** POST /auth/reset-password — body (HU-B-003). El token llega en el enlace del correo. */
+export interface RestablecerContrasenaRequest {
+  token: string;
+  nueva_contrasena: string;
+  confirmar_contrasena: string;
+}
+
+/** Respuesta de forgot-password y reset-password. */
+export interface MensajeResponse {
+  message: string;
+}
+
 /** Rol que da acceso a este portal; los roles de la empresa entran al otro. */
 export const ROL_CLIENTE = 'cliente';
 
