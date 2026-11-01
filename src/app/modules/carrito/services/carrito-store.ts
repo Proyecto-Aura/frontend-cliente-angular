@@ -31,6 +31,8 @@ export class CarritoStore {
   readonly abierto = signal(false);
 
   private readonly disponibles = computed(() => this._items().filter((i) => i.disponible));
+  /** Hay algo que se pueda comprar (para habilitar "Finalizar compra"). */
+  readonly hayDisponibles = computed(() => this.disponibles().length > 0);
   /** Unidades en el carrito (el contador del header). */
   readonly unidades = computed(() => this._items().reduce((n, i) => n + i.cantidad, 0));
   readonly subtotal = computed(() =>

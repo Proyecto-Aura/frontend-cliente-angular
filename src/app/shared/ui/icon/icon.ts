@@ -5,7 +5,9 @@ export type IconName =
   | 'check'
   | 'circle-check'
   | 'chevron-down'
+  | 'chevron-left'
   | 'chevron-right'
+  | 'info'
   | 'log-out'
   | 'mail'
   | 'map-pin'
@@ -14,8 +16,11 @@ export type IconName =
   | 'plus'
   | 'search'
   | 'search-x'
+  | 'shield-check'
   | 'shopping-cart'
   | 'sliders-horizontal'
+  | 'truck'
+  | 'undo-2'
   | 'user'
   | 'x';
 

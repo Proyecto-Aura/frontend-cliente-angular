@@ -1,0 +1,31 @@
+<ol class="m-0 flex list-none flex-wrap items-center gap-2 p-0" aria-label="Pasos de la compra">
+  @for (p of pasos; track p.numero) {
+    <li class="flex items-center gap-2">
+      @if (p.numero > 1) {
+        <span
+          class="h-[1.5px] w-7"
+          [class]="p.numero <= paso() ? 'bg-primary' : 'bg-[#d6d6d6]'"
+          aria-hidden="true"
+        ></span>
+      }
+      <span
+        class="flex items-center gap-1.5 whitespace-nowrap"
+        [class]="
+          p.numero === paso()
+            ? 'font-bold text-[#1f1f1f]'
+            : p.numero < paso()
+              ? 'font-medium text-[#1f1f1f]'
+              : 'font-medium text-muted-foreground'
+        "
+        [attr.aria-current]="p.numero === paso() ? 'step' : null"
+      >
+        <span
+          class="flex size-4 items-center justify-center rounded-full text-[9.5px] font-extrabold text-white"
+          [class]="p.numero <= paso() ? 'bg-primary' : 'bg-muted-foreground'"
+          aria-hidden="true"
+          >{{ p.numero }}</span
+        ><span class="sr-only">Paso {{ p.numero }}: </span>{{ p.etiqueta }}
+      </span>
+    </li>
+  }
+</ol>
