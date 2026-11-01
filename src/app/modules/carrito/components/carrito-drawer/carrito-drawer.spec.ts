@@ -78,6 +78,38 @@ describe('CarritoDrawer (HU-B-006, RF-B19)', () => {
     expect(texto()).toContain('Tu carrito está vacío');
   });
 
+  it('"Finalizar compra" closes the panel and goes to the checkout (HU-B-007)', () => {
+    carrito.agregar(CHIFLE, CHIFLE.presentaciones[0], 1);
+    crear();
+    httpMock.expectOne(`${environment.apiUrl}/catalogo/productos/10`).flush(CHIFLE);
+    fixture.detectChanges();
+    const navegar = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
+    const finalizar = [...raiz().querySelectorAll<HTMLButtonElement>('button')].find((b) =>
+      b.textContent!.includes('Finalizar compra'),
+    )!;
+    expect(finalizar.disabled).toBe(false);
+    finalizar.click();
+
+    expect(carrito.abierto()).toBe(false);
+    expect(navegar).toHaveBeenCalledWith(['/checkout']);
+  });
+
+  it('"Finalizar compra" stays off when nothing in the cart can be bought', () => {
+    carrito.agregar(CHIFLE, CHIFLE.presentaciones[0], 1);
+    crear();
+    httpMock
+      .expectOne(`${environment.apiUrl}/catalogo/productos/10`)
+      .flush({ message: 'x' }, { status: 404, statusText: 'Not Found' });
+    fixture.detectChanges();
+
+    const finalizar = [...raiz().querySelectorAll<HTMLButtonElement>('button')].find((b) =>
+      b.textContent!.includes('Finalizar compra'),
+    )!;
+    expect(lineas()).toHaveLength(1);
+    expect(finalizar.disabled).toBe(true);
+  });
+
   it('closes with the X button', () => {
     crear();
 

@@ -1,0 +1,96 @@
+<div class="flex items-center gap-2.5">
+  <span
+    class="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#fde4e4] text-primary"
+  >
+    <app-icon name="map-pin" [size]="14" />
+  </span>
+  <h2 class="m-0 font-heading text-[15px] font-extrabold text-[#1f1f1f]">Dirección de entrega</h2>
+</div>
+<p class="mt-2 mb-0 text-[11px] text-muted-foreground">
+  Dirección obtenida de tu perfil. Puedes editarla antes de confirmar.
+</p>
+
+<form [formGroup]="form" novalidate (ngSubmit)="enviar()">
+  <div class="mt-3.5 flex flex-col gap-3">
+    <div class="flex flex-col gap-1.5">
+      <label for="co-dir" class="text-[11.5px] font-bold text-[#1f1f1f]"
+        >Dirección <span class="text-primary" aria-hidden="true">*</span></label
+      >
+      <input
+        id="co-dir"
+        type="text"
+        formControlName="direccion"
+        autocomplete="street-address"
+        placeholder="Ej. Av. José Larco 1232, Int 402"
+        required
+        [attr.maxlength]="maxDireccion"
+        class="h-9 w-full rounded-lg border bg-white px-3 text-[12.5px] text-foreground transition outline-none focus:border-primary focus:shadow-[0_0_0_3px_rgba(210,43,43,0.15)] disabled:bg-[#f5f5f5]"
+        [class]="error() ? 'border-destructive' : 'border-border'"
+        [attr.aria-invalid]="!!error()"
+        [attr.aria-describedby]="error() ? 'co-dir-error' : null"
+        (input)="error.set(null)"
+      />
+      @if (error(); as mensaje) {
+        <span id="co-dir-error" class="text-[11px] text-destructive">{{ mensaje }}</span>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1.5">
+      <label for="co-ref" class="text-[11.5px] font-bold text-[#1f1f1f]"
+        >Referencia <span class="font-normal text-muted-foreground">(opcional)</span></label
+      >
+      <input
+        id="co-ref"
+        type="text"
+        formControlName="referencia"
+        placeholder="Ej. Frente al parque, edificio azul"
+        [attr.maxlength]="maxReferencia"
+        class="h-9 w-full rounded-lg border border-border bg-white px-3 text-[12.5px] text-foreground transition outline-none focus:border-primary focus:shadow-[0_0_0_3px_rgba(210,43,43,0.15)] disabled:bg-[#f5f5f5]"
+        (input)="error.set(null)"
+      />
+    </div>
+
+    <div
+      class="flex items-center gap-2 rounded-lg border border-[#bfe9cc] bg-[#eefbf2] px-3 py-[9px] text-[11.5px] text-[#2e7d4f]"
+    >
+      <app-icon name="truck" [size]="14" />
+      <span
+        ><strong class="font-bold">Entrega estimada: 2–3 días hábiles</strong> · Envío gratuito en
+        todos los pedidos</span
+      >
+    </div>
+  </div>
+
+  @if (errorServidor(); as mensaje) {
+    <div role="alert" class="mt-3.5 rounded-lg bg-accent px-3 py-2 text-[12px] text-destructive">
+      {{ mensaje }}
+    </div>
+  }
+
+  @if (confirmada()) {
+    <div
+      role="status"
+      class="mt-3.5 flex items-center gap-1.5 text-[12px] font-semibold text-[#1f6b3f]"
+    >
+      <app-icon name="circle-check" [size]="15" />Dirección confirmada
+    </div>
+    <button
+      type="button"
+      class="mt-2.5 flex h-[34px] w-full cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-border bg-white text-[12.5px] font-semibold whitespace-nowrap text-[#424242] transition-colors hover:border-primary hover:text-primary"
+      (click)="deshacer.emit()"
+    >
+      <app-icon name="undo-2" [size]="13" />Deshacer
+    </button>
+  } @else {
+    <button
+      type="submit"
+      class="mt-3.5 h-9 w-full rounded-lg border-0 bg-primary text-[12.5px] font-bold text-white transition"
+      [class]="
+        confirmando() ? 'cursor-not-allowed opacity-70' : 'cursor-pointer hover:bg-primary-hover'
+      "
+      [attr.aria-disabled]="confirmando()"
+    >
+      {{ confirmando() ? 'Confirmando…' : 'Confirmar dirección' }}
+    </button>
+  }
+</form>

@@ -84,6 +84,26 @@ describe('CarritoStore (HU-B-006)', () => {
     expect(localStorage.getItem(CLAVE)).toBeNull();
   });
 
+  it('knows whether there is anything that can be bought (HU-B-007)', async () => {
+    crear();
+    expect(carrito.hayDisponibles()).toBe(false);
+
+    carrito.agregar(CHIFLE, CHIFLE_250, 1);
+    expect(carrito.hayDisponibles()).toBe(true);
+
+    // El producto deja de venderse: la línea queda en el carrito pero no se puede comprar.
+    const httpMock = TestBed.inject(HttpTestingController);
+    const refresco = firstValueFrom(carrito.refrescar());
+    httpMock
+      .expectOne(`${environment.apiUrl}/catalogo/productos/10`)
+      .flush({ message: 'x' }, { status: 404, statusText: 'Not Found' });
+    await refresco;
+
+    expect(carrito.items()).toHaveLength(1);
+    expect(carrito.hayDisponibles()).toBe(false);
+    httpMock.verify();
+  });
+
   it('keeps the cart after reloading the page', () => {
     crear();
     carrito.agregar(CHIFLE, CHIFLE_250, 2);

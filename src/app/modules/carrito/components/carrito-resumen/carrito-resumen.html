@@ -18,9 +18,9 @@
 </div>
 <button
   type="button"
-  disabled
-  title="Disponible próximamente"
-  class="flex h-9 cursor-not-allowed items-center justify-center gap-[7px] rounded-lg border-0 bg-primary text-[12.5px] font-bold whitespace-nowrap text-white opacity-60"
+  [disabled]="!carrito.hayDisponibles()"
+  class="flex h-9 items-center justify-center gap-[7px] rounded-lg border-0 bg-primary text-[12.5px] font-bold whitespace-nowrap text-white transition-colors enabled:cursor-pointer enabled:hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+  (click)="finalizar()"
 >
   <app-icon name="shopping-cart" [size]="15" />Finalizar compra
 </button>
