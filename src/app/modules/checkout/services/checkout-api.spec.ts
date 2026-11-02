@@ -49,4 +49,45 @@ describe('CheckoutApi (HU-B-007)', () => {
 
     expect(status).toBe(400);
   });
+
+  describe('pagar (HU-B-008)', () => {
+    const PEDIDOS_URL = `${environment.apiUrl}/portal/pedidos`;
+    const pedido = {
+      items: [{ producto_presentacion_id: 101, cantidad: 30 }],
+      tipo_entrega: 'delivery' as const,
+      direccion_entrega: 'Av. Larco 1232',
+      culqi_token: 'tkn_sim_ok_tarjeta_abc',
+    };
+
+    it('posts the cart with the payment token and returns the paid order', () => {
+      const pagado = { id: 7, codigo: 'PED-000007', total: 126 };
+      let resultado: unknown;
+
+      api.pagar(pedido).subscribe((r) => (resultado = r));
+      const req = httpMock.expectOne(PEDIDOS_URL);
+      req.flush(pagado);
+
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual(pedido);
+      expect(resultado).toEqual(pagado);
+    });
+
+    it('propagates a rejected payment (402) so the client can retry', () => {
+      let status = 0;
+      let mensaje = '';
+
+      api.pagar(pedido).subscribe({
+        error: (err: { status: number; error: { message: string } }) => {
+          status = err.status;
+          mensaje = err.error.message;
+        },
+      });
+      httpMock
+        .expectOne(PEDIDOS_URL)
+        .flush({ message: 'Tarjeta rechazada' }, { status: 402, statusText: 'Payment Required' });
+
+      expect(status).toBe(402);
+      expect(mensaje).toBe('Tarjeta rechazada');
+    });
+  });
 });
