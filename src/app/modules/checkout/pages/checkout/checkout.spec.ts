@@ -345,7 +345,7 @@ describe('Checkout (HU-B-007, RF-B20 a RF-B23; HU-B-008, RF-B24 a RF-B28)', () =
         httpMock.expectOne(PEDIDOS_URL).flush(PEDIDO);
         await fixture.whenStable();
 
-        expect(navegar).toHaveBeenCalledWith(['/checkout/exito'], { state: { pedido: PEDIDO } });
+        expect(navegar).toHaveBeenCalledWith(['/checkout/exito', PEDIDO.id]);
         expect(carrito.items()).toEqual([]);
         expect(TestBed.inject(Avisos).actual()?.titulo).toBe('Pago confirmado');
       });

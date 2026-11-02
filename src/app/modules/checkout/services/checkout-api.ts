@@ -23,6 +23,11 @@ export class CheckoutApi {
     return this.http.post<ResumenPedido>(`${this.url}/resumen`, pedido);
   }
 
+  /** Consulta un pedido propio y su estado (HU-B-013). 404 si no existe o es de otro cliente. */
+  consultar(id: number): Observable<PedidoPagado> {
+    return this.http.get<PedidoPagado>(`${this.url}/${id}`);
+  }
+
   /** Cobra con el token de Culqi. Un 402 es un pago rechazado: no se crea nada y se puede reintentar. */
   pagar(pedido: CrearPedidoRequest): Observable<PedidoPagado> {
     return this.http.post<PedidoPagado>(this.url, pedido);

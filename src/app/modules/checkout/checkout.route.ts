@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 
 import { sesionGuard } from '../../shared/auth/sesion.guard';
 
-// CHECKOUT_ROUTES — páginas: checkout (HU-B-007 y pago, HU-B-008) · checkout-exito (pedido pagado, HU-B-008)
+// CHECKOUT_ROUTES — páginas: checkout (HU-B-007 y pago, HU-B-008) · checkout-exito/:id (pedido y su estado, HU-B-008 y HU-B-013)
 export const CHECKOUT_ROUTES: Routes = [
   {
     path: '',
@@ -10,7 +10,7 @@ export const CHECKOUT_ROUTES: Routes = [
     loadComponent: () => import('./pages/checkout/checkout').then((m) => m.Checkout),
   },
   {
-    path: 'exito',
+    path: 'exito/:id',
     canActivate: [sesionGuard],
     loadComponent: () =>
       import('./pages/checkout-exito/checkout-exito').then((m) => m.CheckoutExito),
