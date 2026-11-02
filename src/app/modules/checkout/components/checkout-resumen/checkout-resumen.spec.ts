@@ -94,22 +94,45 @@ describe('CheckoutResumen (HU-B-007, RF-B22/RF-B23)', () => {
     expect(texto()).toContain('Sin imagen');
   });
 
-  it('keeps the payment button off: paying is a later step', () => {
-    render([linea({ presentacionId: 101 })], 10);
+  it('keeps "Pagar" off until the address is confirmed, and says why (HU-B-008)', () => {
+    render([linea({ presentacionId: 101 })], 10, false);
 
     const boton = raiz().querySelector<HTMLButtonElement>('button')!;
-    expect(boton.textContent).toContain('Continuar al pago');
+    expect(boton.textContent).toContain('Pagar S/ 10.00');
     expect(boton.disabled).toBe(true);
+    expect(texto()).toContain('Confirma tu dirección de entrega para continuar');
   });
 
-  it('asks to confirm the address first, then says payment is coming', () => {
+  it('turns "Pagar" on with the address confirmed and asks to pay when clicked (RF-B24)', () => {
+    render([linea({ presentacionId: 101 })], 10, true);
+    const pagar = vi.fn();
+    fixture.componentInstance.pagar.subscribe(pagar);
+
+    const boton = raiz().querySelector<HTMLButtonElement>('button')!;
+    expect(boton.disabled).toBe(false);
+    expect(texto()).toContain('Pagas en línea con Culqi: tarjeta, Yape o Plin');
+    boton.click();
+
+    expect(pagar).toHaveBeenCalledOnce();
+  });
+
+  it('turns "Pagar" off while a payment is being processed', () => {
+    render([linea({ presentacionId: 101 })], 10, true);
+
+    fixture.componentRef.setInput('pagando', true);
+    fixture.detectChanges();
+
+    expect(raiz().querySelector<HTMLButtonElement>('button')!.disabled).toBe(true);
+  });
+
+  it('asks to confirm the address first, then says how it is paid', () => {
     render([linea({ presentacionId: 101 })], 10, false);
     expect(texto()).toContain('Confirma tu dirección de entrega para continuar');
 
     fixture.componentRef.setInput('direccionConfirmada', true);
     fixture.detectChanges();
 
-    expect(texto()).toContain('El pago estará disponible próximamente');
+    expect(texto()).toContain('Pagas en línea con Culqi');
     expect(texto()).not.toContain('Confirma tu dirección');
   });
 });

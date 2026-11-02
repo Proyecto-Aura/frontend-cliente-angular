@@ -6,9 +6,28 @@ import {
   firmaDelPedido,
   itemsDelPedido,
   lineasDelPedido,
+  tokenSimulado,
 } from './checkout.utils';
 
-describe('checkout.utils (HU-B-007)', () => {
+describe('checkout.utils (HU-B-007, HU-B-008)', () => {
+  describe('tokenSimulado (HU-B-008)', () => {
+    it('builds an approved token that carries the payment method', () => {
+      expect(tokenSimulado('aprobado', 'yape')).toMatch(/^tkn_sim_ok_yape_[0-9a-f]{16}$/);
+    });
+
+    it('builds a rejected token', () => {
+      expect(tokenSimulado('rechazado', 'tarjeta')).toMatch(/^tkn_sim_ko_tarjeta_[0-9a-f]{16}$/);
+    });
+
+    it('gives a different token each time and fits the 100 characters the backend accepts', () => {
+      const a = tokenSimulado('aprobado', 'plin');
+      const b = tokenSimulado('aprobado', 'plin');
+
+      expect(a).not.toBe(b);
+      expect(a.length).toBeLessThanOrEqual(100);
+    });
+  });
+
   describe('itemsDelPedido', () => {
     it('sends only the lines that can be bought', () => {
       const items = [

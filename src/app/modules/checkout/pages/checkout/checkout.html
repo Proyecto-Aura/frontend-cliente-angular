@@ -121,12 +121,26 @@
         (confirmar)="confirmarDireccion($event)"
         (deshacer)="deshacerDireccion()"
       />
+      @if (direccionConfirmada() !== null) {
+        <app-checkout-pago />
+      }
     </div>
     <app-checkout-resumen
       [lineas]="lineas()"
       [subtotal]="resumen()!.subtotal"
       [total]="resumen()!.total"
       [direccionConfirmada]="direccionConfirmada() !== null"
+      [pagando]="pagando()"
+      (pagar)="abrirPago()"
     />
+    @if (pagoAbierto()) {
+      <app-checkout-culqi
+        [total]="resumen()!.total"
+        [procesando]="pagando()"
+        [error]="errorPago()"
+        (pagar)="pagar($event)"
+        (cerrar)="cerrarPago()"
+      />
+    }
   }
 </main>

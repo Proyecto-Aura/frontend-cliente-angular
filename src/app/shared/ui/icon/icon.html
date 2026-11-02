@@ -93,6 +93,29 @@
       <svg:line x1="8" x2="8" y1="10" y2="14" />
       <svg:line x1="16" x2="16" y1="18" y2="22" />
     }
+    @case ('circle-x') {
+      <svg:circle cx="12" cy="12" r="10" />
+      <svg:path d="m15 9-6 6" />
+      <svg:path d="m9 9 6 6" />
+    }
+    @case ('credit-card') {
+      <svg:rect width="20" height="14" x="2" y="5" rx="2" />
+      <svg:line x1="2" x2="22" y1="10" y2="10" />
+    }
+    @case ('qr-code') {
+      <svg:rect width="5" height="5" x="3" y="3" rx="1" />
+      <svg:rect width="5" height="5" x="16" y="3" rx="1" />
+      <svg:rect width="5" height="5" x="3" y="16" rx="1" />
+      <svg:path d="M21 16h-3a2 2 0 0 0-2 2v3" />
+      <svg:path d="M21 21v.01" />
+      <svg:path d="M12 7v3a2 2 0 0 1-2 2H7" />
+      <svg:path d="M3 12h.01" />
+      <svg:path d="M12 3h.01" />
+      <svg:path d="M12 16v.01" />
+      <svg:path d="M16 12h1" />
+      <svg:path d="M21 12v.01" />
+      <svg:path d="M12 21v-1" />
+    }
     @case ('truck') {
       <svg:path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" />
       <svg:path d="M15 18H9" />

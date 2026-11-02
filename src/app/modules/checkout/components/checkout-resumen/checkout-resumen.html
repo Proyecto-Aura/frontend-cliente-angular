@@ -59,15 +59,15 @@
 
 <button
   type="button"
-  disabled
-  title="Disponible próximamente"
-  class="flex h-10 w-full cursor-not-allowed items-center justify-center gap-2 rounded-lg border-0 bg-primary text-[13px] font-bold whitespace-nowrap text-white opacity-60"
+  [disabled]="!direccionConfirmada() || pagando()"
+  class="flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-0 bg-primary text-[13px] font-bold whitespace-nowrap text-white hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+  (click)="pagar.emit()"
 >
-  Continuar al pago<app-icon name="chevron-right" [size]="15" />
+  <app-icon name="credit-card" [size]="15" />Pagar {{ precio(total()) }}
 </button>
 <p class="mt-2.5 mb-0 text-center text-[10.5px] text-muted-foreground">
   @if (direccionConfirmada()) {
-    El pago estará disponible próximamente.
+    Pagas en línea con Culqi: tarjeta, Yape o Plin.
   } @else {
     Confirma tu dirección de entrega para continuar.
   }

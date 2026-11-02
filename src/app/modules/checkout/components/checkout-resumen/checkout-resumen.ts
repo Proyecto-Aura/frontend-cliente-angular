@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { formatearPrecio } from '../../../catalogo/utils/catalogo.utils';
@@ -7,7 +7,8 @@ import { LineaPedido } from '../../models/checkout.model';
 /**
  * "Resumen del pedido" del checkout (HU-B-007, RF-B22/RF-B23): las líneas, el
  * subtotal y el total que calculó el servidor, con el precio mayorista cuando
- * corresponde (RN17). El pago llega con HU-B-008, por eso el botón no se activa.
+ * corresponde (RN17). Es lo que el cliente revisa antes de pagar (HU-B-008,
+ * RF-B25): "Pagar" se activa con la dirección confirmada.
  */
 @Component({
   selector: 'app-checkout-resumen',
@@ -24,6 +25,8 @@ export class CheckoutResumen {
   readonly total = input.required<number>();
   /** Con la dirección confirmada solo falta el pago. */
   readonly direccionConfirmada = input(false);
+  readonly pagando = input(false);
+  readonly pagar = output<void>();
 
   protected readonly precio = formatearPrecio;
   protected readonly etiquetaSubtotal = computed(() => {

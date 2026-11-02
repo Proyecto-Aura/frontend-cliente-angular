@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 
 import { environment } from '../../../../../environments/environment';
 import { Avisos } from '../../../../shared/ui/aviso/aviso';
@@ -9,11 +9,12 @@ import { CarritoStore } from '../../../carrito/services/carrito-store';
 import { ProductoCatalogo } from '../../../catalogo/models/catalogo.model';
 import { ITEMS } from '../../../catalogo/testing/catalogo-data';
 import { agruparPorProducto } from '../../../catalogo/utils/catalogo.utils';
-import { ResumenPedido } from '../../models/checkout.model';
+import { PedidoPagado, ResumenPedido } from '../../models/checkout.model';
 import { PERFIL, lineaResumen, resumenPedido } from '../../testing/checkout-data';
 import { Checkout } from './checkout';
 
-describe('Checkout (HU-B-007, RF-B20 a RF-B23)', () => {
+describe('Checkout (HU-B-007, RF-B20 a RF-B23; HU-B-008, RF-B24 a RF-B28)', () => {
+  const PEDIDOS_URL = `${environment.apiUrl}/portal/pedidos`;
   const PERFIL_URL = `${environment.apiUrl}/perfil`;
   const RESUMEN_URL = `${environment.apiUrl}/portal/pedidos/resumen`;
   const PRODUCTO_URL = `${environment.apiUrl}/catalogo/productos/10`;
@@ -134,11 +135,12 @@ describe('Checkout (HU-B-007, RF-B20 a RF-B23)', () => {
       expect(texto()).toContain('Total S/ 126.00');
     });
 
-    it('starts on the delivery step with payment not yet available', () => {
+    it('starts on the delivery step with payment off until the address is confirmed', () => {
       abrir();
 
       expect(pasoActual()).toContain('Datos de entrega');
-      expect(boton('Continuar al pago')!.disabled).toBe(true);
+      expect(boton('Pagar')!.disabled).toBe(true);
+      expect(texto()).not.toContain('Método de pago');
       expect(texto()).toContain('Confirma tu dirección de entrega para continuar');
     });
 
@@ -182,7 +184,9 @@ describe('Checkout (HU-B-007, RF-B20 a RF-B23)', () => {
         expect(campo('co-dir').disabled).toBe(true);
         expect(texto()).toContain('Dirección confirmada');
         expect(pasoActual()).toContain('Pago');
-        expect(texto()).toContain('El pago estará disponible próximamente');
+        expect(texto()).toContain('Pagas en línea con Culqi');
+        expect(texto()).toContain('Método de pago');
+        expect(boton('Pagar')!.disabled).toBe(false);
         expect(TestBed.inject(Avisos).actual()?.titulo).toBe('Dirección confirmada');
       });
 
@@ -243,6 +247,195 @@ describe('Checkout (HU-B-007, RF-B20 a RF-B23)', () => {
         fixture.detectChanges();
 
         httpMock.expectOne(RESUMEN_URL).flush(resumenPedido({ tipo_entrega: 'delivery' }));
+      });
+    });
+
+    describe('paying (HU-B-008, RF-B24 a RF-B28)', () => {
+      const PEDIDO: PedidoPagado = {
+        id: 7,
+        codigo: 'PED-000007',
+        estado: 'confirmado',
+        tipo_entrega: 'delivery',
+        direccion_entrega: DIRECCION_PERFIL,
+        total: 10,
+        items: [
+          {
+            producto_presentacion_id: 101,
+            producto: 'Chifles salados',
+            presentacion: '250g',
+            cantidad: 2,
+            precio_aplicado: 5,
+            subtotal: 10,
+          },
+        ],
+        pago: {
+          metodo_pago: 'culqi',
+          monto: 10,
+          numero_operacion: 'chr_sim_1',
+          fecha_pago: '2026-11-02T10:00:00Z',
+        },
+      };
+      const ventana = () => raiz().querySelector('app-checkout-culqi');
+      let navegar: ReturnType<typeof vi.spyOn>;
+
+      /** Confirma la dirección y abre la ventana de pago. */
+      function irAPagar() {
+        abrir();
+        confirmar(resumenPedido({ tipo_entrega: 'delivery', direccion_entrega: DIRECCION_PERFIL }));
+        boton('Pagar')!.click();
+        fixture.detectChanges();
+      }
+
+      beforeEach(() => {
+        navegar = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+      });
+
+      it('shows the order summary with the total before asking for the payment (RF-B25)', () => {
+        irAPagar();
+
+        expect(ventana()).not.toBeNull();
+        expect(texto()).toContain('Resumen del pedido');
+        expect(texto()).toContain('Total a pagar S/ 10.00');
+        expect(httpMock.match(PEDIDOS_URL)).toHaveLength(0);
+      });
+
+      it('does not open the payment without a confirmed address', () => {
+        abrir();
+
+        boton('Pagar')!.click();
+        fixture.detectChanges();
+
+        expect(ventana()).toBeNull();
+      });
+
+      it('lets the client go back without paying', () => {
+        irAPagar();
+
+        boton('Volver')!.click();
+        fixture.detectChanges();
+
+        expect(ventana()).toBeNull();
+        expect(httpMock.match(PEDIDOS_URL)).toHaveLength(0);
+      });
+
+      it('charges with the token, the cart lines and the confirmed address (RF-B24)', () => {
+        irAPagar();
+
+        boton('Simular pago aprobado')!.click();
+        fixture.detectChanges();
+
+        const req = httpMock.expectOne(PEDIDOS_URL);
+        expect(req.request.method).toBe('POST');
+        expect(req.request.body).toEqual({
+          items: [{ producto_presentacion_id: 101, cantidad: 2 }],
+          tipo_entrega: 'delivery',
+          direccion_entrega: DIRECCION_PERFIL,
+          culqi_token: expect.stringMatching(/^tkn_sim_ok_tarjeta_/),
+        });
+        // El total no viaja: lo recalcula el servidor.
+        expect(req.request.body).not.toHaveProperty('total');
+        req.flush(PEDIDO);
+      });
+
+      it('on approval goes to the paid order and takes the paid lines out of the cart (RF-B26, RF-B28)', async () => {
+        irAPagar();
+
+        boton('Simular pago aprobado')!.click();
+        fixture.detectChanges();
+        httpMock.expectOne(PEDIDOS_URL).flush(PEDIDO);
+        await fixture.whenStable();
+
+        expect(navegar).toHaveBeenCalledWith(['/checkout/exito'], { state: { pedido: PEDIDO } });
+        expect(carrito.items()).toEqual([]);
+        expect(TestBed.inject(Avisos).actual()?.titulo).toBe('Pago confirmado');
+      });
+
+      it('leaves in the cart the lines that were not part of the paid order', async () => {
+        carrito.agregar(CHIFLE, CHIFLE.presentaciones[1], 1);
+        irAPagar();
+
+        boton('Simular pago aprobado')!.click();
+        fixture.detectChanges();
+        httpMock.expectOne(PEDIDOS_URL).flush(PEDIDO);
+        await fixture.whenStable();
+
+        expect(carrito.items().map((i) => i.presentacionId)).toEqual([102]);
+      });
+
+      it('on rejection keeps the window open with the reason and creates nothing (RF-B26)', () => {
+        irAPagar();
+
+        boton('Simular pago rechazado')!.click();
+        fixture.detectChanges();
+        const req = httpMock.expectOne(PEDIDOS_URL);
+        expect(req.request.body.culqi_token).toMatch(/^tkn_sim_ko_tarjeta_/);
+        req.flush(
+          { message: 'El pago fue rechazado (simulación).' },
+          { status: 402, statusText: 'Payment Required' },
+        );
+        fixture.detectChanges();
+
+        expect(ventana()).not.toBeNull();
+        expect(texto()).toContain('Pago rechazado');
+        expect(texto()).toContain('El pago fue rechazado (simulación).');
+        expect(navegar).not.toHaveBeenCalled();
+        expect(carrito.items()).toHaveLength(1);
+      });
+
+      it('lets the client retry after a rejection with the same cart (RF-B27)', async () => {
+        irAPagar();
+        boton('Simular pago rechazado')!.click();
+        fixture.detectChanges();
+        httpMock
+          .expectOne(PEDIDOS_URL)
+          .flush({ message: 'Rechazado' }, { status: 402, statusText: 'Payment Required' });
+        fixture.detectChanges();
+
+        boton('Simular pago aprobado')!.click();
+        fixture.detectChanges();
+        const reintento = httpMock.expectOne(PEDIDOS_URL);
+        expect(reintento.request.body.items).toEqual([
+          { producto_presentacion_id: 101, cantidad: 2 },
+        ]);
+        reintento.flush(PEDIDO);
+        await fixture.whenStable();
+
+        expect(navegar).toHaveBeenCalledOnce();
+      });
+
+      it('sends the payment method chosen in the window inside the token (RF-B24)', () => {
+        irAPagar();
+
+        ventana()!.querySelector<HTMLInputElement>('input[value="yape"]')!.click();
+        fixture.detectChanges();
+        boton('Simular pago aprobado')!.click();
+        fixture.detectChanges();
+
+        const req = httpMock.expectOne(PEDIDOS_URL);
+        expect(req.request.body.culqi_token).toMatch(/^tkn_sim_ok_yape_/);
+        req.flush(PEDIDO);
+      });
+
+      it('explains a connection failure and lets the client retry', () => {
+        irAPagar();
+
+        boton('Simular pago aprobado')!.click();
+        fixture.detectChanges();
+        httpMock.expectOne(PEDIDOS_URL).error(new ProgressEvent('error'), { status: 0 });
+        fixture.detectChanges();
+
+        expect(ventana()!.querySelector('[role="alert"]')).not.toBeNull();
+        expect(boton('Simular pago aprobado')!.disabled).toBe(false);
+      });
+
+      it('cannot pay twice while the server is answering', () => {
+        irAPagar();
+
+        boton('Simular pago aprobado')!.click();
+        fixture.detectChanges();
+
+        expect(boton('Procesando pago')!.disabled).toBe(true);
+        httpMock.expectOne(PEDIDOS_URL).flush(PEDIDO);
       });
     });
 

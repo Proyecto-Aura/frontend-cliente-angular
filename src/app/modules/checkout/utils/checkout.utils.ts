@@ -1,5 +1,10 @@
 import { ItemCarrito } from '../../carrito/models/carrito.model';
-import { ItemResumenRequest, LineaPedido, ResumenPedido } from '../models/checkout.model';
+import {
+  ItemResumenRequest,
+  LineaPedido,
+  MedioPago,
+  ResumenPedido,
+} from '../models/checkout.model';
 
 /** Largo mínimo de una dirección con sentido ("Av. 1"), como en el prototipo. */
 export const DIRECCION_MINIMA = 6;
@@ -65,4 +70,16 @@ export function lineasDelPedido(
         ]
       : [];
   });
+}
+
+export type ResultadoSimulado = 'aprobado' | 'rechazado';
+
+/**
+ * Token del checkout de Culqi SIMULADO (el proyecto aún no tiene llaves de
+ * Culqi). El backend con `CULQI_SIMULADO=true` aprueba `tkn_sim_ok_*` y rechaza
+ * `tkn_sim_ko_*`. No lleva datos de tarjeta: nunca se piden en el simulador.
+ */
+export function tokenSimulado(resultado: ResultadoSimulado, medio: MedioPago): string {
+  const prefijo = resultado === 'aprobado' ? 'tkn_sim_ok_' : 'tkn_sim_ko_';
+  return `${prefijo}${medio}_${crypto.randomUUID().replaceAll('-', '').slice(0, 16)}`;
 }

@@ -1,0 +1,71 @@
+<main class="mx-auto flex max-w-[640px] flex-col gap-[18px] px-[clamp(16px,3vw,40px)] pt-8 pb-14">
+  @if (pedido; as p) {
+    <section
+      class="flex flex-col items-center gap-1.5 rounded-xl border border-[#ececec] bg-white px-6 py-9 text-center"
+    >
+      <span
+        class="mb-2 flex size-12 items-center justify-center rounded-full bg-success-50 text-success-700"
+      >
+        <app-icon name="circle-check" [size]="26" />
+      </span>
+      <h1 class="m-0 font-heading text-xl font-extrabold text-[#1f1f1f]">¡Pago confirmado!</h1>
+      <p class="m-0 text-[12.5px] text-muted-foreground">
+        Tu pedido <strong class="text-[#1f1f1f]">{{ p.codigo }}</strong> quedó registrado como
+        <span class="rounded bg-success-50 px-1.5 py-px text-[11px] font-bold text-success-700"
+          >Pagado</span
+        >.
+      </p>
+    </section>
+
+    <section class="rounded-xl border border-[#ececec] bg-white px-5 py-[18px]">
+      <h2 class="m-0 mb-3 font-heading text-sm font-extrabold text-[#1f1f1f]">
+        Detalle del pedido
+      </h2>
+      <ul class="m-0 flex list-none flex-col gap-2 border-b border-[#f0f0f0] p-0 pb-3.5">
+        @for (item of p.items; track item.producto_presentacion_id) {
+          <li class="flex items-baseline justify-between gap-3 text-xs">
+            <span class="min-w-0 text-[#1f1f1f]">
+              <span class="font-bold">{{ item.producto }}</span>
+              <span class="text-muted-foreground">
+                · {{ item.presentacion }} · {{ item.cantidad }} × {{ precio(item.precio_aplicado) }}
+              </span>
+            </span>
+            <span class="font-extrabold whitespace-nowrap text-[#1f1f1f]">{{
+              precio(item.subtotal)
+            }}</span>
+          </li>
+        }
+      </ul>
+      <dl class="m-0 flex flex-col gap-2 pt-3.5 text-[11.5px]">
+        @if (p.direccion_entrega) {
+          <div class="flex justify-between gap-3">
+            <dt class="whitespace-nowrap text-muted-foreground">Entrega en</dt>
+            <dd class="m-0 text-right font-semibold text-[#1f1f1f]">{{ p.direccion_entrega }}</dd>
+          </div>
+        }
+        <div class="flex justify-between gap-3">
+          <dt class="whitespace-nowrap text-muted-foreground">Medio de pago</dt>
+          <dd class="m-0 text-right font-semibold text-[#1f1f1f]">Culqi</dd>
+        </div>
+        @if (p.pago?.numero_operacion; as operacion) {
+          <div class="flex justify-between gap-3">
+            <dt class="whitespace-nowrap text-muted-foreground">N.º de operación</dt>
+            <dd class="m-0 text-right font-semibold break-all text-[#1f1f1f]">{{ operacion }}</dd>
+          </div>
+        }
+        <div class="flex items-baseline justify-between gap-3 pt-2">
+          <dt class="font-heading text-sm font-extrabold text-[#1f1f1f]">Total pagado</dt>
+          <dd class="m-0 font-heading text-[22px] font-extrabold whitespace-nowrap text-primary">
+            {{ precio(p.total) }}
+          </dd>
+        </div>
+      </dl>
+    </section>
+
+    <a
+      routerLink="/catalogo"
+      class="flex h-10 items-center justify-center rounded-lg bg-primary text-[13px] font-bold text-white hover:bg-primary-hover"
+      >Seguir comprando</a
+    >
+  }
+</main>
