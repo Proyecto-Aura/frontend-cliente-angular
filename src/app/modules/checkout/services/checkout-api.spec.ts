@@ -50,6 +50,31 @@ describe('CheckoutApi (HU-B-007)', () => {
     expect(status).toBe(400);
   });
 
+  describe('consultar (HU-B-013)', () => {
+    it('gets the own order by id and returns it with its status', () => {
+      const pedido = { id: 7, codigo: 'PED-000007', estado: 'confirmado' };
+      let resultado: unknown;
+
+      api.consultar(7).subscribe((r) => (resultado = r));
+      const req = httpMock.expectOne(`${environment.apiUrl}/portal/pedidos/7`);
+      req.flush(pedido);
+
+      expect(req.request.method).toBe('GET');
+      expect(resultado).toEqual(pedido);
+    });
+
+    it('propagates a 404 when the order is not the client’s', () => {
+      let status = 0;
+
+      api.consultar(9).subscribe({ error: (err: { status: number }) => (status = err.status) });
+      httpMock
+        .expectOne(`${environment.apiUrl}/portal/pedidos/9`)
+        .flush({ message: 'Pedido no encontrado' }, { status: 404, statusText: 'Not Found' });
+
+      expect(status).toBe(404);
+    });
+  });
+
   describe('pagar (HU-B-008)', () => {
     const PEDIDOS_URL = `${environment.apiUrl}/portal/pedidos`;
     const pedido = {

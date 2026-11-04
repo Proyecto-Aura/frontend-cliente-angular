@@ -1,15 +1,23 @@
-import { Component, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { Icon } from '../../../../shared/ui/icon/icon';
+import { apiErrorMessage } from '../../../../shared/utils/api-error';
 import { formatearPrecio } from '../../../catalogo/utils/catalogo.utils';
 import { PedidoPagado } from '../../models/checkout.model';
+import { CheckoutApi } from '../../services/checkout-api';
+
+const ETIQUETA_ESTADO: Record<string, string> = {
+  confirmado: 'Confirmado',
+};
 
 /**
- * Pedido pagado (HU-B-008, RF-B26 y RF-B28): confirma el resultado del pago y
- * muestra el pedido como "Pagado". El pedido llega en el estado de la
- * navegación desde el checkout; si se entra sin él (enlace directo) se vuelve al
- * catálogo. Ver el historial de pedidos es de otra HU (HU-B-011).
+ * Pedido y su estado (HU-B-013, RF-B37; antes HU-B-008, RF-B26 y RF-B28): carga
+ * el pedido propio por su id desde el backend y muestra su estado, "Confirmado"
+ * una vez que el pago se completa. Al leerlo del servidor sobrevive a recargar la
+ * página. Ver el historial de pedidos es de otra HU (HU-B-011).
  */
 @Component({
   selector: 'app-checkout-exito',
@@ -18,18 +26,47 @@ import { PedidoPagado } from '../../models/checkout.model';
   templateUrl: './checkout-exito.html',
 })
 export class CheckoutExito {
-  private readonly router = inject(Router);
+  private readonly api = inject(CheckoutApi);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly id = Number(inject(ActivatedRoute).snapshot.paramMap.get('id'));
 
-  protected readonly pedido: PedidoPagado | null = leerPedido();
+  protected readonly pedido = signal<PedidoPagado | null>(null);
+  protected readonly cargando = signal(false);
+  protected readonly error = signal<string | null>(null);
+  protected readonly noEncontrado = signal(false);
   protected readonly precio = formatearPrecio;
 
   constructor() {
-    if (!this.pedido) void this.router.navigate(['/catalogo'], { replaceUrl: true });
+    this.cargar();
   }
-}
 
-/** El pedido que dejó el checkout en el estado de la navegación (sobrevive a recargar). */
-function leerPedido(): PedidoPagado | null {
-  const estado = history.state as { pedido?: PedidoPagado } | null;
-  return estado?.pedido?.codigo ? estado.pedido : null;
+  protected etiqueta(estado: string): string {
+    return ETIQUETA_ESTADO[estado] ?? estado.replaceAll('_', ' ');
+  }
+
+  protected cargar(): void {
+    if (!Number.isInteger(this.id) || this.id <= 0) {
+      this.noEncontrado.set(true);
+      return;
+    }
+    this.cargando.set(true);
+    this.error.set(null);
+    this.api
+      .consultar(this.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (pedido) => {
+          this.pedido.set(pedido);
+          this.cargando.set(false);
+        },
+        error: (err: unknown) => {
+          this.cargando.set(false);
+          if (err instanceof HttpErrorResponse && err.status === 404) {
+            this.noEncontrado.set(true);
+            return;
+          }
+          this.error.set(apiErrorMessage(err, 'No pudimos cargar tu pedido. Inténtalo de nuevo.'));
+        },
+      });
+  }
 }

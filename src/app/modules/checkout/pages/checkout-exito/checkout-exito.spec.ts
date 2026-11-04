@@ -1,10 +1,14 @@
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router, provideRouter } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 
+import { environment } from '../../../../../environments/environment';
 import { PedidoPagado } from '../../models/checkout.model';
 import { CheckoutExito } from './checkout-exito';
 
-describe('CheckoutExito (HU-B-008, RF-B26 y RF-B28)', () => {
+describe('CheckoutExito (HU-B-013, RF-B37; HU-B-008)', () => {
+  const URL = `${environment.apiUrl}/portal/pedidos/7`;
   const PEDIDO: PedidoPagado = {
     id: 7,
     codigo: 'PED-000007',
@@ -39,36 +43,80 @@ describe('CheckoutExito (HU-B-008, RF-B26 y RF-B28)', () => {
   };
 
   let fixture: ComponentFixture<CheckoutExito>;
-  let navegar: ReturnType<typeof vi.spyOn>;
+  let httpMock: HttpTestingController;
+  // Doble de la ruta activa: el id se fija en cada prueba antes de crear la pantalla.
+  const ruta = { snapshot: { paramMap: convertToParamMap({}) } };
 
   const raiz = () => fixture.nativeElement as HTMLElement;
   const texto = () =>
     raiz()
       .innerHTML.replace(/<!--[\s\S]*?-->|<[^>]+>/g, ' ')
       .replace(/\s+/g, ' ');
-  const abrir = (estado: unknown) => {
-    history.replaceState(estado, '');
+  const boton = (nombre: string) =>
+    [...raiz().querySelectorAll('button')].find((b) => b.textContent!.includes(nombre));
+
+  /** Abre la pantalla de un pedido; el id viene de la ruta, como en la app. */
+  const abrir = (id: string) => {
+    ruta.snapshot = { paramMap: convertToParamMap({ id }) };
     fixture = TestBed.createComponent(CheckoutExito);
     fixture.detectChanges();
   };
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [provideRouter([])] });
-    navegar = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([]),
+        { provide: ActivatedRoute, useValue: ruta },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
+    });
+    httpMock = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => history.replaceState(null, ''));
+  afterEach(() => httpMock.verify());
 
-  it('confirms the payment and shows the order as paid (RF-B26, RF-B28)', () => {
-    abrir({ pedido: PEDIDO });
+  it('asks the backend for the order of the route, not the navigation state (RF-B37)', () => {
+    abrir('7');
 
-    expect(raiz().querySelector('h1')!.textContent).toContain('¡Pago confirmado!');
-    expect(texto()).toContain('Tu pedido PED-000007 quedó registrado como Pagado');
-    expect(navegar).not.toHaveBeenCalled();
+    const req = httpMock.expectOne(URL);
+
+    expect(req.request.method).toBe('GET');
+    req.flush(PEDIDO);
+  });
+
+  it('shows a loading state while the order arrives', () => {
+    abrir('7');
+
+    expect(raiz().querySelector('[aria-label="Cargando tu pedido"]')).not.toBeNull();
+    expect(raiz().querySelector('h1')).toBeNull();
+    httpMock.expectOne(URL).flush(PEDIDO);
+  });
+
+  it('shows the status "Confirmado" once the payment is complete (RF-B37)', () => {
+    abrir('7');
+    httpMock.expectOne(URL).flush(PEDIDO);
+    fixture.detectChanges();
+
+    expect(raiz().querySelector('h1')!.textContent).toContain('¡Pedido confirmado!');
+    expect(texto()).toContain('Tu pedido PED-000007 está Confirmado');
+    expect(raiz().querySelector('[aria-label="Cargando tu pedido"]')).toBeNull();
+  });
+
+  it('does not say "Confirmado" for an order in another status', () => {
+    abrir('7');
+    httpMock.expectOne(URL).flush({ ...PEDIDO, estado: 'en_camino' });
+    fixture.detectChanges();
+
+    expect(raiz().querySelector('h1')!.textContent).toContain('Estado de tu pedido');
+    expect(texto()).toContain('está en camino');
+    expect(texto()).not.toContain('Confirmado');
   });
 
   it('lists each line with the price that was charged, wholesale included', () => {
-    abrir({ pedido: PEDIDO });
+    abrir('7');
+    httpMock.expectOne(URL).flush(PEDIDO);
+    fixture.detectChanges();
 
     expect(raiz().querySelectorAll('li')).toHaveLength(2);
     expect(texto()).toContain('Chifles salados · 250g · 30 × S/ 4.20');
@@ -77,7 +125,9 @@ describe('CheckoutExito (HU-B-008, RF-B26 y RF-B28)', () => {
   });
 
   it('shows where it is delivered, how it was paid and the total', () => {
-    abrir({ pedido: PEDIDO });
+    abrir('7');
+    httpMock.expectOne(URL).flush(PEDIDO);
+    fixture.detectChanges();
 
     expect(texto()).toContain('Entrega en Av. Los Girasoles 123 · Ref: puerta verde');
     expect(texto()).toContain('Medio de pago Culqi');
@@ -86,21 +136,23 @@ describe('CheckoutExito (HU-B-008, RF-B26 y RF-B28)', () => {
   });
 
   it('hides the delivery address and the operation number when there are none', () => {
-    abrir({
-      pedido: {
-        ...PEDIDO,
-        tipo_entrega: 'recojo_tienda',
-        direccion_entrega: null,
-        pago: { ...PEDIDO.pago!, numero_operacion: null },
-      },
+    abrir('7');
+    httpMock.expectOne(URL).flush({
+      ...PEDIDO,
+      tipo_entrega: 'recojo_tienda',
+      direccion_entrega: null,
+      pago: { ...PEDIDO.pago!, numero_operacion: null },
     });
+    fixture.detectChanges();
 
     expect(texto()).not.toContain('Entrega en');
     expect(texto()).not.toContain('N.º de operación');
   });
 
   it('lets the client keep shopping', () => {
-    abrir({ pedido: PEDIDO });
+    abrir('7');
+    httpMock.expectOne(URL).flush(PEDIDO);
+    fixture.detectChanges();
 
     const enlace = [...raiz().querySelectorAll<HTMLAnchorElement>('a')].find((a) =>
       a.textContent!.includes('Seguir comprando'),
@@ -108,16 +160,43 @@ describe('CheckoutExito (HU-B-008, RF-B26 y RF-B28)', () => {
     expect(enlace.getAttribute('href')).toBe('/catalogo');
   });
 
-  it('goes back to the catalog when it is opened without an order', () => {
-    abrir(null);
+  it('says the order was not found when it does not exist or is not the client’s (404)', () => {
+    abrir('7');
+    httpMock
+      .expectOne(URL)
+      .flush({ message: 'Pedido no encontrado' }, { status: 404, statusText: 'Not Found' });
+    fixture.detectChanges();
 
-    expect(navegar).toHaveBeenCalledWith(['/catalogo'], { replaceUrl: true });
-    expect(raiz().querySelector('h1')).toBeNull();
+    expect(raiz().querySelector('h1')!.textContent).toContain('Pedido no encontrado');
+    expect(raiz().querySelector('[role="alert"]')).not.toBeNull();
+    expect(boton('Reintentar')).toBeUndefined();
+    expect(texto()).not.toContain('Confirmado');
   });
 
-  it('ignores a navigation state that is not an order', () => {
-    abrir({ pedido: { algo: 'raro' } });
+  it('does not call the backend with an id that is not a number', () => {
+    abrir('abc');
+    fixture.detectChanges();
 
-    expect(navegar).toHaveBeenCalledWith(['/catalogo'], { replaceUrl: true });
+    httpMock.expectNone(() => true);
+    expect(raiz().querySelector('h1')!.textContent).toContain('Pedido no encontrado');
+  });
+
+  it('shows the server error and lets the client retry (RF-B37)', () => {
+    abrir('7');
+    httpMock
+      .expectOne(URL)
+      .flush({ message: 'Fallo interno' }, { status: 500, statusText: 'Server Error' });
+    fixture.detectChanges();
+
+    expect(raiz().querySelector('[role="alert"]')).not.toBeNull();
+    expect(raiz().querySelector('h1')).toBeNull();
+
+    boton('Reintentar')!.click();
+    fixture.detectChanges();
+    httpMock.expectOne(URL).flush(PEDIDO);
+    fixture.detectChanges();
+
+    expect(texto()).toContain('Tu pedido PED-000007 está Confirmado');
+    expect(raiz().querySelector('[role="alert"]')).toBeNull();
   });
 });

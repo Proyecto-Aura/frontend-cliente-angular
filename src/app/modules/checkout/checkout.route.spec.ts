@@ -17,7 +17,7 @@ describe('CHECKOUT_ROUTES (HU-B-007, HU-B-008)', () => {
   });
 
   it('protects and lazy-loads the paid order page', async () => {
-    const exito = CHECKOUT_ROUTES.find((r) => r.path === 'exito')!;
+    const exito = CHECKOUT_ROUTES.find((r) => r.path === 'exito/:id')!;
     const cargar = exito.loadComponent as () => Promise<unknown>;
 
     expect(exito.canActivate).toEqual([sesionGuard]);

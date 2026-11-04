@@ -191,7 +191,7 @@ export class Checkout {
       .subscribe({
         next: (pedido) => {
           this.avisos.mostrar('Pago confirmado', `Tu pedido ${pedido.codigo} está pagado.`);
-          void this.router.navigate(['/checkout/exito'], { state: { pedido } }).then(() => {
+          void this.router.navigate(['/checkout/exito', pedido.id]).then(() => {
             pedido.items.forEach((i) => this.carrito.eliminar(i.producto_presentacion_id));
           });
         },
