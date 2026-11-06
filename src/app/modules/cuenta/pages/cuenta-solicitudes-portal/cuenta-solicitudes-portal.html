@@ -2,12 +2,53 @@
   <app-cuenta-solicitud-confirmacion [solicitud]="solicitud" />
 }
 <app-cuenta-solicitudes
+  [solicitudes]="solicitudes.solicitudes()"
+  [cargando]="solicitudes.cargando()"
+  [error]="solicitudes.error()"
   [accionesDisponibles]="true"
   (nuevaSolicitud)="formularioAbierto.set(true)"
+  (verDetalle)="solicitudes.abrirDetalle($event)"
+  (reintentar)="solicitudes.cargar()"
 />
+@if (solicitudes.meta(); as meta) {
+  @if (meta.total_pages > 1) {
+    <nav
+      aria-label="Páginas de solicitudes"
+      class="mt-5 flex flex-wrap items-center justify-between gap-3 text-xs"
+    >
+      <button
+        type="button"
+        class="min-h-9 rounded-md border border-border px-3 enabled:cursor-pointer disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        [disabled]="solicitudes.cargando() || solicitudes.pagina() <= 1"
+        (click)="solicitudes.cargar(solicitudes.pagina() - 1)"
+      >
+        Anterior
+      </button>
+      <span role="status">Página {{ solicitudes.pagina() }} de {{ meta.total_pages }}</span>
+      <button
+        type="button"
+        class="min-h-9 rounded-md border border-border px-3 enabled:cursor-pointer disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        [disabled]="solicitudes.cargando() || solicitudes.pagina() >= meta.total_pages"
+        (click)="solicitudes.cargar(solicitudes.pagina() + 1)"
+      >
+        Siguiente
+      </button>
+    </nav>
+  }
+}
+@if (solicitudes.detalleId(); as id) {
+  <app-cuenta-solicitud-detalle
+    [solicitud]="solicitudes.detalle()"
+    [cargando]="solicitudes.cargandoDetalle()"
+    [error]="solicitudes.errorDetalle()"
+    (reintentar)="solicitudes.abrirDetalle(id)"
+    (cerrar)="solicitudes.cerrarDetalle()"
+  />
+}
 @if (formularioAbierto()) {
   <app-cuenta-nueva-solicitud
     (cerrar)="formularioAbierto.set(false)"
     (registrada)="registrada($event)"
+    (revisarPedidos)="solicitudes.cargar(1)"
   />
 }

@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { environment } from '../../../../environments/environment';
 import { Session } from '../../../shared/auth/session';
 import { authTokenInterceptor } from '../../../shared/data-access/interceptors/auth-token.interceptor';
-import { SOLICITUD_REGISTRADA_PRUEBA } from '../testing/reembolsos-data';
+import { PAGINA_SOLICITUDES_PRUEBA, SOLICITUD_REGISTRADA_PRUEBA } from '../testing/reembolsos-data';
 import { ReembolsosApi } from './reembolsos-api';
 
 describe('ReembolsosApi', () => {
@@ -33,6 +33,66 @@ describe('ReembolsosApi', () => {
   afterEach(() => {
     http.verify();
     localStorage.clear();
+  });
+
+  it('reads the own paginated portal list with JWT and the optional published state filter', () => {
+    const respuesta = vi.fn();
+    api.listar(2, 'rechazado').subscribe(respuesta);
+    const req = http.expectOne((r) => r.url === url);
+    expect(req.request.method).toBe('GET');
+    expect(req.request.params.get('page')).toBe('2');
+    expect(req.request.params.get('limit')).toBe('10');
+    expect(req.request.params.get('estado')).toBe('rechazado');
+    expect(req.request.headers.get('Authorization')).toBe('Bearer jwt-prueba');
+    req.flush(PAGINA_SOLICITUDES_PRUEBA);
+    expect(respuesta).toHaveBeenCalledExactlyOnceWith(PAGINA_SOLICITUDES_PRUEBA);
+  });
+
+  it('makes a fresh detail request on every opening instead of retaining the signed evidence link', () => {
+    for (const revision of [1, 2]) {
+      const respuesta = vi.fn();
+      api.detalle(31).subscribe(respuesta);
+      const req = http.expectOne(`${url}/31`);
+      expect(req.request.method).toBe('GET');
+      expect(req.request.headers.get('Authorization')).toBe('Bearer jwt-prueba');
+      const detalle = {
+        ...SOLICITUD_REGISTRADA_PRUEBA,
+        evidencia: {
+          nombre: 'prueba.pdf',
+          url: `https://example.test/prueba.pdf?revision=${revision}`,
+        },
+      };
+      req.flush(detalle);
+      expect(respuesta).toHaveBeenCalledExactlyOnceWith(detalle);
+    }
+  });
+
+  it.each([
+    { ...PAGINA_SOLICITUDES_PRUEBA, meta: null },
+    {
+      ...PAGINA_SOLICITUDES_PRUEBA,
+      data: [{ ...SOLICITUD_REGISTRADA_PRUEBA, estado: 'desconocido' }],
+    },
+    {
+      ...PAGINA_SOLICITUDES_PRUEBA,
+      data: [{ ...SOLICITUD_REGISTRADA_PRUEBA, fecha_solicitud: 'incorrecta' }],
+    },
+  ])('does not interpret malformed list data as a valid empty result', (respuesta) => {
+    const next = vi.fn(),
+      error = vi.fn();
+    api.listar().subscribe({ next, error });
+    http.expectOne((r) => r.url === url).flush(respuesta);
+    expect(next).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledOnce();
+  });
+
+  it('rejects a detail that does not correspond to the requested id', () => {
+    const next = vi.fn(),
+      error = vi.fn();
+    api.detalle(99).subscribe({ next, error });
+    http.expectOne(`${url}/99`).flush(SOLICITUD_REGISTRADA_PRUEBA);
+    expect(next).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledOnce();
   });
 
   it('sends only the four multipart fields with JWT, preserving the file and automatic boundary', () => {

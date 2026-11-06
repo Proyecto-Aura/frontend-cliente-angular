@@ -52,6 +52,9 @@ describe('CUENTA_ROUTES (HU-B-014)', () => {
 
   const responderPerfil = () => {
     for (const req of httpMock.match(`${environment.apiUrl}/perfil`)) req.flush(PERFIL);
+    for (const req of httpMock.match((r) => r.url === `${environment.apiUrl}/portal/reembolsos`)) {
+      req.flush({ data: [], meta: { total: 0, page: 1, limit: 10, total_pages: 0 } });
+    }
   };
 
   it('redirects direct access to requests to the real login route without a session', async () => {

@@ -1,5 +1,14 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, computed, inject, input, output } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  afterRenderEffect,
+  computed,
+  inject,
+  input,
+  output,
+  viewChild,
+} from '@angular/core';
 
 import { CuentaDialogo } from '../cuenta-dialogo/cuenta-dialogo';
 import { Icon } from '../../../../shared/ui/icon/icon';
@@ -21,23 +30,38 @@ const dia = new Intl.DateTimeFormat('es-PE', {
   templateUrl: './cuenta-solicitud-detalle.html',
 })
 export class CuentaSolicitudDetalle {
-  readonly solicitud = input.required<SolicitudDetalle>();
+  readonly solicitud = input<SolicitudDetalle | null>(null);
+  readonly cargando = input(false);
+  readonly error = input<string | null>(null);
+  readonly reintentar = output<void>();
   readonly cerrar = output<void>();
   private readonly documento = inject(DOCUMENT);
+  private readonly botonCerrar = viewChild<ElementRef<HTMLButtonElement>>('botonCerrar');
+  private readonly estadoCarga = viewChild<ElementRef<HTMLElement>>('estadoCarga');
+  private readonly errorCarga = viewChild<ElementRef<HTMLElement>>('errorCarga');
+  protected readonly titulo = computed(() => {
+    const solicitud = this.solicitud();
+    return solicitud ? `Solicitud ${solicitud.codigo}` : 'Detalle de solicitud';
+  });
 
-  protected readonly monto = computed(() => moneda.format(this.solicitud().monto));
-  protected readonly fechaSolicitud = computed(() =>
-    dia.format(new Date(this.solicitud().fecha_solicitud)),
-  );
+  protected readonly monto = computed(() => {
+    const solicitud = this.solicitud();
+    return solicitud ? moneda.format(solicitud.monto) : '';
+  });
+  protected readonly fechaSolicitud = computed(() => {
+    const solicitud = this.solicitud();
+    return solicitud ? dia.format(new Date(solicitud.fecha_solicitud)) : '';
+  });
   protected readonly fechaResolucion = computed(() => {
-    const fecha = this.solicitud().fecha_resolucion;
+    const fecha = this.solicitud()?.fecha_resolucion;
     return fecha ? dia.format(new Date(fecha)) : null;
   });
-  protected readonly etiquetaEstado = computed(
-    () => SOLICITUD_ESTADOS[this.solicitud().estado].etiqueta,
-  );
+  protected readonly etiquetaEstado = computed(() => {
+    const solicitud = this.solicitud();
+    return solicitud ? SOLICITUD_ESTADOS[solicitud.estado].etiqueta : '';
+  });
   protected readonly enlaceEvidencia = computed(() => {
-    const evidencia = this.solicitud().evidencia;
+    const evidencia = this.solicitud()?.evidencia;
     if (!evidencia) return null;
     try {
       const url = new URL(evidencia.url);
@@ -50,4 +74,22 @@ export class CuentaSolicitudDetalle {
       return null;
     }
   });
+
+  constructor() {
+    afterRenderEffect({
+      write: () => {
+        const destino = this.cargando()
+          ? this.estadoCarga()
+          : this.error()
+            ? this.errorCarga()
+            : this.solicitud()
+              ? this.botonCerrar()
+              : undefined;
+        // La directiva captura el origen antes de abrir. Solo mover el foco de un modal ya abierto.
+        if (this.botonCerrar()?.nativeElement.closest('dialog')?.open) {
+          destino?.nativeElement.focus({ preventScroll: true });
+        }
+      },
+    });
+  }
 }

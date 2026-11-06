@@ -3,6 +3,7 @@
   #modal="cuentaDialogo"
   aria-labelledby="solicitud-detalle-titulo"
   aria-modal="true"
+  [attr.aria-busy]="cargando()"
   class="m-auto max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-[520px] overflow-y-auto rounded-lg border-0 bg-surface p-5 text-foreground shadow-[0_20px_48px_rgba(33,33,33,0.24)] backdrop:bg-[rgba(33,33,33,0.45)] sm:p-7"
   (cerrarSolicitado)="cerrar.emit()"
 >
@@ -11,9 +12,10 @@
       id="solicitud-detalle-titulo"
       class="m-0 min-w-0 text-xl leading-snug font-semibold break-words"
     >
-      Solicitud {{ solicitud().codigo }}
+      {{ titulo() }}
     </h2>
     <button
+      #botonCerrar
       data-foco-inicial
       type="button"
       aria-label="Cerrar detalle"
@@ -24,108 +26,134 @@
     </button>
   </div>
 
-  <div class="mt-5 mb-4 flex flex-wrap items-center justify-between gap-2">
-    <span class="text-[13px] font-semibold text-primary">Solicitud de reembolso</span>
-    <app-cuenta-solicitud-estado [estado]="solicitud().estado" />
-  </div>
+  @if (cargando()) {
+    <p
+      #estadoCarga
+      tabindex="-1"
+      role="status"
+      class="mt-5 mb-0 text-sm text-neutral-700 focus:outline-none"
+    >
+      Cargando detalle de la solicitud…
+    </p>
+  } @else if (error(); as mensaje) {
+    <div
+      #errorCarga
+      tabindex="-1"
+      role="alert"
+      class="mt-5 rounded-lg border border-destructive/40 bg-danger-50 p-4 text-xs text-danger-700 focus:outline-2 focus:outline-primary"
+    >
+      <p class="m-0">{{ mensaje }}</p>
+      <button
+        type="button"
+        class="mt-3 min-h-9 cursor-pointer rounded-md border border-border bg-surface px-3 text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        (click)="reintentar.emit()"
+      >
+        Volver a intentar
+      </button>
+    </div>
+  } @else if (solicitud(); as solicitud) {
+    <div class="mt-5 mb-4 flex flex-wrap items-center justify-between gap-2">
+      <span class="text-[13px] font-semibold text-primary">Solicitud de reembolso</span>
+      <app-cuenta-solicitud-estado [estado]="solicitud.estado" />
+    </div>
 
-  <dl
-    class="m-0 divide-y divide-border overflow-hidden rounded-lg border border-border text-[13px]"
-  >
-    <div class="flex flex-wrap justify-between gap-2 px-3.5 py-3">
-      <dt class="text-neutral-700">Tipo</dt>
-      <dd class="m-0">Reembolso</dd>
-    </div>
-    <div class="flex flex-wrap justify-between gap-2 px-3.5 py-3">
-      <dt class="text-neutral-700">Pedido</dt>
-      <dd class="m-0 break-all">#{{ solicitud().pedido.codigo }}</dd>
-    </div>
-    <div class="flex flex-wrap justify-between gap-2 px-3.5 py-3">
-      <dt class="text-neutral-700">Fecha de solicitud</dt>
-      <dd class="m-0">
-        <time [attr.datetime]="solicitud().fecha_solicitud">{{ fechaSolicitud() }}</time>
-      </dd>
-    </div>
-    <div class="flex flex-wrap justify-between gap-2 px-3.5 py-3">
-      <dt class="text-neutral-700">Importe</dt>
-      <dd class="m-0">{{ monto() }}</dd>
-    </div>
-    @if (fechaResolucion(); as fecha) {
+    <dl
+      class="m-0 divide-y divide-border overflow-hidden rounded-lg border border-border text-[13px]"
+    >
       <div class="flex flex-wrap justify-between gap-2 px-3.5 py-3">
-        <dt class="text-neutral-700">Fecha de resolución</dt>
+        <dt class="text-neutral-700">Tipo</dt>
+        <dd class="m-0">Reembolso</dd>
+      </div>
+      <div class="flex flex-wrap justify-between gap-2 px-3.5 py-3">
+        <dt class="text-neutral-700">Pedido</dt>
+        <dd class="m-0 break-all">#{{ solicitud.pedido.codigo }}</dd>
+      </div>
+      <div class="flex flex-wrap justify-between gap-2 px-3.5 py-3">
+        <dt class="text-neutral-700">Fecha de solicitud</dt>
         <dd class="m-0">
-          <time [attr.datetime]="solicitud().fecha_resolucion">{{ fecha }}</time>
+          <time [attr.datetime]="solicitud.fecha_solicitud">{{ fechaSolicitud() }}</time>
         </dd>
       </div>
-    }
-    <div class="flex flex-col gap-2 px-3.5 py-3 sm:flex-row sm:justify-between sm:gap-4">
-      <dt class="shrink-0 text-neutral-700">Motivo de la solicitud</dt>
-      <dd
-        class="m-0 min-w-0 whitespace-pre-wrap break-words [overflow-wrap:anywhere] sm:text-right"
-      >
-        {{ solicitud().motivo_cliente }}
-      </dd>
-    </div>
-    @if (solicitud().estado === 'rechazado' && solicitud().motivo_rechazo; as motivo) {
+      <div class="flex flex-wrap justify-between gap-2 px-3.5 py-3">
+        <dt class="text-neutral-700">Importe</dt>
+        <dd class="m-0">{{ monto() }}</dd>
+      </div>
+      @if (fechaResolucion(); as fecha) {
+        <div class="flex flex-wrap justify-between gap-2 px-3.5 py-3">
+          <dt class="text-neutral-700">Fecha de resolución</dt>
+          <dd class="m-0">
+            <time [attr.datetime]="solicitud.fecha_resolucion">{{ fecha }}</time>
+          </dd>
+        </div>
+      }
       <div class="flex flex-col gap-2 px-3.5 py-3 sm:flex-row sm:justify-between sm:gap-4">
-        <dt class="shrink-0 font-semibold text-danger-700">Motivo del rechazo</dt>
+        <dt class="shrink-0 text-neutral-700">Motivo de la solicitud</dt>
         <dd
           class="m-0 min-w-0 whitespace-pre-wrap break-words [overflow-wrap:anywhere] sm:text-right"
         >
-          {{ motivo }}
+          {{ solicitud.motivo_cliente }}
         </dd>
       </div>
-    }
-    @if (solicitud().evidencia; as evidencia) {
-      <div class="flex flex-col gap-2 px-3.5 py-3">
-        <dt class="text-neutral-700">Evidencia</dt>
-        <dd class="m-0 min-w-0">
-          @if (enlaceEvidencia(); as enlace) {
-            <a
-              [href]="enlace"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="font-semibold break-words text-primary underline underline-offset-2 [overflow-wrap:anywhere] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-              >{{ evidencia.nombre }}<span class="sr-only"> (se abre en otra pestaña)</span></a
-            >
-            <p class="mt-1 mb-0 text-[11px] text-neutral-700">
-              Si el enlace caducó, vuelve a consultar la solicitud.
-            </p>
-          } @else {
-            <span class="break-words [overflow-wrap:anywhere]">{{ evidencia.nombre }}</span>
-            <p class="mt-1 mb-0 text-xs text-danger-700">
-              El enlace de evidencia no está disponible.
-            </p>
-          }
-        </dd>
-      </div>
-    }
-  </dl>
+      @if (solicitud.estado === 'rechazado' && solicitud.motivo_rechazo; as motivo) {
+        <div class="flex flex-col gap-2 px-3.5 py-3 sm:flex-row sm:justify-between sm:gap-4">
+          <dt class="shrink-0 font-semibold text-danger-700">Motivo del rechazo</dt>
+          <dd
+            class="m-0 min-w-0 whitespace-pre-wrap break-words [overflow-wrap:anywhere] sm:text-right"
+          >
+            {{ motivo }}
+          </dd>
+        </div>
+      }
+      @if (solicitud.evidencia; as evidencia) {
+        <div class="flex flex-col gap-2 px-3.5 py-3">
+          <dt class="text-neutral-700">Evidencia</dt>
+          <dd class="m-0 min-w-0">
+            @if (enlaceEvidencia(); as enlace) {
+              <a
+                [href]="enlace"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-semibold break-words text-primary underline underline-offset-2 [overflow-wrap:anywhere] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                >{{ evidencia.nombre }}<span class="sr-only"> (se abre en otra pestaña)</span></a
+              >
+              <p class="mt-1 mb-0 text-[11px] text-neutral-700">
+                Si el enlace caducó, vuelve a consultar la solicitud.
+              </p>
+            } @else {
+              <span class="break-words [overflow-wrap:anywhere]">{{ evidencia.nombre }}</span>
+              <p class="mt-1 mb-0 text-xs text-danger-700">
+                El enlace de evidencia no está disponible.
+              </p>
+            }
+          </dd>
+        </div>
+      }
+    </dl>
 
-  <section aria-labelledby="solicitud-seguimiento-titulo" class="mt-5">
-    <h3 id="solicitud-seguimiento-titulo" class="m-0 text-xs font-bold">Seguimiento</h3>
-    <ol class="mt-3 mb-0 ml-1 list-none border-l border-border p-0">
-      <li
-        class="relative pb-4 pl-4 before:absolute before:top-1 before:-left-[5px] before:size-2 before:rounded-full before:bg-primary"
-      >
-        <p class="m-0 text-xs font-semibold">Solicitud registrada</p>
-        <time
-          class="mt-1 block text-[11px] text-neutral-700"
-          [attr.datetime]="solicitud().fecha_solicitud"
-          >{{ fechaSolicitud() }}</time
+    <section aria-labelledby="solicitud-seguimiento-titulo" class="mt-5">
+      <h3 id="solicitud-seguimiento-titulo" class="m-0 text-xs font-bold">Seguimiento</h3>
+      <ol class="mt-3 mb-0 ml-1 list-none border-l border-border p-0">
+        <li
+          class="relative pb-4 pl-4 before:absolute before:top-1 before:-left-[5px] before:size-2 before:rounded-full before:bg-primary"
         >
-      </li>
-      <li
-        class="relative pl-4 before:absolute before:top-1 before:-left-[5px] before:size-2 before:rounded-full before:bg-primary"
-      >
-        <p class="m-0 text-xs font-semibold">Estado actual: {{ etiquetaEstado() }}</p>
-        @if (solicitud().estado === 'pendiente') {
-          <p class="mt-1 mb-0 text-[11px] text-neutral-700">Pendiente de resolución</p>
-        }
-      </li>
-    </ol>
-  </section>
-
+          <p class="m-0 text-xs font-semibold">Solicitud registrada</p>
+          <time
+            class="mt-1 block text-[11px] text-neutral-700"
+            [attr.datetime]="solicitud.fecha_solicitud"
+            >{{ fechaSolicitud() }}</time
+          >
+        </li>
+        <li
+          class="relative pl-4 before:absolute before:top-1 before:-left-[5px] before:size-2 before:rounded-full before:bg-primary"
+        >
+          <p class="m-0 text-xs font-semibold">Estado actual: {{ etiquetaEstado() }}</p>
+          @if (solicitud.estado === 'pendiente') {
+            <p class="mt-1 mb-0 text-[11px] text-neutral-700">Pendiente de resolución</p>
+          }
+        </li>
+      </ol>
+    </section>
+  }
   <div class="mt-6 flex justify-end">
     <button
       type="button"
