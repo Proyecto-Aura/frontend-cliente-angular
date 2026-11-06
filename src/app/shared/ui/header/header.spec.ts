@@ -27,6 +27,7 @@ describe('Header', () => {
         provideRouter([
           { path: 'catalogo', component: ConHeader },
           { path: 'nosotros', component: ConHeader },
+          { path: 'mi-cuenta/solicitudes', component: ConHeader },
         ]),
       ],
     });
@@ -61,6 +62,24 @@ describe('Header', () => {
     harness.detectChanges();
 
     expect(enlace('Mi perfil')?.getAttribute('href')).toBe('/mi-cuenta/perfil');
+    expect(enlace('Mis Solicitudes')?.getAttribute('href')).toBe('/mi-cuenta/solicitudes');
+  });
+
+  it('navigates to requests and closes the account menu', async () => {
+    localStorage.setItem('francos.access_token', 'jwt');
+    await crear();
+
+    raiz().querySelector<HTMLButtonElement>('button[aria-haspopup="menu"]')!.click();
+    await harness.fixture.whenStable();
+    enlace('Mis Solicitudes')!.click();
+    await harness.fixture.whenStable();
+
+    expect(TestBed.inject(Router).url).toBe('/mi-cuenta/solicitudes');
+    expect(raiz().querySelector('[role="menu"]')).toBeNull();
+
+    raiz().querySelector<HTMLButtonElement>('button[aria-haspopup="menu"]')!.click();
+    await harness.fixture.whenStable();
+    expect(enlace('Mis Solicitudes')?.getAttribute('aria-current')).toBe('page');
   });
 
   it('logs out from the "Mi cuenta" menu and goes to the login (HU-B-004)', async () => {

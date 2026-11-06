@@ -13,7 +13,7 @@
       {{ perfil.nombreVisible() || 'Mi cuenta' }}
     </div>
     @if (perfil.tipoVisible()) {
-      <div class="mt-px text-[11px] text-[#8a8a8a]">{{ perfil.tipoVisible() }}</div>
+      <div class="mt-px text-[11px] text-neutral-700">{{ perfil.tipoVisible() }}</div>
     }
   </div>
 </div>
@@ -26,6 +26,34 @@
     class="flex h-9 items-center gap-2.5 rounded-lg px-3 text-[13px] whitespace-nowrap text-[#424242] no-underline transition-colors hover:bg-[#fdecec]"
   >
     <app-icon name="user" [size]="16" />Mi perfil
+  </a>
+  <a
+    routerLink="/mi-cuenta/pedidos"
+    routerLinkActive
+    #pedidosActivos="routerLinkActive"
+    ariaCurrentWhenActive="page"
+    class="flex h-9 items-center gap-2.5 rounded-lg px-3 text-[13px] whitespace-nowrap no-underline transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+    [class]="
+      pedidosActivos.isActive
+        ? 'bg-primary font-bold text-white hover:bg-primary-hover'
+        : 'text-foreground hover:bg-accent'
+    "
+  >
+    <app-icon name="shopping-cart" [size]="16" />Mis Pedidos
+  </a>
+  <a
+    routerLink="/mi-cuenta/solicitudes"
+    routerLinkActive
+    #solicitudesActivas="routerLinkActive"
+    ariaCurrentWhenActive="page"
+    class="flex h-9 items-center gap-2.5 rounded-lg px-3 text-[13px] whitespace-nowrap no-underline transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+    [class]="
+      solicitudesActivas.isActive
+        ? 'bg-primary font-bold text-white hover:bg-primary-hover'
+        : 'text-foreground hover:bg-accent'
+    "
+  >
+    <app-icon name="message-square" [size]="16" />Mis Solicitudes
   </a>
 </nav>
 

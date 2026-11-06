@@ -1,0 +1,7 @@
+<app-cuenta-solicitudes
+  [accionesDisponibles]="true"
+  (nuevaSolicitud)="formularioAbierto.set(true)"
+/>
+@if (formularioAbierto()) {
+  <app-cuenta-nueva-solicitud (cerrar)="formularioAbierto.set(false)" />
+}

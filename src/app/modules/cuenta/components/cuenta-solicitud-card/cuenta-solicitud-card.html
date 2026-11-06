@@ -1,0 +1,60 @@
+<article
+  class="flex flex-col gap-3 rounded-xl border bg-surface p-[18px] sm:flex-row sm:items-start sm:gap-4"
+  [class]="visual().borde"
+  [attr.aria-labelledby]="'solicitud-' + solicitud().id"
+>
+  <div class="flex min-w-0 flex-1 items-start gap-3.5">
+    <span
+      class="flex size-9 shrink-0 items-center justify-center rounded-[10px]"
+      [class]="visual().tono"
+    >
+      <app-icon name="message-square" [size]="17" />
+    </span>
+    <div class="min-w-0 flex-1">
+      <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+        <h2
+          [id]="'solicitud-' + solicitud().id"
+          class="m-0 text-[11.5px] font-bold text-foreground"
+        >
+          #{{ solicitud().codigo }}
+        </h2>
+        <span
+          class="rounded-full bg-danger-50 px-2 py-0.5 text-[10px] leading-tight font-semibold text-danger-700"
+          >Reembolso</span
+        >
+        <span class="text-[11px] text-neutral-700">Pedido #{{ solicitud().pedido.codigo }}</span>
+      </div>
+      @if (solicitud().motivo; as motivo) {
+        <p class="mt-1.5 mb-0 text-[13px] leading-snug font-semibold break-words text-primary">
+          {{ motivo }}
+        </p>
+      }
+      @if (solicitud().descripcion; as descripcion) {
+        <p class="mt-1 mb-0 text-xs leading-relaxed break-words text-neutral-700">
+          {{ descripcion }}
+        </p>
+      }
+      <div class="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11.5px]">
+        <time class="text-neutral-700" [attr.datetime]="solicitud().fecha_solicitud">{{
+          fecha()
+        }}</time>
+        <span class="font-semibold text-primary">{{ monto() }}</span>
+      </div>
+    </div>
+  </div>
+  <div
+    class="flex shrink-0 items-center justify-between gap-2 pl-[50px] sm:flex-col sm:items-end sm:pl-0"
+  >
+    <app-cuenta-solicitud-estado [estado]="solicitud().estado" />
+    <button
+      type="button"
+      class="min-h-8 rounded-md border border-border bg-surface px-3 text-[11.5px] text-foreground transition-colors enabled:cursor-pointer enabled:hover:border-primary enabled:hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed"
+      [disabled]="!detalleDisponible()"
+      [attr.aria-label]="'Ver detalle de la solicitud ' + solicitud().codigo"
+      [attr.title]="detalleDisponible() ? null : 'Detalle aún no disponible'"
+      (click)="verDetalle.emit(solicitud().id)"
+    >
+      Ver detalle
+    </button>
+  </div>
+</article>

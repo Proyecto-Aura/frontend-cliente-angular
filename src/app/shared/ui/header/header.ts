@@ -21,6 +21,7 @@ export const ESPERA_BUSQUEDA_MS = 300;
   selector: 'app-header',
   imports: [NgOptimizedImage, RouterLink, RouterLinkActive, Icon],
   host: {
+    role: 'banner',
     class:
       'sticky top-0 z-40 block bg-[linear-gradient(90deg,#d32f2f_0%,#c62828_100%)] shadow-[0_2px_12px_rgba(120,10,10,0.18)]',
   },
