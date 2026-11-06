@@ -58,23 +58,32 @@ describe('CuentaPedidoCard', () => {
     expect(raiz.querySelector('button')).toBeNull();
   });
 
-  it('does not show a refund action for an unpaid or unverified order and allows retry', async () => {
+  it.each<EstadoPedido>(['confirmado', 'entregado', 'cancelado'])(
+    'RF-B39: no permite solicitar sobre un pedido %s sin pago',
+    async (estado) => {
+      const fixture = TestBed.createComponent(CuentaPedidoCard);
+      fixture.componentRef.setInput('pedido', {
+        resumen: { ...resumen, estado },
+        detalle: { ...detalle, estado, pago: null },
+        errorDetalle: null,
+      });
+      await fixture.whenStable();
+      const raiz = fixture.nativeElement as HTMLElement;
+      expect(raiz.textContent).toContain('Sin pago registrado');
+      expect(raiz.querySelector('[aria-label^="Solicitar reembolso"]')).toBeNull();
+      expect(raiz.querySelector('app-cuenta-solicitud-estado')).toBeNull();
+    },
+  );
+
+  it('does not show a refund action for an unverified order and allows retry', async () => {
     const fixture = TestBed.createComponent(CuentaPedidoCard);
-    fixture.componentRef.setInput('pedido', {
-      resumen,
-      detalle: { ...detalle, pago: null },
-      errorDetalle: null,
-    });
-    await fixture.whenStable();
-    const raiz = fixture.nativeElement as HTMLElement;
-    expect(raiz.textContent).toContain('Sin pago registrado');
-    expect(raiz.querySelector('button')).toBeNull();
     fixture.componentRef.setInput('pedido', {
       resumen,
       detalle: null,
       errorDetalle: 'No pudimos verificar este pedido.',
     });
     await fixture.whenStable();
+    const raiz = fixture.nativeElement as HTMLElement;
     const reintentar = vi.fn();
     fixture.componentInstance.reintentar.subscribe(reintentar);
     expect(raiz.querySelector('[role=alert]')).not.toBeNull();

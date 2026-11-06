@@ -74,7 +74,19 @@ describe('CuentaSolicitudDetalle', () => {
     const dialogo = await crear(solicitud);
     expect(dialogo.textContent).toContain(solicitud.pedido.codigo);
     expect(dialogo.textContent).toContain(solicitud.motivo_cliente);
-    expect(dialogo.textContent).toContain('Estado actual:');
+    const etiquetasEstado = {
+      pendiente: 'Pendiente',
+      aprobado: 'Aprobado',
+      rechazado: 'Rechazado',
+      reembolsado: 'Reembolsado',
+    };
+    const esperado = etiquetasEstado[solicitud.estado];
+    expect(dialogo.querySelector('app-cuenta-solicitud-estado')?.textContent?.trim()).toBe(
+      esperado,
+    );
+    expect(dialogo.querySelector('ol li:last-child p')?.textContent?.trim()).toBe(
+      `Estado actual: ${esperado}`,
+    );
     const etiquetas = [...dialogo.querySelectorAll('dt')].map((e) => e.textContent?.trim());
     expect(etiquetas.includes('Fecha de resolución')).toBe(!!solicitud.fecha_resolucion);
     expect(etiquetas.includes('Motivo del rechazo')).toBe(solicitud.estado === 'rechazado');

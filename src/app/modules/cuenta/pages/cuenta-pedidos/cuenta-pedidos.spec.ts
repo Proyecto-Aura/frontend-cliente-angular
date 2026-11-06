@@ -20,6 +20,50 @@ describe('CuentaPedidos', () => {
   });
   afterEach(() => http.verify());
 
+  it('RF-B40/RF-B41: muestra el estado exacto de cada solicitud en su pedido y no ofrece solicitar otra', async () => {
+    const estados = [
+      { estado: 'pendiente', etiqueta: 'Pendiente' },
+      { estado: 'aprobado', etiqueta: 'Aprobado' },
+      { estado: 'rechazado', etiqueta: 'Rechazado' },
+      { estado: 'reembolsado', etiqueta: 'Reembolsado' },
+    ] as const;
+    const pedidos = estados.map(({ estado }, indice) => ({
+      ...PEDIDO_RESUMEN_PRUEBA,
+      id: 21 + indice,
+      codigo: `PED-PRUEBA-${21 + indice}`,
+      reembolso: { id: 31 + indice, estado },
+    }));
+    const fixture = TestBed.createComponent(CuentaPedidos);
+    http
+      .expectOne((r) => r.url === url)
+      .flush({
+        data: pedidos,
+        meta: { total: 4, page: 1, limit: 10, total_pages: 1 },
+      });
+    for (const pedido of pedidos) {
+      http.expectOne(`${url}/${pedido.id}`).flush({
+        ...PEDIDO_DETALLE_PRUEBA,
+        id: pedido.id,
+        codigo: pedido.codigo,
+      });
+    }
+    await fixture.whenStable();
+    const raiz = fixture.nativeElement as HTMLElement;
+    expect(raiz.querySelectorAll('article')).toHaveLength(4);
+    for (const [indice, pedido] of pedidos.entries()) {
+      const tarjeta = raiz.querySelector<HTMLElement>(
+        `article[aria-labelledby="pedido-${pedido.id}"]`,
+      )!;
+      expect(tarjeta.querySelector('h2')?.textContent?.trim()).toBe(`#${pedido.codigo}`);
+      expect(tarjeta.textContent).toContain('Solicitud de reembolso registrada');
+      expect(tarjeta.querySelector('app-cuenta-solicitud-estado')?.textContent?.trim()).toBe(
+        estados[indice].etiqueta,
+      );
+      expect(tarjeta.querySelector('[aria-label^="Solicitar reembolso"]')).toBeNull();
+    }
+    http.expectNone((r) => r.method === 'POST');
+  });
+
   it('loads an empty real page and does not substitute example orders', async () => {
     const fixture = TestBed.createComponent(CuentaPedidos);
     http
