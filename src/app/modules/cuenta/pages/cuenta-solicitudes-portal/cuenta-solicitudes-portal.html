@@ -1,7 +1,13 @@
+@if (confirmacion(); as solicitud) {
+  <app-cuenta-solicitud-confirmacion [solicitud]="solicitud" />
+}
 <app-cuenta-solicitudes
   [accionesDisponibles]="true"
   (nuevaSolicitud)="formularioAbierto.set(true)"
 />
 @if (formularioAbierto()) {
-  <app-cuenta-nueva-solicitud (cerrar)="formularioAbierto.set(false)" />
+  <app-cuenta-nueva-solicitud
+    (cerrar)="formularioAbierto.set(false)"
+    (registrada)="registrada($event)"
+  />
 }

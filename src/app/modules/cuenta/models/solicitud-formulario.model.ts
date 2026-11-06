@@ -33,7 +33,7 @@ export function pedidoParaReembolso(vista: PedidoPortalVista): PedidoReembolsoVi
   };
 }
 
-/** Valores validados en memoria; esta fase no los envía ni los guarda. */
+/** Datos validados del multipart; el monto y el cliente los determina el servidor. */
 export interface SolicitudPreparada {
   pedido_id: number;
   motivo: string;

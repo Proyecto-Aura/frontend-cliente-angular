@@ -1,5 +1,6 @@
 import {
   Component,
+  afterRenderEffect,
   ElementRef,
   computed,
   inject,
@@ -39,6 +40,7 @@ export class CuentaSolicitudFormulario {
   readonly pedidos = input<readonly PedidoReembolsoVista[]>([]);
   readonly demostracion = input(false);
   readonly enviando = input(false);
+  readonly errorEnvio = input<string | null>(null);
   readonly envioDisponible = input(true);
   readonly pedidoInicialId = input<number | null>(null);
   readonly cargandoPedidos = input(false);
@@ -53,6 +55,8 @@ export class CuentaSolicitudFormulario {
 
   private readonly elemento = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly selectorArchivo = viewChild<ElementRef<HTMLInputElement>>('selectorArchivo');
+  private readonly errorEnvioNodo = viewChild<ElementRef<HTMLElement>>('errorEnvioNodo');
+  private readonly estadoEnvioNodo = viewChild<ElementRef<HTMLElement>>('estadoEnvioNodo');
   protected readonly motivos = MOTIVOS_SOLICITUD;
   protected readonly intentado = signal(false);
   protected readonly archivoRevisado = signal(false);
@@ -114,6 +118,19 @@ export class CuentaSolicitudFormulario {
     return null;
   });
 
+  constructor() {
+    afterRenderEffect({
+      write: () => {
+        const destino = this.enviando()
+          ? this.estadoEnvioNodo()
+          : this.errorEnvio()
+            ? this.errorEnvioNodo()
+            : undefined;
+        destino?.nativeElement.focus();
+      },
+    });
+  }
+
   protected errorCampo(campo: 'pedido_id' | 'motivo' | 'descripcion'): string | null {
     const estado = this.formulario[campo]();
     return this.intentado() || estado.touched() ? (estado.errors()[0]?.message ?? null) : null;
@@ -149,7 +166,7 @@ export class CuentaSolicitudFormulario {
       this.cargandoPedidos() ||
       this.errorPedidos() ||
       !this.elegibles().length ||
-      this.validacionCompleta()
+      (this.demostracion() && this.validacionCompleta())
     )
       return;
     this.intentado.set(true);

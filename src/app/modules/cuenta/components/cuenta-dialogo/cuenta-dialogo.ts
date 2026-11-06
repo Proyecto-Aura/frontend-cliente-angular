@@ -1,5 +1,13 @@
 import { DOCUMENT } from '@angular/common';
-import { Directive, DestroyRef, ElementRef, afterNextRender, inject, output } from '@angular/core';
+import {
+  Directive,
+  DestroyRef,
+  ElementRef,
+  afterNextRender,
+  inject,
+  input,
+  output,
+} from '@angular/core';
 
 @Directive({
   selector: 'dialog[appCuentaDialogo]',
@@ -11,6 +19,7 @@ import { Directive, DestroyRef, ElementRef, afterNextRender, inject, output } fr
   },
 })
 export class CuentaDialogo {
+  readonly bloqueado = input(false);
   readonly cerrarSolicitado = output<void>();
   private readonly documento = inject(DOCUMENT);
   private readonly elemento = inject<ElementRef<HTMLDialogElement>>(ElementRef);
@@ -34,6 +43,7 @@ export class CuentaDialogo {
 
   cerrar(event?: Event): void {
     event?.preventDefault();
+    if (this.bloqueado()) return;
     this.restaurarFoco();
     this.cerrarSolicitado.emit();
   }
