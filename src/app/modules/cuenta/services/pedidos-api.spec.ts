@@ -25,6 +25,7 @@ describe('PedidosApi', () => {
     api.listar(2).subscribe();
     const lista = http.expectOne((r) => r.url === `${environment.apiUrl}/portal/pedidos`);
     expect(lista.request.method).toBe('GET');
+    expect(lista.request.body).toBeNull();
     expect(lista.request.params.get('page')).toBe('2');
     expect(lista.request.params.get('limit')).toBe('10');
     expect(lista.request.headers.get('Authorization')).toBe('Bearer jwt-prueba');
@@ -32,6 +33,7 @@ describe('PedidosApi', () => {
     api.detalle(21).subscribe();
     const detalle = http.expectOne(`${environment.apiUrl}/portal/pedidos/21`);
     expect(detalle.request.method).toBe('GET');
+    expect(detalle.request.body).toBeNull();
     expect(detalle.request.headers.get('Authorization')).toBe('Bearer jwt-prueba');
     detalle.flush({});
   });

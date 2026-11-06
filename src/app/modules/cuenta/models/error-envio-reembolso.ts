@@ -10,8 +10,15 @@ export interface ErrorEnvioReembolso {
 export function errorEnvioReembolso(error: unknown): ErrorEnvioReembolso {
   if (error instanceof HttpErrorResponse) {
     if (error.status === 400 || error.status === 422) {
+      const respaldo = 'Revisa el motivo, la descripción y la evidencia adjunta.';
+      const mensaje = apiErrorMessage(error, respaldo);
+      // class-validator y ParseFilePipe pueden devolver sus mensajes técnicos en inglés.
+      const tecnico =
+        /^(?:Validation failed\b|File is required\b|(?:pedido_id|motivo|descripcion) (?:must|should)\b|property \S+ should not exist)/i.test(
+          mensaje,
+        );
       return {
-        mensaje: apiErrorMessage(error, 'Revisa el motivo, la descripción y la evidencia adjunta.'),
+        mensaje: tecnico ? respaldo : mensaje,
         requiereRevision: false,
       };
     }

@@ -2,6 +2,19 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { errorEnvioReembolso } from './error-envio-reembolso';
 
 describe('Errores al enviar un reembolso', () => {
+  it.each([
+    'File is required',
+    'descripcion must be longer than or equal to 10 characters',
+    'pedido_id must be a positive number',
+    'property monto should not exist',
+  ])('RF-B39: presenta en español el error técnico 400 %s', (message) => {
+    expect(errorEnvioReembolso(new HttpErrorResponse({ status: 400, error: { message } }))).toEqual(
+      {
+        mensaje: 'Revisa el motivo, la descripción y la evidencia adjunta.',
+        requiereRevision: false,
+      },
+    );
+  });
   it('allows correcting invalid data or an oversized file without losing the draft', () => {
     const validacion = errorEnvioReembolso(
       new HttpErrorResponse({

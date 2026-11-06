@@ -53,6 +53,7 @@
       </div>
       <span
         id="solicitud-pedido-error"
+        [attr.role]="errorCampo('pedido_id') ? 'alert' : null"
         [class.hidden]="!errorCampo('pedido_id')"
         class="text-[11px] text-danger-700"
         >{{ errorCampo('pedido_id') }}</span
@@ -161,6 +162,7 @@
       </div>
       <span
         id="solicitud-motivo-error"
+        [attr.role]="errorCampo('motivo') ? 'alert' : null"
         [class.hidden]="!errorCampo('motivo')"
         class="text-[11px] text-danger-700"
         >{{ errorCampo('motivo') }}</span
@@ -188,6 +190,7 @@
       ></textarea>
       <span
         id="solicitud-descripcion-error"
+        [attr.role]="errorCampo('descripcion') ? 'alert' : null"
         [class.hidden]="!errorCampo('descripcion')"
         class="text-[11px] text-danger-700"
         >{{ errorCampo('descripcion') }}</span
@@ -252,6 +255,7 @@
         }
         <span
           id="solicitud-evidencia-error"
+          [attr.role]="(intentado() || archivoRevisado()) && errorArchivo() ? 'alert' : null"
           [class.hidden]="!(intentado() || archivoRevisado()) || !errorArchivo()"
           class="text-[11px] text-danger-700"
           >{{ intentado() || archivoRevisado() ? errorArchivo() : '' }}</span

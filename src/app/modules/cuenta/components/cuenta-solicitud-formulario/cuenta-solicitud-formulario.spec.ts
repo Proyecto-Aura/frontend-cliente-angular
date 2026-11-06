@@ -52,6 +52,30 @@ describe('CuentaSolicitudFormulario', () => {
     await adjuntar(new File(['%PDF-1.4 ejemplo'], 'evidencia.pdf', { type: 'application/pdf' }));
   };
 
+  it('asocia cada control con su label y anuncia los errores de validación con role alert (RF-B39)', async () => {
+    const controles = raiz().querySelectorAll<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >('input[id], select[id], textarea[id]');
+    for (const control of controles) {
+      expect(control.labels?.length, `Label de ${control.id}`).toBeGreaterThan(0);
+      expect(
+        [...control.labels!].some(
+          (label) => label.htmlFor === control.id && !!label.textContent?.trim(),
+        ),
+      ).toBe(true);
+    }
+    await enviar();
+    for (const id of ['motivo', 'descripcion', 'evidencia']) {
+      const campo = raiz().querySelector(`#solicitud-${id}`)!;
+      const error = raiz().querySelector(`#solicitud-${id}-error`)!;
+      expect(campo.getAttribute('aria-describedby')?.split(' ')).toContain(error.id);
+      expect(campo.getAttribute('aria-invalid')).toBe('true');
+      expect(error.classList.contains('hidden')).toBe(false);
+      expect(error.textContent?.trim()).toBeTruthy();
+      expect(error.getAttribute('role'), `Anuncio de ${error.id}`).toBe('alert');
+    }
+  });
+
   it('preselects only an eligible requested id and never silently replaces an unavailable selection', async () => {
     fixture.componentRef.setInput('pedidoInicialId', 502);
     await fixture.whenStable();
@@ -118,12 +142,15 @@ describe('CuentaSolicitudFormulario', () => {
   });
 
   it.each([9, 1001])('rejects a trimmed description of %i characters', async (longitud) => {
+    const validado = vi.fn();
+    component.validado.subscribe(validado);
     await completar(`  ${'x'.repeat(longitud)}  `);
     await enviar();
     expect(raiz().querySelector('#solicitud-descripcion')?.getAttribute('aria-invalid')).toBe(
       'true',
     );
     expect(document.activeElement?.id).toBe('solicitud-descripcion');
+    expect(validado).not.toHaveBeenCalled();
   });
 
   it.each([10, 1000])(
@@ -139,6 +166,8 @@ describe('CuentaSolicitudFormulario', () => {
   );
 
   it('validates whitespace-only reasons and the maximum 150 characters', async () => {
+    const validado = vi.fn();
+    component.validado.subscribe(validado);
     await completar();
     await cambiar('#solicitud-motivo', '    ');
     await enviar();
@@ -146,6 +175,7 @@ describe('CuentaSolicitudFormulario', () => {
     await cambiar('#solicitud-motivo', 'x'.repeat(151));
     await enviar();
     expect(raiz().querySelector('#solicitud-motivo-error')?.textContent).toContain('150');
+    expect(validado).not.toHaveBeenCalled();
   });
 
   it('rejects an injected order id and updates the read-only amount on legitimate selection', async () => {

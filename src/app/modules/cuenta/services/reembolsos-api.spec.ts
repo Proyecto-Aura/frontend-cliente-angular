@@ -103,6 +103,7 @@ describe('ReembolsosApi', () => {
     expect(req.request.headers.get('Authorization')).toBe('Bearer jwt-prueba');
     expect(req.request.headers.has('Content-Type')).toBe(false);
     const datos = req.request.body as FormData;
+    expect(req.request.body).toBeInstanceOf(FormData);
     expect([...datos.keys()]).toEqual(['pedido_id', 'motivo', 'descripcion', 'evidencia']);
     expect(datos.get('pedido_id')).toBe('21');
     expect(datos.get('motivo')).toBe('Otro');
