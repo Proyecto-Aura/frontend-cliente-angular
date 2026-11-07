@@ -13,6 +13,33 @@ import {
 
 describe('CuentaSolicitudesPortal', () => {
   prepararDialogoEnPruebas();
+  it('renders the separate server texts in cards without fetching every detail', async () => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
+    const http = TestBed.inject(HttpTestingController);
+    const fixture = TestBed.createComponent(CuentaSolicitudesPortal);
+    const url = `${environment.apiUrl}/portal/reembolsos`;
+    http
+      .expectOne((r) => r.url === url)
+      .flush({
+        ...PAGINA_SOLICITUDES_PRUEBA,
+        data: [
+          {
+            ...PAGINA_SOLICITUDES_PRUEBA.data[0],
+            motivo: 'Otro: embalaje',
+            descripcion: 'La bolsa recibida estaba rota.',
+          },
+        ],
+      });
+    await fixture.whenStable();
+    const raiz = fixture.nativeElement as HTMLElement;
+    const textos = [...raiz.querySelectorAll('article p')].map((p) => p.textContent?.trim());
+    expect(textos).toEqual(['Otro: embalaje', 'La bolsa recibida estaba rota.']);
+    expect(raiz.textContent).not.toContain('SOL-DEMO');
+    http.expectNone((r) => r.url.startsWith(`${url}/`));
+    http.verify();
+  });
   it('paginates server results and retries a failed list without showing example records', async () => {
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting()],

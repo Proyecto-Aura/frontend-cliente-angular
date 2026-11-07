@@ -68,6 +68,47 @@ describe('ReembolsosApi', () => {
   });
 
   it.each([
+    {
+      motivo: 'Otro: embalaje',
+      descripcion: 'La bolsa llegó rota: revisar el cierre.',
+      fecha_reembolso: '2026-11-07T12:00:00Z',
+    },
+    { motivo: null, descripcion: null, fecha_reembolso: null },
+  ])(
+    'preserves the separate contract fields, including null, without parsing legacy text: %j',
+    (campos) => {
+      const resumen = { ...PAGINA_SOLICITUDES_PRUEBA.data[0], ...campos };
+      const lista = { ...PAGINA_SOLICITUDES_PRUEBA, data: [resumen] };
+      const detalle = { ...SOLICITUD_REGISTRADA_PRUEBA, ...campos };
+      const resultadoLista = vi.fn();
+      const resultadoDetalle = vi.fn();
+      api.listar().subscribe(resultadoLista);
+      http.expectOne((r) => r.url === url).flush(lista);
+      expect(resultadoLista).toHaveBeenCalledExactlyOnceWith(lista);
+      api.detalle(31).subscribe(resultadoDetalle);
+      http.expectOne(`${url}/31`).flush(detalle);
+      expect(resultadoDetalle).toHaveBeenCalledExactlyOnceWith(detalle);
+    },
+  );
+
+  it.each([{ motivo: 123 }, { descripcion: {} }, { fecha_reembolso: 'sin-fecha' }])(
+    'rejects malformed new contract fields instead of displaying them: %j',
+    (campos) => {
+      const next = vi.fn(),
+        error = vi.fn();
+      api.listar().subscribe({ next, error });
+      http
+        .expectOne((r) => r.url === url)
+        .flush({
+          ...PAGINA_SOLICITUDES_PRUEBA,
+          data: [{ ...PAGINA_SOLICITUDES_PRUEBA.data[0], ...campos }],
+        });
+      expect(next).not.toHaveBeenCalled();
+      expect(error).toHaveBeenCalledOnce();
+    },
+  );
+
+  it.each([
     { ...PAGINA_SOLICITUDES_PRUEBA, meta: null },
     {
       ...PAGINA_SOLICITUDES_PRUEBA,

@@ -34,7 +34,7 @@ describe('CuentaSolicitudes', () => {
     }
     expect(raiz.querySelectorAll('article')).toHaveLength(0);
     expect(raiz.textContent).toContain('Consulta tus solicitudes');
-    expect(raiz.textContent).not.toContain('Aún no hay solicitudes');
+    expect(raiz.textContent).not.toContain('Sin solicitudes registradas.');
     expect(raiz.textContent).not.toContain('SOL-DEMO');
     expect(raiz.querySelector('button')?.disabled).toBe(true);
   });
@@ -50,7 +50,10 @@ describe('CuentaSolicitudes', () => {
   it('distinguishes an empty result from a not-yet-loaded list', async () => {
     fixture.componentRef.setInput('solicitudes', []);
     await fixture.whenStable();
-    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Aún no hay solicitudes');
+    const raiz = fixture.nativeElement as HTMLElement;
+    expect(raiz.textContent).toContain('Sin solicitudes registradas.');
+    expect(raiz.querySelector('article')).toBeNull();
+    expect(raiz.textContent).not.toContain('Consulta tus solicitudes');
   });
 
   it('prioritizes loading and error states over any cards', async () => {

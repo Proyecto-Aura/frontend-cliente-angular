@@ -25,5 +25,11 @@ export class CuentaSolicitudCard {
   readonly verDetalle = output<number>();
   protected readonly visual = computed(() => SOLICITUD_ESTADOS[this.solicitud().estado]);
   protected readonly monto = computed(() => moneda.format(this.solicitud().monto));
-  protected readonly fecha = computed(() => dia.format(new Date(this.solicitud().fecha_solicitud)));
+  protected readonly fecha = computed(() => {
+    const partes = dia.formatToParts(new Date(this.solicitud().fecha_solicitud));
+    const valor = (tipo: Intl.DateTimeFormatPartTypes) =>
+      partes.find((p) => p.type === tipo)?.value ?? '';
+    const mes = valor('month').replace('.', '');
+    return `${valor('day')} ${mes.charAt(0).toUpperCase()}${mes.slice(1)}, ${valor('year')}`;
+  });
 }

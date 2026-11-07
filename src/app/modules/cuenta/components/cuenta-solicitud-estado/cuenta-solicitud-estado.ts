@@ -10,7 +10,7 @@ import { SOLICITUD_ESTADOS } from './solicitud-estados';
   host: { class: 'inline-flex' },
   template: `
     <span
-      class="inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[10.5px] leading-tight font-semibold"
+      class="inline-flex h-5 items-center gap-1 whitespace-nowrap rounded-[10px] px-[9px] text-[10.5px] font-bold"
       [class]="visual().tono"
     >
       <app-icon [name]="visual().icono" [size]="11" />{{ visual().etiqueta }}

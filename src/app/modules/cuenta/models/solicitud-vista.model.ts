@@ -8,9 +8,9 @@ export interface SolicitudVista {
   monto: number;
   estado: EstadoSolicitud;
   fecha_solicitud: string;
-  /** Textos opcionales del prototipo. No se deducen del resumen de la API. */
-  motivo?: string;
-  descripcion?: string;
+  /** Textos publicados por la API; pueden faltar en registros históricos. */
+  motivo?: string | null;
+  descripcion?: string | null;
 }
 
 export const ESTADOS_SOLICITUD: readonly EstadoSolicitud[] = [

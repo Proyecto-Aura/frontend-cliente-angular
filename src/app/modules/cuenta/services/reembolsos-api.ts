@@ -21,7 +21,10 @@ const resumenValido = (s: SolicitudResumen) =>
   Number.isFinite(s.monto) &&
   s.monto >= 0 &&
   ESTADOS_SOLICITUD.includes(s.estado) &&
+  (s.motivo === null || typeof s.motivo === 'string') &&
+  (s.descripcion === null || typeof s.descripcion === 'string') &&
   fechaValida(s.fecha_solicitud) &&
+  (s.fecha_reembolso === null || fechaValida(s.fecha_reembolso)) &&
   (s.fecha_resolucion === null || fechaValida(s.fecha_resolucion));
 
 @Service()

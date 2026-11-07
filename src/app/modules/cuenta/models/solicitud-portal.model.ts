@@ -1,9 +1,18 @@
 import { SolicitudDetalle } from './solicitud-detalle.model';
 
-/** GET /portal/reembolsos: motivo y evidencia solo se publican en el detalle. */
+/** GET /portal/reembolsos: textos separados; evidencia solo en el detalle. */
 export type SolicitudResumen = Pick<
   SolicitudDetalle,
-  'id' | 'codigo' | 'pedido' | 'monto' | 'estado' | 'fecha_solicitud' | 'fecha_resolucion'
+  | 'id'
+  | 'codigo'
+  | 'pedido'
+  | 'monto'
+  | 'estado'
+  | 'motivo'
+  | 'descripcion'
+  | 'fecha_solicitud'
+  | 'fecha_resolucion'
+  | 'fecha_reembolso'
 >;
 
 export interface PaginaSolicitudes {

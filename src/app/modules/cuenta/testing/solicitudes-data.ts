@@ -50,6 +50,9 @@ export const SOLICITUDES_DEMO: readonly SolicitudVista[] = [
 export const DETALLES_DEMO: readonly SolicitudDetalle[] = SOLICITUDES_DEMO.map(
   ({ motivo, descripcion, ...solicitud }) => ({
     ...solicitud,
+    motivo: motivo ?? null,
+    descripcion: descripcion ?? null,
+    fecha_reembolso: solicitud.estado === 'reembolsado' ? '2026-09-24T12:00:00Z' : null,
     motivo_cliente: `${motivo}: ${descripcion}`,
     fecha_resolucion: {
       pendiente: null,
