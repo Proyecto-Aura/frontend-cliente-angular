@@ -116,7 +116,7 @@ describe('CuentaSolicitudesPortal', () => {
     http.verify();
   });
 
-  it('opens the real form from Nueva solicitud and shows the server confirmation without fabricating list records', async () => {
+  it('closes the confirmed form and refreshes pending server results without adding a duplicate banner', async () => {
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting()],
     });
@@ -142,10 +142,9 @@ describe('CuentaSolicitudesPortal', () => {
       .flush(PAGINA_SOLICITUDES_PRUEBA);
     await fixture.whenStable();
     expect(raiz.querySelector('dialog')).toBeNull();
-    expect(raiz.querySelector('app-cuenta-solicitud-confirmacion')!.textContent).toContain(
-      'REF-PRUEBA-001',
-    );
-    expect(raiz.querySelector('app-cuenta-solicitud-confirmacion')!.textContent).toContain(
+    expect(raiz.querySelector('app-cuenta-solicitud-confirmacion')).toBeNull();
+    expect(raiz.querySelector('article')?.textContent).toContain('REF-PRUEBA-001');
+    expect(raiz.querySelector('article app-cuenta-solicitud-estado')?.textContent).toContain(
       'Pendiente',
     );
     expect(raiz.querySelectorAll('article')).toHaveLength(1);

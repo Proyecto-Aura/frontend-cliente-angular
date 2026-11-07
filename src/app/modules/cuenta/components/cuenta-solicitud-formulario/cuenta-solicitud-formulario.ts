@@ -77,7 +77,6 @@ export class CuentaSolicitudFormulario {
   );
   protected readonly importe = computed(() => this.seleccionado()?.montoPagado.toFixed(2) ?? '');
   protected readonly archivo = computed(() => this.archivos()[0]);
-  protected readonly cantidadCaracteres = computed(() => this.modelo().descripcion.trim().length);
 
   protected readonly formulario = form(this.modelo, (s) => {
     required(s.pedido_id, { message: 'Selecciona un pedido pagado.' });
@@ -137,7 +136,12 @@ export class CuentaSolicitudFormulario {
   }
 
   protected etiquetaPedido(pedido: PedidoReembolsoVista): string {
-    return `#${pedido.codigo} · ${fecha.format(new Date(pedido.fecha))} · ${moneda.format(pedido.montoPagado)}`;
+    const partes = fecha.formatToParts(new Date(pedido.fecha));
+    const valor = (tipo: Intl.DateTimeFormatPartTypes) =>
+      partes.find((p) => p.type === tipo)?.value ?? '';
+    const mes = valor('month').replace('.', '');
+    const dia = `${valor('day')} ${mes.charAt(0).toUpperCase()}${mes.slice(1)}, ${valor('year')}`;
+    return `#${pedido.codigo} · ${dia} · ${moneda.format(pedido.montoPagado)}`;
   }
 
   protected elegirArchivo(event: Event): void {

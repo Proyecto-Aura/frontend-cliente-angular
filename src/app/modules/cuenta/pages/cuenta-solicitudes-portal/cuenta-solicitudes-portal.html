@@ -1,6 +1,3 @@
-@if (confirmacion(); as solicitud) {
-  <app-cuenta-solicitud-confirmacion [solicitud]="solicitud" />
-}
 <app-cuenta-solicitudes
   [solicitudes]="solicitudes.solicitudes()"
   [cargando]="solicitudes.cargando()"
@@ -48,7 +45,7 @@
 @if (formularioAbierto()) {
   <app-cuenta-nueva-solicitud
     (cerrar)="formularioAbierto.set(false)"
-    (registrada)="registrada($event)"
+    (registrada)="registrada()"
     (revisarPedidos)="solicitudes.cargar(1)"
   />
 }

@@ -1,6 +1,3 @@
-@if (confirmacion(); as solicitud) {
-  <app-cuenta-solicitud-confirmacion [solicitud]="solicitud" />
-}
 <section aria-labelledby="cuenta-pedidos-titulo" [attr.aria-busy]="pedidos.cargando()">
   <div class="font-heading text-[10.5px] font-extrabold tracking-[0.08em] text-primary">
     HISTORIAL
@@ -104,7 +101,7 @@
     [pedidoInicialId]="id"
     [paginaInicial]="pedidos.pagina()"
     (cerrar)="seleccionado.set(null)"
-    (registrada)="registrada($event)"
+    (registrada)="registrada()"
     (revisarPedidos)="pedidos.cargar()"
   />
 }

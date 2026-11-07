@@ -1,7 +1,8 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
+import { Avisos } from '../../../../shared/ui/aviso/aviso';
 import { environment } from '../../../../../environments/environment';
 import { CuentaPedidos } from './cuenta-pedidos';
 import { PEDIDO_DETALLE_PRUEBA, PEDIDO_RESUMEN_PRUEBA } from '../../testing/pedidos-data';
@@ -114,7 +115,8 @@ describe('CuentaPedidos', () => {
     expect(raiz.querySelector('dialog')).toBeNull();
   });
 
-  it('confirms a saved request, closes the modal and reloads orders to remove the duplicate action', async () => {
+  it('navigates to requests only after confirmation, keeps the toast and removes the duplicate action', async () => {
+    const navegar = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     const fixture = TestBed.createComponent(CuentaPedidos);
     const raiz = fixture.nativeElement as HTMLElement;
     const lista = () => http.expectOne((r) => r.url === url);
@@ -150,6 +152,7 @@ describe('CuentaPedidos', () => {
     raiz
       .querySelector('form')!
       .dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    expect(navegar).not.toHaveBeenCalled();
     http
       .expectOne(`${environment.apiUrl}/portal/reembolsos`)
       .flush(SOLICITUD_REGISTRADA_PRUEBA, { status: 201, statusText: 'Created' });
@@ -160,16 +163,13 @@ describe('CuentaPedidos', () => {
     http.expectOne(`${url}/21`).flush(PEDIDO_DETALLE_PRUEBA);
     await fixture.whenStable();
     expect(raiz.querySelector('dialog')).toBeNull();
-    expect(raiz.querySelector('app-cuenta-solicitud-confirmacion')!.textContent).toContain(
-      'REF-PRUEBA-001',
-    );
-    expect(raiz.querySelector('app-cuenta-solicitud-confirmacion')!.textContent).toContain(
-      'Pendiente',
-    );
+    expect(navegar).toHaveBeenCalledExactlyOnceWith(['/mi-cuenta/solicitudes']);
+    expect(TestBed.inject(Avisos).actual()?.titulo).toContain('REF-PRUEBA-001');
+    expect(TestBed.inject(Avisos).actual()?.detalle).toContain('Pendiente');
+    expect(raiz.querySelector('app-cuenta-solicitud-confirmacion')).toBeNull();
     expect(raiz.querySelector('article')!.textContent).toContain(
       'Solicitud de reembolso registrada',
     );
     expect(raiz.querySelector('article button')).toBeNull();
-    expect(document.activeElement).toBe(raiz.querySelector('app-cuenta-solicitud-confirmacion'));
   });
 });

@@ -92,6 +92,12 @@ describe('CUENTA_ROUTES (HU-B-014)', () => {
 
     expect(raiz.querySelector('app-cuenta-sidebar')).not.toBeNull();
     expect(raiz.querySelector('h1')?.textContent?.trim()).toBe('Mis Solicitudes');
+    expect(document.activeElement).toBe(raiz.querySelector('h1'));
+    const contenido = raiz.querySelector('app-cuenta-solicitudes-portal')!;
+    const avisos = raiz.querySelector('app-cuenta-notificaciones')!;
+    expect(
+      contenido.compareDocumentPosition(avisos) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
     expect(enlace.getAttribute('aria-current')).toBe('page');
     expect(nav.querySelectorAll('[aria-current="page"]')).toHaveLength(1);
     expect(

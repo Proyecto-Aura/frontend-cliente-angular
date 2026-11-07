@@ -126,6 +126,28 @@ describe('CuentaSolicitudFormulario', () => {
     expect(raiz().querySelector<HTMLInputElement>('#solicitud-importe')?.readOnly).toBe(true);
   });
 
+  it('keeps the prototype field order and exposes attachment restrictions without a visual counter', () => {
+    expect(
+      [...raiz().querySelectorAll('select[id], textarea[id], input[id]')].map((c) => c.id),
+    ).toEqual([
+      'solicitud-pedido_id',
+      'solicitud-producto',
+      'solicitud-motivo',
+      'solicitud-descripcion',
+      'solicitud-importe',
+      'solicitud-evidencia',
+    ]);
+    expect(raiz().querySelector('#solicitud-contador')).toBeNull();
+    const archivo = raiz().querySelector<HTMLInputElement>('#solicitud-evidencia')!;
+    expect(archivo.required).toBe(true);
+    expect(archivo.labels).toHaveLength(1);
+    expect(archivo.getAttribute('aria-labelledby')).toBe('solicitud-evidencia-etiqueta');
+    expect(archivo.accept).toContain('image/webp');
+    const ayuda = document.getElementById('solicitud-evidencia-ayuda')!;
+    expect(archivo.getAttribute('aria-describedby')?.split(' ')).toContain(ayuda.id);
+    expect(ayuda.textContent).toContain('Menos de 5 MiB');
+  });
+
   it('shows required errors and focuses the first invalid field on submit', async () => {
     const validado = vi.fn();
     component.validado.subscribe(validado);
