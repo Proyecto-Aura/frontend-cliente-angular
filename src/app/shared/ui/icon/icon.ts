@@ -2,6 +2,8 @@ import { Component, input } from '@angular/core';
 
 export type IconName =
   | 'arrow-left'
+  | 'banknote'
+  | 'clock'
   | 'check'
   | 'circle-check'
   | 'circle-x'
@@ -12,9 +14,11 @@ export type IconName =
   | 'info'
   | 'log-out'
   | 'mail'
+  | 'message-square'
   | 'map-pin'
   | 'minus'
   | 'phone'
+  | 'paperclip'
   | 'plus'
   | 'qr-code'
   | 'search'
