@@ -14,7 +14,6 @@ import { CuentaDialogo } from '../cuenta-dialogo/cuenta-dialogo';
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { SolicitudDetalle } from '../../models/solicitud-detalle.model';
 import { CuentaSolicitudEstado } from '../cuenta-solicitud-estado/cuenta-solicitud-estado';
-import { SOLICITUD_ESTADOS } from '../cuenta-solicitud-estado/solicitud-estados';
 
 const moneda = new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' });
 const dia = new Intl.DateTimeFormat('es-PE', {
@@ -23,6 +22,13 @@ const dia = new Intl.DateTimeFormat('es-PE', {
   year: 'numeric',
   timeZone: 'UTC',
 });
+const formatearFecha = (fecha: string): string => {
+  const partes = dia.formatToParts(new Date(fecha));
+  const valor = (tipo: Intl.DateTimeFormatPartTypes) =>
+    partes.find((p) => p.type === tipo)?.value ?? '';
+  const mes = valor('month').replace('.', '');
+  return `${valor('day')} ${mes.charAt(0).toUpperCase()}${mes.slice(1)}, ${valor('year')}`;
+};
 
 @Component({
   imports: [Icon, CuentaSolicitudEstado, CuentaDialogo],
@@ -50,15 +56,33 @@ export class CuentaSolicitudDetalle {
   });
   protected readonly fechaSolicitud = computed(() => {
     const solicitud = this.solicitud();
-    return solicitud ? dia.format(new Date(solicitud.fecha_solicitud)) : '';
+    return solicitud ? formatearFecha(solicitud.fecha_solicitud) : '';
   });
-  protected readonly fechaResolucion = computed(() => {
-    const fecha = this.solicitud()?.fecha_resolucion;
-    return fecha ? dia.format(new Date(fecha)) : null;
+  protected readonly seguimiento = computed(() => {
+    const s = this.solicitud();
+    if (!s) return [];
+    const etapa = (texto: string, fecha: string | null, pendiente = false) => ({
+      texto,
+      fecha,
+      fechaTexto: fecha ? formatearFecha(fecha) : null,
+      pendiente,
+    });
+    const etapas = [etapa('Solicitud registrada', s.fecha_solicitud)];
+    if (s.estado === 'pendiente') {
+      etapas.push(etapa('En revisión', null, true));
+    } else {
+      etapas.push(etapa(s.estado === 'rechazado' ? 'Rechazada' : 'Aprobada', s.fecha_resolucion));
+      if (s.estado === 'reembolsado') etapas.push(etapa('Reembolsada', s.fecha_reembolso));
+    }
+    return etapas;
   });
-  protected readonly etiquetaEstado = computed(() => {
-    const solicitud = this.solicitud();
-    return solicitud ? SOLICITUD_ESTADOS[solicitud.estado].etiqueta : '';
+  protected readonly colorSeguimiento = computed(() => {
+    const estado = this.solicitud()?.estado;
+    return estado === 'rechazado'
+      ? 'bg-primary'
+      : estado === 'pendiente'
+        ? 'bg-[#B7791F]'
+        : 'bg-[#2E9E5B]';
   });
   protected readonly enlaceEvidencia = computed(() => {
     const evidencia = this.solicitud()?.evidencia;

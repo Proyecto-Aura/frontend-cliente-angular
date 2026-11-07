@@ -100,7 +100,7 @@ describe('CuentaSolicitudesPortal', () => {
     http.expectOne(`${url}/31`).flush(SOLICITUD_REGISTRADA_PRUEBA);
     await fixture.whenStable();
     expect(raiz.querySelector('dialog')?.textContent).toContain(
-      SOLICITUD_REGISTRADA_PRUEBA.motivo_cliente,
+      SOLICITUD_REGISTRADA_PRUEBA.descripcion,
     );
     raiz.querySelector<HTMLButtonElement>('[aria-label="Cerrar detalle"]')!.click();
     await fixture.whenStable();

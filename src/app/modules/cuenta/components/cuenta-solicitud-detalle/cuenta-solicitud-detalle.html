@@ -4,14 +4,11 @@
   aria-labelledby="solicitud-detalle-titulo"
   aria-modal="true"
   [attr.aria-busy]="cargando()"
-  class="m-auto max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-[520px] overflow-y-auto rounded-lg border-0 bg-surface p-5 text-foreground shadow-[0_20px_48px_rgba(33,33,33,0.24)] backdrop:bg-[rgba(33,33,33,0.45)] sm:p-7"
+  class="m-auto max-h-[min(90dvh,calc(100dvh-48px))] w-[calc(100%-48px)] max-w-[520px] overflow-y-auto rounded-lg border-0 bg-surface p-7 text-foreground shadow-[0_20px_48px_rgba(33,33,33,0.24)] backdrop:bg-[rgba(33,33,33,0.45)]"
   (cerrarSolicitado)="cerrar.emit()"
 >
-  <div class="flex items-start justify-between gap-4">
-    <h2
-      id="solicitud-detalle-titulo"
-      class="m-0 min-w-0 text-xl leading-snug font-semibold break-words"
-    >
+  <div class="flex items-center justify-between">
+    <h2 id="solicitud-detalle-titulo" class="m-0 min-w-0 flex-1 truncate text-xl font-semibold">
       {{ titulo() }}
     </h2>
     <button
@@ -52,62 +49,59 @@
       </button>
     </div>
   } @else if (solicitud(); as solicitud) {
-    <div class="mt-5 mb-4 flex flex-wrap items-center justify-between gap-2">
-      <span class="text-[13px] font-semibold text-primary">Solicitud de reembolso</span>
+    <div class="my-[18px] flex flex-wrap items-center justify-between gap-3">
+      @if (solicitud.motivo; as motivo) {
+        <span
+          class="min-w-0 flex-1 text-[13px] font-bold [overflow-wrap:anywhere] text-danger-700"
+          >{{ motivo }}</span
+        >
+      }
       <app-cuenta-solicitud-estado [estado]="solicitud.estado" />
     </div>
 
     <dl
-      class="m-0 divide-y divide-border overflow-hidden rounded-lg border border-border text-[13px]"
+      class="m-0 divide-y divide-[#ECECEC] overflow-hidden rounded-lg border border-[#ECECEC] text-[13px] [&>div]:flex [&>div]:justify-between [&>div]:gap-4 [&>div]:px-3.5 [&>div]:py-2.5 [&_dt]:shrink-0 [&_dt]:whitespace-nowrap [&_dt]:text-neutral-700 [&_dd]:m-0 [&_dd]:min-w-0 [&_dd]:flex-1 [&_dd]:text-right [&_dd]:font-medium [&_dd]:[overflow-wrap:anywhere]"
     >
-      <div class="flex flex-wrap justify-between gap-2 px-3.5 py-3">
-        <dt class="text-neutral-700">Tipo</dt>
-        <dd class="m-0">Reembolso</dd>
+      <div>
+        <dt>Tipo</dt>
+        <dd>Reembolso</dd>
       </div>
-      <div class="flex flex-wrap justify-between gap-2 px-3.5 py-3">
-        <dt class="text-neutral-700">Pedido</dt>
-        <dd class="m-0 break-all">#{{ solicitud.pedido.codigo }}</dd>
+      <div>
+        <dt>Pedido</dt>
+        <dd>#{{ solicitud.pedido.codigo }}</dd>
       </div>
-      <div class="flex flex-wrap justify-between gap-2 px-3.5 py-3">
-        <dt class="text-neutral-700">Fecha de solicitud</dt>
-        <dd class="m-0">
+      <div>
+        <dt>Producto</dt>
+        <dd>Pedido completo</dd>
+      </div>
+      <div>
+        <dt>Fecha de solicitud</dt>
+        <dd>
           <time [attr.datetime]="solicitud.fecha_solicitud">{{ fechaSolicitud() }}</time>
         </dd>
       </div>
-      <div class="flex flex-wrap justify-between gap-2 px-3.5 py-3">
-        <dt class="text-neutral-700">Importe</dt>
-        <dd class="m-0">{{ monto() }}</dd>
+      <div>
+        <dt>Importe</dt>
+        <dd>{{ monto() }}</dd>
       </div>
-      @if (fechaResolucion(); as fecha) {
-        <div class="flex flex-wrap justify-between gap-2 px-3.5 py-3">
-          <dt class="text-neutral-700">Fecha de resolución</dt>
-          <dd class="m-0">
-            <time [attr.datetime]="solicitud.fecha_resolucion">{{ fecha }}</time>
-          </dd>
+      @if (solicitud.descripcion; as descripcion) {
+        <div>
+          <dt>Descripción</dt>
+          <dd class="whitespace-pre-wrap">{{ descripcion }}</dd>
         </div>
       }
-      <div class="flex flex-col gap-2 px-3.5 py-3 sm:flex-row sm:justify-between sm:gap-4">
-        <dt class="shrink-0 text-neutral-700">Motivo de la solicitud</dt>
-        <dd
-          class="m-0 min-w-0 whitespace-pre-wrap break-words [overflow-wrap:anywhere] sm:text-right"
-        >
-          {{ solicitud.motivo_cliente }}
-        </dd>
-      </div>
       @if (solicitud.estado === 'rechazado' && solicitud.motivo_rechazo; as motivo) {
-        <div class="flex flex-col gap-2 px-3.5 py-3 sm:flex-row sm:justify-between sm:gap-4">
-          <dt class="shrink-0 font-semibold text-danger-700">Motivo del rechazo</dt>
-          <dd
-            class="m-0 min-w-0 whitespace-pre-wrap break-words [overflow-wrap:anywhere] sm:text-right"
-          >
+        <div>
+          <dt>Motivo del rechazo</dt>
+          <dd class="whitespace-pre-wrap">
             {{ motivo }}
           </dd>
         </div>
       }
       @if (solicitud.evidencia; as evidencia) {
-        <div class="flex flex-col gap-2 px-3.5 py-3">
-          <dt class="text-neutral-700">Evidencia</dt>
-          <dd class="m-0 min-w-0">
+        <div>
+          <dt>Evidencia</dt>
+          <dd>
             @if (enlaceEvidencia(); as enlace) {
               <a
                 [href]="enlace"
@@ -116,9 +110,6 @@
                 class="font-semibold break-words text-primary underline underline-offset-2 [overflow-wrap:anywhere] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >{{ evidencia.nombre }}<span class="sr-only"> (se abre en otra pestaña)</span></a
               >
-              <p class="mt-1 mb-0 text-[11px] text-neutral-700">
-                Si el enlace caducó, vuelve a consultar la solicitud.
-              </p>
             } @else {
               <span class="break-words [overflow-wrap:anywhere]">{{ evidencia.nombre }}</span>
               <p class="mt-1 mb-0 text-xs text-danger-700">
@@ -130,31 +121,36 @@
       }
     </dl>
 
-    <section aria-labelledby="solicitud-seguimiento-titulo" class="mt-5">
-      <h3 id="solicitud-seguimiento-titulo" class="m-0 text-xs font-bold">Seguimiento</h3>
-      <ol class="mt-3 mb-0 ml-1 list-none border-l border-border p-0">
-        <li
-          class="relative pb-4 pl-4 before:absolute before:top-1 before:-left-[5px] before:size-2 before:rounded-full before:bg-primary"
-        >
-          <p class="m-0 text-xs font-semibold">Solicitud registrada</p>
-          <time
-            class="mt-1 block text-[11px] text-neutral-700"
-            [attr.datetime]="solicitud.fecha_solicitud"
-            >{{ fechaSolicitud() }}</time
-          >
-        </li>
-        <li
-          class="relative pl-4 before:absolute before:top-1 before:-left-[5px] before:size-2 before:rounded-full before:bg-primary"
-        >
-          <p class="m-0 text-xs font-semibold">Estado actual: {{ etiquetaEstado() }}</p>
-          @if (solicitud.estado === 'pendiente') {
-            <p class="mt-1 mb-0 text-[11px] text-neutral-700">Pendiente de resolución</p>
-          }
-        </li>
+    <section aria-labelledby="solicitud-seguimiento-titulo" class="mt-[18px]">
+      <h3 id="solicitud-seguimiento-titulo" class="m-0 mb-2.5 text-xs font-bold">Seguimiento</h3>
+      <ol class="m-0 list-none p-0">
+        @for (etapa of seguimiento(); track etapa.texto; let ultima = $last) {
+          <li class="flex gap-3">
+            <span class="flex flex-col items-center" aria-hidden="true">
+              <span
+                class="mt-1 size-2.5 shrink-0 rounded-full"
+                [class]="etapa.pendiente ? 'bg-[#E0E0E0]' : colorSeguimiento()"
+              ></span>
+              @if (!ultima) {
+                <span class="min-h-[18px] w-0.5 flex-1 bg-[#ECECEC]"></span>
+              }
+            </span>
+            <div class="min-w-0 flex-1 pb-3">
+              <p class="m-0 text-[12.5px] font-semibold">{{ etapa.texto }}</p>
+              @if (etapa.fechaTexto) {
+                <time class="block text-[11px] text-neutral-700" [attr.datetime]="etapa.fecha">{{
+                  etapa.fechaTexto
+                }}</time>
+              } @else if (etapa.pendiente) {
+                <p class="m-0 text-[11px] text-neutral-700">Pendiente de respuesta</p>
+              }
+            </div>
+          </li>
+        }
       </ol>
     </section>
   }
-  <div class="mt-6 flex justify-end">
+  <div class="mt-[18px] flex justify-end">
     <button
       type="button"
       class="min-h-9 cursor-pointer rounded-md bg-primary px-4 text-[13px] font-bold text-white hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
