@@ -260,6 +260,22 @@ describe('CuentaSolicitudFormulario', () => {
     );
   });
 
+  it('accepts a 150-character reason and evidence exactly one byte below the strict limit', async () => {
+    const validado = vi.fn();
+    component.validado.subscribe(validado);
+    await completar();
+    await cambiar('#solicitud-motivo', 'x'.repeat(150));
+    await adjuntar(
+      new File([new Uint8Array(LIMITE_EVIDENCIA_BYTES - 1)], 'limite.pdf', {
+        type: 'application/pdf',
+      }),
+    );
+    await enviar();
+    expect(validado).toHaveBeenCalledOnce();
+    expect(validado.mock.calls[0][0].motivo).toHaveLength(150);
+    expect(validado.mock.calls[0][0].evidencia.size).toBe(LIMITE_EVIDENCIA_BYTES - 1);
+  });
+
   it('allows removing evidence and validates it again', async () => {
     await completar();
     const quitar = [...raiz().querySelectorAll('button')].find((b) =>

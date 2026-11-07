@@ -40,6 +40,7 @@ describe('ReembolsosApi', () => {
     api.listar(2, 'rechazado').subscribe(respuesta);
     const req = http.expectOne((r) => r.url === url);
     expect(req.request.method).toBe('GET');
+    expect(req.request.body).toBeNull();
     expect(req.request.params.get('page')).toBe('2');
     expect(req.request.params.get('limit')).toBe('10');
     expect(req.request.params.get('estado')).toBe('rechazado');
@@ -136,6 +137,22 @@ describe('ReembolsosApi', () => {
     expect(error).toHaveBeenCalledOnce();
   });
 
+  it.each([
+    { motivo_cliente: 123 },
+    { motivo_rechazo: {} },
+    { evidencia: {} },
+    { evidencia: { nombre: 123, url: 'https://example.test/prueba.pdf' } },
+    { evidencia: { nombre: 'prueba.pdf', url: null } },
+    { fecha_resolucion: 'sin-fecha' },
+  ])('rejects malformed detail fields without exposing them to the modal: %j', (campos) => {
+    const next = vi.fn(),
+      error = vi.fn();
+    api.detalle(31).subscribe({ next, error });
+    http.expectOne(`${url}/31`).flush({ ...SOLICITUD_REGISTRADA_PRUEBA, ...campos });
+    expect(next).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledOnce();
+  });
+
   it('sends only the four multipart fields with JWT, preserving the file and automatic boundary', () => {
     const respuesta = vi.fn();
     api.solicitar(solicitud).subscribe(respuesta);
@@ -162,6 +179,9 @@ describe('ReembolsosApi', () => {
     { estado: 'aprobado' },
     { id: 0 },
     { monto: '12' },
+    { codigo: '   ' },
+    { monto: -1 },
+    { pedido: null },
   ])('does not announce a saved pending request from an inconsistent response %j', (cambio) => {
     const next = vi.fn(),
       error = vi.fn();

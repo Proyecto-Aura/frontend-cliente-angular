@@ -229,6 +229,18 @@ describe('CuentaNuevaSolicitud: envío real', () => {
     },
   );
 
+  it('cancels the pending client subscription on destruction without announcing a successful save', () => {
+    const registrada = vi.fn();
+    fixture.componentInstance.registrada.subscribe(registrada);
+    enviar();
+    const req = http.expectOne(url);
+    fixture.destroy();
+    expect(req.cancelled).toBe(true);
+    expect(registrada).not.toHaveBeenCalled();
+    expect(TestBed.inject(Avisos).actual()).toBeNull();
+    http.expectNone(url);
+  });
+
   it('requires reviewing the order after a network error without losing the draft or retrying automatically', async () => {
     enviar();
     http.expectOne(url).error(new ProgressEvent('error'));
