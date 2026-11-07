@@ -1,0 +1,107 @@
+<section aria-labelledby="cuenta-pedidos-titulo" [attr.aria-busy]="pedidos.cargando()">
+  <div class="font-heading text-[10.5px] font-extrabold tracking-[0.08em] text-primary">
+    HISTORIAL
+  </div>
+  <h1
+    id="cuenta-pedidos-titulo"
+    class="mt-1 mb-1.5 font-heading text-[clamp(24px,2.4vw,28px)] leading-[1.15] font-extrabold tracking-[-0.01em]"
+  >
+    Mis Pedidos
+  </h1>
+  <p class="m-0 text-[12.5px] text-neutral-700">
+    Rastrea y gestiona tus snacks naturales favoritos.
+  </p>
+  <div class="mt-6">
+    @if (pedidos.cargando()) {
+      <p
+        role="status"
+        class="rounded-xl border border-border bg-surface p-5 text-sm text-neutral-700"
+      >
+        Cargando pedidos…
+      </p>
+    } @else if (pedidos.error(); as error) {
+      <div
+        role="alert"
+        class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-destructive/50 bg-surface p-5"
+      >
+        <p class="m-0 text-sm text-danger-700">{{ error }}</p>
+        <button
+          type="button"
+          class="min-h-9 cursor-pointer rounded-md border border-border px-3 text-xs focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          (click)="pedidos.cargar()"
+        >
+          Volver a intentar
+        </button>
+      </div>
+    } @else {
+      <ul aria-label="Mis pedidos" class="m-0 flex list-none flex-col gap-3.5 p-0">
+        @for (pedido of pedidos.filas(); track pedido.resumen.id) {
+          <li>
+            <app-cuenta-pedido-card
+              [pedido]="pedido"
+              (solicitar)="seleccionado.set($event)"
+              (reintentar)="pedidos.cargar()"
+            />
+          </li>
+        } @empty {
+          <li class="rounded-xl border border-border bg-surface px-5 py-8 text-center">
+            <p class="m-0 text-sm font-semibold">Aún no tienes pedidos</p>
+            <p class="mt-2 mb-0 text-xs text-neutral-700">
+              Cuando realices una compra, podrás consultar tu pedido aquí.
+            </p>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+  @if (pedidos.meta(); as meta) {
+    @if (meta.total_pages > 1) {
+      <nav
+        aria-label="Páginas de pedidos"
+        class="mt-5 flex flex-wrap items-center justify-between gap-3 text-xs"
+      >
+        <button
+          type="button"
+          class="min-h-9 rounded-md border border-border px-3 enabled:cursor-pointer disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          [disabled]="pedidos.cargando() || pedidos.pagina() <= 1"
+          (click)="pedidos.cargar(pedidos.pagina() - 1)"
+        >
+          Anterior
+        </button>
+        <span role="status">Página {{ pedidos.pagina() }} de {{ meta.total_pages }}</span>
+        <button
+          type="button"
+          class="min-h-9 rounded-md border border-border px-3 enabled:cursor-pointer disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          [disabled]="pedidos.cargando() || pedidos.pagina() >= meta.total_pages"
+          (click)="pedidos.cargar(pedidos.pagina() + 1)"
+        >
+          Siguiente
+        </button>
+      </nav>
+    }
+  }
+  <aside
+    class="mt-5 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-destructive/20 bg-danger-50 p-5"
+  >
+    <div>
+      <p class="m-0 text-sm font-semibold text-danger-700">¿Tienes hambre de más?</p>
+      <p class="mt-1 mb-0 text-xs text-neutral-700">
+        Explora nuestras últimas novedades artesanales.
+      </p>
+    </div>
+    <a
+      routerLink="/catalogo"
+      class="flex min-h-9 items-center rounded-full bg-primary px-5 text-xs font-bold text-white no-underline hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+      >Ir a la tienda</a
+    >
+  </aside>
+</section>
+@if (seleccionado(); as id) {
+  <app-cuenta-nueva-solicitud
+    [pedidoInicialId]="id"
+    [paginaInicial]="pedidos.pagina()"
+    (cerrar)="seleccionado.set(null)"
+    (registrada)="registrada()"
+    (revisarPedidos)="pedidos.cargar()"
+  />
+}
