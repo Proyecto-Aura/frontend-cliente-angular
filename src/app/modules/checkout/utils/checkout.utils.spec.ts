@@ -7,6 +7,7 @@ import {
   errorDeDireccion,
   erroresDeComprobante,
   esRucValido,
+  etiquetaComprobante,
   firmaDelPedido,
   itemsDelPedido,
   lineasDelPedido,
@@ -88,6 +89,26 @@ describe('checkout.utils (HU-B-007, HU-B-008, HU-B-009)', () => {
         ruc: '20601234565',
         razon_social: 'Empresa S.A.C.',
       });
+    });
+  });
+
+  describe('etiquetaComprobante (HU-B-010)', () => {
+    const base = {
+      codigo: 'B001-00000015',
+      serie: 'B001',
+      numero: 15,
+      ruc: null,
+      razon_social: null,
+      subtotal: 10,
+      total: 10,
+      fecha_emision: '2026-11-10T15:00:00Z',
+    };
+
+    it('reads the type and the number', () => {
+      expect(etiquetaComprobante({ ...base, tipo: 'boleta' })).toBe('Boleta B001-00000015');
+      expect(etiquetaComprobante({ ...base, tipo: 'factura', codigo: 'F001-00000001' })).toBe(
+        'Factura F001-00000001',
+      );
     });
   });
 

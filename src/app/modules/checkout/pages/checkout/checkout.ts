@@ -267,6 +267,12 @@ export class Checkout {
         tipo_entrega: 'delivery',
         direccion_entrega: direccion,
         culqi_token: token,
+        // HU-B-010: con el pago confirmado el servidor emite este comprobante.
+        comprobante: comprobanteDelPedido(
+          this.tipoComprobante(),
+          this.rucComprobante(),
+          this.razonSocialComprobante(),
+        ),
       })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({

@@ -149,6 +149,66 @@ describe('CheckoutExito (HU-B-013, RF-B37; HU-B-008)', () => {
     expect(texto()).not.toContain('N.º de operación');
   });
 
+  describe('receipt (HU-B-010, RF-B30, RF-B31)', () => {
+    const comprobante = () =>
+      raiz().querySelector('[data-testid="comprobante"]')!.textContent!.replace(/\s+/g, ' ').trim();
+    const aviso = () => raiz().querySelector('[data-testid="aviso-comprobante"]');
+    const conComprobante = (c: NonNullable<NonNullable<PedidoPagado['pago']>['comprobante']>) => ({
+      ...PEDIDO,
+      pago: { ...PEDIDO.pago!, comprobante: c },
+    });
+    const BOLETA = {
+      tipo: 'boleta' as const,
+      codigo: 'B001-00000015',
+      serie: 'B001',
+      numero: 15,
+      ruc: null,
+      razon_social: null,
+      subtotal: 165.6,
+      total: 165.6,
+      fecha_emision: '2026-11-10T15:00:00Z',
+    };
+
+    it('shows the issued boleta and says it was sent by email', () => {
+      abrir('7');
+      httpMock.expectOne(URL).flush(conComprobante(BOLETA));
+      fixture.detectChanges();
+
+      expect(comprobante()).toBe('Boleta B001-00000015');
+      expect(aviso()!.textContent).toContain('Te enviamos tu boleta a tu correo.');
+    });
+
+    it('shows the factura with the RUC and business name', () => {
+      abrir('7');
+      httpMock.expectOne(URL).flush(
+        conComprobante({
+          ...BOLETA,
+          tipo: 'factura',
+          codigo: 'F001-00000001',
+          serie: 'F001',
+          numero: 1,
+          ruc: '20601234565',
+          razon_social: 'Distribuidora Andina S.A.C.',
+        }),
+      );
+      fixture.detectChanges();
+
+      expect(comprobante()).toBe(
+        'Factura F001-00000001 RUC 20601234565 · Distribuidora Andina S.A.C.',
+      );
+      expect(aviso()!.textContent).toContain('Te enviamos tu factura a tu correo.');
+    });
+
+    it('says it is pending when the server could not issue it yet', () => {
+      abrir('7');
+      httpMock.expectOne(URL).flush(conComprobante(null as never));
+      fixture.detectChanges();
+
+      expect(comprobante()).toBe('Pendiente de emisión');
+      expect(aviso()).toBeNull();
+    });
+  });
+
   it('lets the client keep shopping', () => {
     abrir('7');
     httpMock.expectOne(URL).flush(PEDIDO);

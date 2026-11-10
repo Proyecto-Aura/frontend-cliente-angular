@@ -19,6 +19,11 @@
           >{{ etiqueta(p.estado) }}</span
         >.
       </p>
+      @if (p.pago?.comprobante; as c) {
+        <p class="m-0 text-[12.5px] text-muted-foreground" data-testid="aviso-comprobante">
+          Te enviamos tu {{ c.tipo === 'factura' ? 'factura' : 'boleta' }} a tu correo.
+        </p>
+      }
     </section>
 
     <section class="rounded-xl border border-[#ececec] bg-white px-5 py-[18px]">
@@ -50,6 +55,21 @@
         <div class="flex justify-between gap-3">
           <dt class="whitespace-nowrap text-muted-foreground">Medio de pago</dt>
           <dd class="m-0 text-right font-semibold text-[#1f1f1f]">Culqi</dd>
+        </div>
+        <div class="flex justify-between gap-3">
+          <dt class="whitespace-nowrap text-muted-foreground">Comprobante</dt>
+          <dd class="m-0 text-right font-semibold text-[#1f1f1f]" data-testid="comprobante">
+            @if (p.pago?.comprobante; as c) {
+              {{ etiquetaComprobante(c) }}
+              @if (c.ruc) {
+                <span class="block font-normal break-all text-muted-foreground"
+                  >RUC {{ c.ruc }} · {{ c.razon_social }}</span
+                >
+              }
+            } @else {
+              Pendiente de emisión
+            }
+          </dd>
         </div>
         @if (p.pago?.numero_operacion; as operacion) {
           <div class="flex justify-between gap-3">

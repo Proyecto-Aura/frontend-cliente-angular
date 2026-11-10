@@ -1,5 +1,6 @@
 import { ItemCarrito } from '../../carrito/models/carrito.model';
 import {
+  ComprobanteEmitido,
   ComprobanteRequest,
   ItemResumenRequest,
   LineaPedido,
@@ -124,6 +125,11 @@ export function comprobanteDelPedido(
   return tipo === 'factura'
     ? { tipo_comprobante: tipo, ruc: ruc.trim(), razon_social: razonSocial.trim() }
     : { tipo_comprobante: tipo };
+}
+
+/** Cómo se lee el comprobante emitido: "Boleta B001-00000015". */
+export function etiquetaComprobante(comprobante: ComprobanteEmitido): string {
+  return `${comprobante.tipo === 'factura' ? 'Factura' : 'Boleta'} ${comprobante.codigo}`;
 }
 
 export type ResultadoSimulado = 'aprobado' | 'rechazado';
