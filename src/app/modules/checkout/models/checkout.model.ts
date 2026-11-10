@@ -85,6 +85,23 @@ export interface CrearPedidoRequest {
   direccion_entrega?: string;
   /** Token que entrega el checkout de Culqi; el total lo recalcula el servidor. */
   culqi_token: string;
+  /** HU-B-010: la boleta o factura que se emite al confirmar el pago (si no viene, boleta). */
+  comprobante?: ComprobanteRequest;
+}
+
+/** Boleta o factura emitida al confirmar el pago (HU-B-010, RF-B30). */
+export interface ComprobanteEmitido {
+  tipo: TipoComprobante;
+  /** Serie y correlativo de 8 dígitos: `B001-00000015`. */
+  codigo: string;
+  serie: string;
+  numero: number;
+  /** Solo en factura. */
+  ruc: string | null;
+  razon_social: string | null;
+  subtotal: number;
+  total: number;
+  fecha_emision: string;
 }
 
 /** Pedido ya creado y pagado (respuesta 201 de `POST /api/v1/portal/pedidos`). */
@@ -108,5 +125,7 @@ export interface PedidoPagado {
     monto: number;
     numero_operacion: string | null;
     fecha_pago: string;
+    /** `null` mientras no se emita (por ejemplo, si no hay una serie activa). */
+    comprobante?: ComprobanteEmitido | null;
   } | null;
 }

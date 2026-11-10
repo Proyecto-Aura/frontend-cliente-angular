@@ -331,6 +331,7 @@ describe('Checkout (HU-B-007, RF-B20 a RF-B23; HU-B-008, RF-B24 a RF-B28)', () =
           tipo_entrega: 'delivery',
           direccion_entrega: DIRECCION_PERFIL,
           culqi_token: expect.stringMatching(/^tkn_sim_ok_tarjeta_/),
+          comprobante: { tipo_comprobante: 'boleta' },
         });
         // El total no viaja: lo recalcula el servidor.
         expect(req.request.body).not.toHaveProperty('total');
@@ -560,24 +561,6 @@ describe('Checkout (HU-B-007, RF-B20 a RF-B23; HU-B-008, RF-B24 a RF-B28)', () =
         expect(ventana()).not.toBeNull();
       });
 
-      it('does not send the receipt with the payment (it is not stored yet)', () => {
-        abrir();
-        confirmarDelivery();
-        elegir('factura');
-        escribir('co-ruc', RUC);
-        escribir('co-razon', RAZON);
-        pagar();
-        httpMock.expectOne(RESUMEN_URL).flush(resumenPedido({ tipo_entrega: 'delivery' }));
-        fixture.detectChanges();
-
-        boton('Simular pago aprobado')!.click();
-        fixture.detectChanges();
-
-        const req = httpMock.expectOne(PEDIDOS_URL);
-        expect(req.request.body).not.toHaveProperty('comprobante');
-        req.flush({ message: 'Pago rechazado' }, { status: 402, statusText: 'Payment Required' });
-      });
-
       it('shows the server error, keeps the payment closed and clears it when the client edits', () => {
         abrir();
         confirmarDelivery();
@@ -624,6 +607,34 @@ describe('Checkout (HU-B-007, RF-B20 a RF-B23; HU-B-008, RF-B24 a RF-B28)', () =
         expect(opcion('factura').checked).toBe(true);
         expect(campo('co-ruc').value).toBe(RUC);
         expect(campo('co-razon').value).toBe(RAZON);
+      });
+
+      it('sends the validated factura with the payment so the server issues it (HU-B-010)', () => {
+        abrir();
+        confirmarDelivery();
+        elegir('factura');
+        escribir('co-ruc', RUC);
+        escribir('co-razon', `  ${RAZON} `);
+        pagar();
+        httpMock.expectOne(RESUMEN_URL).flush(
+          resumenPedido({
+            tipo_entrega: 'delivery',
+            direccion_entrega: DIRECCION_PERFIL,
+            comprobante: { tipo_comprobante: 'factura', ruc: RUC, razon_social: RAZON },
+          }),
+        );
+        fixture.detectChanges();
+
+        boton('Simular pago aprobado')!.click();
+        fixture.detectChanges();
+
+        const req = httpMock.expectOne(PEDIDOS_URL);
+        expect(req.request.body.comprobante).toEqual({
+          tipo_comprobante: 'factura',
+          ruc: RUC,
+          razon_social: RAZON,
+        });
+        req.flush({ message: 'Pago rechazado' }, { status: 402, statusText: 'Payment Required' });
       });
 
       it('respects the client choice after the first suggestion', () => {
