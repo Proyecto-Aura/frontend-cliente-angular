@@ -135,4 +135,14 @@ describe('CheckoutResumen (HU-B-007, RF-B22/RF-B23)', () => {
     expect(texto()).toContain('Pagas en línea con Culqi');
     expect(texto()).not.toContain('Confirma tu dirección');
   });
+
+  it('shows the chosen receipt type, boleta by default (HU-B-009)', () => {
+    render([linea({ presentacionId: 101 })], 10);
+    expect(texto()).toContain('Comprobante Boleta');
+
+    fixture.componentRef.setInput('comprobante', 'factura');
+    fixture.detectChanges();
+
+    expect(texto()).toContain('Comprobante Factura');
+  });
 });

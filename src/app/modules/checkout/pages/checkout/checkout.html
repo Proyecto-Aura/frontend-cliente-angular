@@ -121,6 +121,14 @@
         (confirmar)="confirmarDireccion($event)"
         (deshacer)="deshacerDireccion()"
       />
+      <app-checkout-comprobante
+        [(tipo)]="tipoComprobante"
+        [(ruc)]="rucComprobante"
+        [(razonSocial)]="razonSocialComprobante"
+        [mostrarErrores]="intentoPagar()"
+        [errorServidor]="errorComprobante()"
+        [bloqueado]="pagando() || validandoComprobante() || pagoAbierto()"
+      />
       @if (direccionConfirmada() !== null) {
         <app-checkout-pago />
       }
@@ -130,7 +138,8 @@
       [subtotal]="resumen()!.subtotal"
       [total]="resumen()!.total"
       [direccionConfirmada]="direccionConfirmada() !== null"
-      [pagando]="pagando()"
+      [pagando]="pagando() || validandoComprobante()"
+      [comprobante]="tipoComprobante()"
       (pagar)="abrirPago()"
     />
     @if (pagoAbierto()) {

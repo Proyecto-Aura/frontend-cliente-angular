@@ -7,11 +7,29 @@ export interface ItemResumenRequest {
   cantidad: number;
 }
 
+/** Comprobante que el cliente elige para su pedido (HU-B-009, RF-B29). */
+export type TipoComprobante = 'boleta' | 'factura';
+
+/** RUC y razón social de quien recibe la factura. */
+export interface DatosFactura {
+  ruc: string;
+  razon_social: string;
+}
+
+/** Lo que se envía al resumen: con boleta no lleva más datos; con factura, RUC y razón social. */
+export interface ComprobanteRequest {
+  tipo_comprobante: TipoComprobante;
+  ruc?: string;
+  razon_social?: string;
+}
+
 export interface ResumenPedidoRequest {
   items: ItemResumenRequest[];
   tipo_entrega: TipoEntrega;
   /** Solo con delivery: vale para este pedido; si falta, el backend usa la del perfil. */
   direccion_entrega?: string;
+  /** HU-B-009: si no viene, el servidor asume boleta. */
+  comprobante?: ComprobanteRequest;
 }
 
 /** Una línea ya calculada por el servidor (RN17: mayorista al superar el umbral). */
@@ -31,6 +49,14 @@ export interface ResumenPedido {
   direccion_perfil: string | null;
   /** Solo con delivery: la dirección con la que se calculó el resumen. */
   direccion_entrega: string | null;
+  /** HU-B-009: el comprobante que validó el servidor; con boleta, RUC y razón social en `null`. */
+  comprobante: {
+    tipo_comprobante: TipoComprobante;
+    ruc: string | null;
+    razon_social: string | null;
+  };
+  /** Datos del perfil para prellenar la factura, si el cliente tiene un RUC válido. */
+  comprobante_sugerido: DatosFactura | null;
   items: LineaResumen[];
   subtotal: number;
   total: number;

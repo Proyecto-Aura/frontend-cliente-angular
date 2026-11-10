@@ -1,4 +1,4 @@
-import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import {
@@ -19,14 +19,21 @@ import { apiErrorMessage } from '../../../../shared/utils/api-error';
 import { CarritoStore } from '../../../carrito/services/carrito-store';
 import { PerfilStore } from '../../../cuenta/services/perfil-store';
 import { CheckoutCliente } from '../../components/checkout-cliente/checkout-cliente';
+import { CheckoutComprobante } from '../../components/checkout-comprobante/checkout-comprobante';
 import { CheckoutCulqi } from '../../components/checkout-culqi/checkout-culqi';
 import { CheckoutDireccion } from '../../components/checkout-direccion/checkout-direccion';
 import { CheckoutPago } from '../../components/checkout-pago/checkout-pago';
 import { CheckoutResumen } from '../../components/checkout-resumen/checkout-resumen';
 import { CheckoutStepper, PasoCheckout } from '../../components/checkout-stepper/checkout-stepper';
-import { ResumenPedido } from '../../models/checkout.model';
+import { ResumenPedido, TipoComprobante } from '../../models/checkout.model';
 import { CheckoutApi } from '../../services/checkout-api';
-import { firmaDelPedido, itemsDelPedido, lineasDelPedido } from '../../utils/checkout.utils';
+import {
+  comprobanteDelPedido,
+  erroresDeComprobante,
+  firmaDelPedido,
+  itemsDelPedido,
+  lineasDelPedido,
+} from '../../utils/checkout.utils';
 
 /**
  * HU-B-007 (RF-B20 a RF-B23): el cliente confirma su carrito corroborando la
@@ -44,6 +51,7 @@ import { firmaDelPedido, itemsDelPedido, lineasDelPedido } from '../../utils/che
     Icon,
     CheckoutStepper,
     CheckoutCliente,
+    CheckoutComprobante,
     CheckoutDireccion,
     CheckoutPago,
     CheckoutResumen,
@@ -74,6 +82,26 @@ export class Checkout {
   protected readonly pagando = signal(false);
   /** Motivo del último pago rechazado (RF-B26). */
   protected readonly errorPago = signal<string | null>(null);
+
+  /** Comprobante elegido (HU-B-009, RF-B29): boleta, o factura con RUC y razón social. */
+  protected readonly tipoComprobante = signal<TipoComprobante>('boleta');
+  protected readonly rucComprobante = signal('');
+  protected readonly razonSocialComprobante = signal('');
+  /** El cliente ya pulsó "Pagar": se muestran todos los errores del comprobante. */
+  protected readonly intentoPagar = signal(false);
+  /** Mientras el servidor valida los datos de la factura. */
+  protected readonly validandoComprobante = signal(false);
+  protected readonly errorComprobante = signal<string | null>(null);
+  /** La factura con los datos del perfil se propone una sola vez. */
+  private sugerenciaAplicada = false;
+  private readonly comprobanteValido = computed(() => {
+    const errores = erroresDeComprobante(
+      this.tipoComprobante(),
+      this.rucComprobante(),
+      this.razonSocialComprobante(),
+    );
+    return !errores.ruc && !errores.razonSocial;
+  });
 
   /** Hay al menos un producto que se puede comprar. */
   protected readonly hayProductos = computed(() => itemsDelPedido(this.carrito.items()).length > 0);
@@ -108,6 +136,14 @@ export class Checkout {
         takeUntilDestroyed(),
       )
       .subscribe();
+
+    // Si el cliente cambia el comprobante, el error anterior del servidor ya no aplica.
+    effect(() => {
+      this.tipoComprobante();
+      this.rucComprobante();
+      this.razonSocialComprobante();
+      this.errorComprobante.set(null);
+    });
 
     // Nombre y teléfono del perfil: si no se pueden traer, el resumen sigue funcionando.
     if (!this.perfil.perfil()) {
@@ -157,8 +193,53 @@ export class Checkout {
       });
   }
 
+  /**
+   * "Pagar": primero el comprobante (RF-B29). Con boleta se abre el pago. Con
+   * factura, el servidor valida RUC y razón social en el resumen y, solo si los
+   * acepta, se abre el pago.
+   */
   protected abrirPago(): void {
-    if (!this.direccionConfirmada() || this.pagando()) return;
+    const direccion = this.direccionConfirmada();
+    if (!direccion || this.pagando() || this.validandoComprobante()) return;
+    this.intentoPagar.set(true);
+    if (!this.comprobanteValido()) return;
+
+    const tipo = this.tipoComprobante();
+    if (tipo === 'boleta') {
+      this.mostrarPago();
+      return;
+    }
+
+    this.validandoComprobante.set(true);
+    this.errorComprobante.set(null);
+    this.api
+      .resumir({
+        items: itemsDelPedido(this.carrito.items()),
+        tipo_entrega: 'delivery',
+        direccion_entrega: direccion,
+        comprobante: comprobanteDelPedido(
+          tipo,
+          this.rucComprobante(),
+          this.razonSocialComprobante(),
+        ),
+      })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (resumen) => {
+          this.resumen.set(resumen);
+          this.validandoComprobante.set(false);
+          this.mostrarPago();
+        },
+        error: (err: unknown) => {
+          this.errorComprobante.set(
+            apiErrorMessage(err, 'No pudimos validar los datos de la factura. Inténtalo de nuevo.'),
+          );
+          this.validandoComprobante.set(false);
+        },
+      });
+  }
+
+  private mostrarPago(): void {
     this.errorPago.set(null);
     this.pagoAbierto.set(true);
   }
@@ -211,6 +292,21 @@ export class Checkout {
   }
 
   /**
+   * Si el perfil tiene un RUC válido (cliente que se registró con RUC), se
+   * propone factura con sus datos, como en el prototipo. Solo la primera vez:
+   * después manda lo que el cliente elija.
+   */
+  private proponerFactura(resumen: ResumenPedido): void {
+    if (this.sugerenciaAplicada) return;
+    this.sugerenciaAplicada = true;
+    const sugerido = resumen.comprobante_sugerido;
+    if (!sugerido) return;
+    this.tipoComprobante.set('factura');
+    this.rucComprobante.set(sugerido.ruc);
+    this.razonSocialComprobante.set(sugerido.razon_social);
+  }
+
+  /**
    * Pide el resumen con lo que hay en el carrito. Sin dirección confirmada se
    * pide como recojo en tienda: así el servidor devuelve los montos y la
    * dirección del perfil sin exigir una (el perfil puede no tenerla).
@@ -235,6 +331,7 @@ export class Checkout {
       .pipe(
         tap((resumen) => {
           this.resumen.set(resumen);
+          this.proponerFactura(resumen);
           this.cargando.set(false);
         }),
         map(() => undefined),

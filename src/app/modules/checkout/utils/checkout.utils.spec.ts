@@ -1,15 +1,96 @@
 import { itemCarrito, lineaResumen, resumenPedido } from '../testing/checkout-data';
 import {
   DIRECCION_MAXIMA,
+  RAZON_SOCIAL_MAXIMA,
+  comprobanteDelPedido,
   componerDireccion,
   errorDeDireccion,
+  erroresDeComprobante,
+  esRucValido,
   firmaDelPedido,
   itemsDelPedido,
   lineasDelPedido,
   tokenSimulado,
 } from './checkout.utils';
 
-describe('checkout.utils (HU-B-007, HU-B-008)', () => {
+describe('checkout.utils (HU-B-007, HU-B-008, HU-B-009)', () => {
+  describe('esRucValido (HU-B-009), same rule as the backend', () => {
+    it.each(['20601234565', '20100047218', '10456789124', '15123456782'])(
+      'accepts %s (valid prefix and check digit)',
+      (ruc) => expect(esRucValido(ruc)).toBe(true),
+    );
+
+    it('rejects a wrong check digit', () => {
+      expect(esRucValido('20601234566')).toBe(false);
+    });
+
+    it('rejects a prefix SUNAT does not use', () => {
+      expect(esRucValido('30601234565')).toBe(false);
+    });
+
+    it.each(['2060123456', '206012345651', '2060123456a', ''])('rejects "%s"', (ruc) =>
+      expect(esRucValido(ruc)).toBe(false),
+    );
+  });
+
+  describe('erroresDeComprobante (RF-B29)', () => {
+    it('asks nothing else with boleta', () => {
+      expect(erroresDeComprobante('boleta', '', '')).toEqual({ ruc: null, razonSocial: null });
+    });
+
+    it('requires RUC and business name with factura', () => {
+      expect(erroresDeComprobante('factura', '  ', ' ')).toEqual({
+        ruc: 'Ingresa el RUC.',
+        razonSocial: 'Ingresa la razón social.',
+      });
+    });
+
+    it('explains a RUC without 11 digits', () => {
+      expect(erroresDeComprobante('factura', '2060123', 'Empresa S.A.C.').ruc).toBe(
+        'El RUC debe tener 11 dígitos.',
+      );
+    });
+
+    it('explains an invalid RUC', () => {
+      expect(erroresDeComprobante('factura', '20601234566', 'Empresa S.A.C.').ruc).toBe(
+        'El RUC no es válido. Revisa el número.',
+      );
+    });
+
+    it('asks for a business name of at least 3 characters and at most the backend limit', () => {
+      expect(erroresDeComprobante('factura', '20601234565', 'SA').razonSocial).toBe(
+        'Ingresa la razón social.',
+      );
+      expect(
+        erroresDeComprobante('factura', '20601234565', 'x'.repeat(RAZON_SOCIAL_MAXIMA + 1))
+          .razonSocial,
+      ).toBe(`La razón social no puede pasar de ${RAZON_SOCIAL_MAXIMA} caracteres.`);
+    });
+
+    it('accepts valid factura data', () => {
+      expect(erroresDeComprobante('factura', ' 20601234565 ', 'Empresa S.A.C.')).toEqual({
+        ruc: null,
+        razonSocial: null,
+      });
+    });
+  });
+
+  describe('comprobanteDelPedido', () => {
+    it('sends only the type with boleta, even if factura data was typed', () => {
+      expect(comprobanteDelPedido('boleta', '20601234565', 'Empresa')).toEqual({
+        tipo_comprobante: 'boleta',
+      });
+    });
+
+    it('sends the trimmed RUC and business name with factura', () => {
+      expect(comprobanteDelPedido('factura', ' 20601234565 ', ' Empresa S.A.C. ')).toEqual({
+        tipo_comprobante: 'factura',
+        ruc: '20601234565',
+        razon_social: 'Empresa S.A.C.',
+      });
+    });
+  });
+
   describe('tokenSimulado (HU-B-008)', () => {
     it('builds an approved token that carries the payment method', () => {
       expect(tokenSimulado('aprobado', 'yape')).toMatch(/^tkn_sim_ok_yape_[0-9a-f]{16}$/);

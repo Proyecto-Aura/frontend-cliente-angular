@@ -38,6 +38,8 @@ export function resumenPedido(over: Partial<ResumenPedido> = {}): ResumenPedido 
     tipo_entrega: 'recojo_tienda',
     direccion_perfil: 'Av. Los Girasoles 123, San Miguel',
     direccion_entrega: null,
+    comprobante: { tipo_comprobante: 'boleta', ruc: null, razon_social: null },
+    comprobante_sugerido: null,
     items: [lineaResumen({ producto_presentacion_id: 101 })],
     subtotal: 10,
     total: 10,
