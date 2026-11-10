@@ -1,9 +1,11 @@
 import { ItemCarrito } from '../../carrito/models/carrito.model';
 import {
+  ComprobanteRequest,
   ItemResumenRequest,
   LineaPedido,
   MedioPago,
   ResumenPedido,
+  TipoComprobante,
 } from '../models/checkout.model';
 
 /** Largo mínimo de una dirección con sentido ("Av. 1"), como en el prototipo. */
@@ -70,6 +72,58 @@ export function lineasDelPedido(
         ]
       : [];
   });
+}
+
+/** Prefijos de RUC vigentes en SUNAT: los mismos que acepta el backend. */
+const PREFIJOS_RUC = ['10', '15', '17', '20'];
+const PESOS_RUC = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2];
+/** Razón social: mínimo del prototipo y máximo que acepta el backend. */
+export const RAZON_SOCIAL_MINIMA = 3;
+export const RAZON_SOCIAL_MAXIMA = 200;
+
+/** RUC peruano: 11 dígitos, prefijo válido y dígito verificador (módulo 11), como el backend. */
+export function esRucValido(ruc: string): boolean {
+  if (!/^\d{11}$/.test(ruc) || !PREFIJOS_RUC.includes(ruc.slice(0, 2))) return false;
+  const suma = PESOS_RUC.reduce((total, peso, i) => total + peso * Number(ruc[i]), 0);
+  return (11 - (suma % 11)) % 10 === Number(ruc[10]);
+}
+
+export interface ErroresComprobante {
+  ruc: string | null;
+  razonSocial: string | null;
+}
+
+/** Errores de la factura (RF-B29). Con boleta no se pide nada más. */
+export function erroresDeComprobante(
+  tipo: TipoComprobante,
+  ruc: string,
+  razonSocial: string,
+): ErroresComprobante {
+  if (tipo === 'boleta') return { ruc: null, razonSocial: null };
+  const numero = ruc.trim();
+  const razon = razonSocial.trim();
+  let errorRuc: string | null = null;
+  if (!numero) errorRuc = 'Ingresa el RUC.';
+  else if (!/^\d{11}$/.test(numero)) errorRuc = 'El RUC debe tener 11 dígitos.';
+  else if (!esRucValido(numero)) errorRuc = 'El RUC no es válido. Revisa el número.';
+
+  let errorRazon: string | null = null;
+  if (razon.length < RAZON_SOCIAL_MINIMA) errorRazon = 'Ingresa la razón social.';
+  else if (razon.length > RAZON_SOCIAL_MAXIMA) {
+    errorRazon = `La razón social no puede pasar de ${RAZON_SOCIAL_MAXIMA} caracteres.`;
+  }
+  return { ruc: errorRuc, razonSocial: errorRazon };
+}
+
+/** Lo que se manda al servidor: con boleta, solo el tipo. */
+export function comprobanteDelPedido(
+  tipo: TipoComprobante,
+  ruc: string,
+  razonSocial: string,
+): ComprobanteRequest {
+  return tipo === 'factura'
+    ? { tipo_comprobante: tipo, ruc: ruc.trim(), razon_social: razonSocial.trim() }
+    : { tipo_comprobante: tipo };
 }
 
 export type ResultadoSimulado = 'aprobado' | 'rechazado';

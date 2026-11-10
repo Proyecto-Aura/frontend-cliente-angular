@@ -439,6 +439,211 @@ describe('Checkout (HU-B-007, RF-B20 a RF-B23; HU-B-008, RF-B24 a RF-B28)', () =
       });
     });
 
+    describe('choosing the receipt type (HU-B-009, RF-B29)', () => {
+      const RUC = '20601234565';
+      const RAZON = 'Distribuidora Andina S.A.C.';
+      const ventana = () => raiz().querySelector('app-checkout-culqi');
+      const opcion = (valor: string) =>
+        raiz().querySelector<HTMLInputElement>(`input[name="co-comprobante"][value="${valor}"]`)!;
+      const elegir = (valor: string) => {
+        opcion(valor).click();
+        fixture.detectChanges();
+      };
+      const filaResumen = () =>
+        [...raiz().querySelectorAll('app-checkout-resumen dl > div')]
+          .map((d) => d.textContent!.replace(/\s+/g, ' ').trim())
+          .find((t) => t.startsWith('Comprobante'));
+      const pagar = () => {
+        boton('Pagar')!.click();
+        fixture.detectChanges();
+      };
+      const confirmarDelivery = () =>
+        confirmar(resumenPedido({ tipo_entrega: 'delivery', direccion_entrega: DIRECCION_PERFIL }));
+
+      it('offers boleta and factura, with boleta chosen by default', () => {
+        abrir();
+
+        expect(texto()).toContain('Comprobante de pago');
+        expect(opcion('boleta').checked).toBe(true);
+        expect(opcion('factura').checked).toBe(false);
+        expect(raiz().querySelector('#co-ruc')).toBeNull();
+        expect(filaResumen()).toBe('Comprobante Boleta');
+      });
+
+      it('asks for RUC and business name only with factura', () => {
+        abrir();
+
+        elegir('factura');
+
+        expect(campo('co-ruc')).not.toBeNull();
+        expect(campo('co-razon')).not.toBeNull();
+        expect(filaResumen()).toBe('Comprobante Factura');
+
+        elegir('boleta');
+
+        expect(raiz().querySelector('#co-ruc')).toBeNull();
+      });
+
+      it('with boleta opens the payment without asking anything else', () => {
+        abrir();
+        confirmarDelivery();
+
+        pagar();
+
+        expect(ventana()).not.toBeNull();
+        httpMock.expectNone(RESUMEN_URL);
+      });
+
+      it('with an empty factura shows the errors and does not open the payment', () => {
+        abrir();
+        confirmarDelivery();
+        elegir('factura');
+
+        pagar();
+
+        expect(texto()).toContain('Ingresa el RUC.');
+        expect(texto()).toContain('Ingresa la razón social.');
+        expect(campo('co-ruc').getAttribute('aria-invalid')).toBe('true');
+        expect(ventana()).toBeNull();
+        httpMock.expectNone(RESUMEN_URL);
+      });
+
+      it('rejects a RUC with a wrong check digit before calling the server', () => {
+        abrir();
+        confirmarDelivery();
+        elegir('factura');
+        escribir('co-ruc', '20601234566');
+        escribir('co-razon', RAZON);
+
+        pagar();
+
+        expect(texto()).toContain('El RUC no es válido. Revisa el número.');
+        expect(ventana()).toBeNull();
+        httpMock.expectNone(RESUMEN_URL);
+      });
+
+      it('keeps only digits in the RUC, up to 11', () => {
+        abrir();
+        elegir('factura');
+
+        escribir('co-ruc', '20-601.234 5651234');
+
+        expect(campo('co-ruc').value).toBe(RUC);
+      });
+
+      it('validates the factura with the server and then opens the payment', () => {
+        abrir();
+        confirmarDelivery();
+        elegir('factura');
+        escribir('co-ruc', RUC);
+        escribir('co-razon', `  ${RAZON} `);
+
+        pagar();
+
+        const req = httpMock.expectOne(RESUMEN_URL);
+        expect(req.request.body).toEqual({
+          items: [{ producto_presentacion_id: 101, cantidad: 2 }],
+          tipo_entrega: 'delivery',
+          direccion_entrega: DIRECCION_PERFIL,
+          comprobante: { tipo_comprobante: 'factura', ruc: RUC, razon_social: RAZON },
+        });
+        expect(ventana()).toBeNull();
+        req.flush(
+          resumenPedido({
+            tipo_entrega: 'delivery',
+            direccion_entrega: DIRECCION_PERFIL,
+            comprobante: { tipo_comprobante: 'factura', ruc: RUC, razon_social: RAZON },
+          }),
+        );
+        fixture.detectChanges();
+
+        expect(ventana()).not.toBeNull();
+      });
+
+      it('does not send the receipt with the payment (it is not stored yet)', () => {
+        abrir();
+        confirmarDelivery();
+        elegir('factura');
+        escribir('co-ruc', RUC);
+        escribir('co-razon', RAZON);
+        pagar();
+        httpMock.expectOne(RESUMEN_URL).flush(resumenPedido({ tipo_entrega: 'delivery' }));
+        fixture.detectChanges();
+
+        boton('Simular pago aprobado')!.click();
+        fixture.detectChanges();
+
+        const req = httpMock.expectOne(PEDIDOS_URL);
+        expect(req.request.body).not.toHaveProperty('comprobante');
+        req.flush({ message: 'Pago rechazado' }, { status: 402, statusText: 'Payment Required' });
+      });
+
+      it('shows the server error, keeps the payment closed and clears it when the client edits', () => {
+        abrir();
+        confirmarDelivery();
+        elegir('factura');
+        escribir('co-ruc', RUC);
+        escribir('co-razon', RAZON);
+        pagar();
+
+        httpMock
+          .expectOne(RESUMEN_URL)
+          .flush(
+            { message: 'comprobante.ruc no es un RUC válido' },
+            { status: 400, statusText: 'Bad Request' },
+          );
+        fixture.detectChanges();
+
+        expect(raiz().querySelector('app-checkout-comprobante [role="alert"]')).not.toBeNull();
+        expect(ventana()).toBeNull();
+
+        escribir('co-razon', 'Otra Empresa S.A.C.');
+
+        expect(raiz().querySelector('app-checkout-comprobante [role="alert"]')).toBeNull();
+      });
+
+      it('cannot validate twice while the server is answering', () => {
+        abrir();
+        confirmarDelivery();
+        elegir('factura');
+        escribir('co-ruc', RUC);
+        escribir('co-razon', RAZON);
+
+        pagar();
+        expect(boton('Pagar')!.disabled).toBe(true);
+        expect(opcion('boleta').disabled).toBe(true);
+
+        httpMock.expectOne(RESUMEN_URL).flush(resumenPedido({ tipo_entrega: 'delivery' }));
+      });
+
+      it('proposes factura with the profile data when the client has a valid RUC', () => {
+        abrir({
+          resumen: resumenPedido({ comprobante_sugerido: { ruc: RUC, razon_social: RAZON } }),
+        });
+
+        expect(opcion('factura').checked).toBe(true);
+        expect(campo('co-ruc').value).toBe(RUC);
+        expect(campo('co-razon').value).toBe(RAZON);
+      });
+
+      it('respects the client choice after the first suggestion', () => {
+        abrir({
+          resumen: resumenPedido({ comprobante_sugerido: { ruc: RUC, razon_social: RAZON } }),
+        });
+        elegir('boleta');
+
+        // El carrito cambia y el servidor vuelve a mandar la sugerencia.
+        carrito.cambiarCantidad(101, 5);
+        fixture.detectChanges();
+        httpMock
+          .expectOne(RESUMEN_URL)
+          .flush(resumenPedido({ comprobante_sugerido: { ruc: RUC, razon_social: RAZON } }));
+        fixture.detectChanges();
+
+        expect(opcion('boleta').checked).toBe(true);
+      });
+    });
+
     describe('cancelling the confirmation (RF-B21)', () => {
       it('unlocks the address so the client can change it', () => {
         abrir();

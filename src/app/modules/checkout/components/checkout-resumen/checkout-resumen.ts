@@ -2,7 +2,7 @@ import { Component, computed, input, output } from '@angular/core';
 
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { formatearPrecio } from '../../../catalogo/utils/catalogo.utils';
-import { LineaPedido } from '../../models/checkout.model';
+import { LineaPedido, TipoComprobante } from '../../models/checkout.model';
 
 /**
  * "Resumen del pedido" del checkout (HU-B-007, RF-B22/RF-B23): las líneas, el
@@ -26,7 +26,13 @@ export class CheckoutResumen {
   /** Con la dirección confirmada solo falta el pago. */
   readonly direccionConfirmada = input(false);
   readonly pagando = input(false);
+  /** Comprobante elegido (HU-B-009), como en el resumen del prototipo. */
+  readonly comprobante = input<TipoComprobante>('boleta');
   readonly pagar = output<void>();
+
+  protected readonly etiquetaComprobante = computed(() =>
+    this.comprobante() === 'factura' ? 'Factura' : 'Boleta',
+  );
 
   protected readonly precio = formatearPrecio;
   protected readonly etiquetaSubtotal = computed(() => {

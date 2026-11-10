@@ -8,6 +8,7 @@ export type IconName =
   | 'circle-check'
   | 'circle-x'
   | 'credit-card'
+  | 'file-text'
   | 'chevron-down'
   | 'chevron-left'
   | 'chevron-right'
