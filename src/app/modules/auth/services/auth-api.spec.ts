@@ -103,6 +103,21 @@ describe('AuthApi', () => {
     expect(session.isAuthenticated()).toBe(false);
   });
 
+  it('refreshes the access_token with the refresh cookie, keeping the roles', () => {
+    session.start('jwt-viejo', ['cliente']);
+    let nuevo: string | undefined;
+    api.refrescar().subscribe((r) => (nuevo = r.access_token));
+
+    const req = httpMock.expectOne(`${AUTH}/refresh`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.withCredentials).toBe(true);
+    req.flush({ access_token: 'jwt-nuevo' });
+
+    expect(nuevo).toBe('jwt-nuevo');
+    expect(session.accessToken()).toBe('jwt-nuevo');
+    expect(session.roles()).toEqual(['cliente']);
+  });
+
   it('asks for the password recovery link (HU-B-003)', () => {
     let mensaje = '';
     api.solicitarRecuperacion('rosa@francos.test').subscribe((r) => (mensaje = r.message));

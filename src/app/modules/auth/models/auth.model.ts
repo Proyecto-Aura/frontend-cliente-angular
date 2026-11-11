@@ -37,6 +37,11 @@ export interface MensajeResponse {
   message: string;
 }
 
+/** POST /auth/refresh — respuesta: solo renueva el access_token (roles no cambian). */
+export interface RefreshResponse {
+  access_token: string;
+}
+
 /** Rol que da acceso a este portal; los roles de la empresa entran al otro. */
 export const ROL_CLIENTE = 'cliente';
 
