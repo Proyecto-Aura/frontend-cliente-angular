@@ -18,6 +18,12 @@ export class Session {
     this.write(accessToken);
   }
 
+  /** Renueva solo el access_token (POST /auth/refresh): los roles no cambian. */
+  actualizarToken(accessToken: string): void {
+    this._accessToken.set(accessToken);
+    this.write(accessToken);
+  }
+
   clear(): void {
     this._accessToken.set(null);
     this._roles.set([]);

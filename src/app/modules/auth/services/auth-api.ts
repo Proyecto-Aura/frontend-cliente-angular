@@ -8,6 +8,7 @@ import {
   LoginRequest,
   LoginResponse,
   MensajeResponse,
+  RefreshResponse,
   RestablecerContrasenaRequest,
   ROL_CLIENTE,
   RegistroResponse,
@@ -43,6 +44,16 @@ export class AuthApi {
    */
   registrarCliente(body: RegisterClientePayload): Observable<RegistroResponse> {
     return this.http.post<RegistroResponse>(`${this.base}/register`, body);
+  }
+
+  /**
+   * Renueva el access_token vencido con el refresh_token (cookie httpOnly).
+   * No devuelve roles: la sesión ya los tiene de cuando se inició.
+   */
+  refrescar(): Observable<RefreshResponse> {
+    return this.http
+      .post<RefreshResponse>(`${this.base}/refresh`, {}, { withCredentials: true })
+      .pipe(tap((res) => this.session.actualizarToken(res.access_token)));
   }
 
   /**
