@@ -65,6 +65,11 @@ describe('CuentaPerfil (HU-B-015, RF-B43)', () => {
     httpMock.expectNone(PERFIL_URL);
   });
 
+  it('offers changing the password below the personal data (HU-B-017)', () => {
+    expect(raiz().querySelector('app-cuenta-password-card')).not.toBeNull();
+    expect(campo('pw-actual')).not.toBeNull();
+  });
+
   it('saves only what changed and confirms it', () => {
     escribir('pf-nombre', ' Rosa María ');
     escribir('pf-telefono', '912345678');

@@ -11,6 +11,7 @@ import {
 } from '@angular/forms';
 
 import { Icon } from '../../../../shared/ui/icon/icon';
+import { CuentaPasswordCard } from '../../components/cuenta-password-card/cuenta-password-card';
 import { apiErrorMessage } from '../../../../shared/utils/api-error';
 import { ActualizarPerfil, PerfilCliente } from '../../models/perfil.model';
 import { PerfilStore } from '../../services/perfil-store';
@@ -24,11 +25,12 @@ function telefonoValido(control: AbstractControl<string>): ValidationErrors | nu
 
 /**
  * HU-B-015 (RF-B43): "Mi Perfil", donde el cliente edita su nombre, email y
- * teléfono. El email se guarda directo; verificarlo es la HU-B-016.
+ * teléfono. El email se guarda directo; verificarlo es la HU-B-016. Debajo,
+ * la tarjeta para cambiar la contraseña (HU-B-017).
  */
 @Component({
   selector: 'app-cuenta-perfil',
-  imports: [ReactiveFormsModule, Icon],
+  imports: [ReactiveFormsModule, Icon, CuentaPasswordCard],
   host: { class: 'flex flex-col gap-[18px]' },
   templateUrl: './cuenta-perfil.html',
 })
