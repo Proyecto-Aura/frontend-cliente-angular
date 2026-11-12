@@ -54,6 +54,14 @@ export const AUTH_ROUTES: Routes = [
           ),
       },
       {
+        // HU-B-016: confirmar el correo nuevo desde el enlace que llega a esa dirección.
+        path: 'verificar-cambio-correo',
+        loadComponent: () =>
+          import('./pages/auth-verificar-cambio-correo/auth-verificar-cambio-correo').then(
+            (m) => m.AuthVerificarCambioCorreo,
+          ),
+      },
+      {
         path: 'reenviar-verificacion',
         loadComponent: () =>
           import('./pages/auth-reenviar-verificacion/auth-reenviar-verificacion').then(

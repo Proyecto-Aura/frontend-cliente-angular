@@ -11,6 +11,14 @@ export interface PerfilCliente {
   razon_social: string | null;
 }
 
+/**
+ * Respuesta del `PATCH /perfil`. HU-B-016: si el email cambió, no se aplica
+ * todavía; el backend envía un enlace al correo nuevo y lo indica aquí.
+ */
+export interface PerfilActualizado extends PerfilCliente {
+  cambio_email_pendiente?: boolean;
+}
+
 /** Lo que el cliente puede editar (RF-B43); solo se envía lo que cambió. */
 export interface ActualizarPerfil {
   nombres?: string;

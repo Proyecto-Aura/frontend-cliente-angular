@@ -25,8 +25,9 @@ function telefonoValido(control: AbstractControl<string>): ValidationErrors | nu
 
 /**
  * HU-B-015 (RF-B43): "Mi Perfil", donde el cliente edita su nombre, email y
- * teléfono. El email se guarda directo; verificarlo es la HU-B-016. Debajo,
- * la tarjeta para cambiar la contraseña (HU-B-017).
+ * teléfono. HU-B-016 (RF-B44): el email nuevo no se aplica hasta que el
+ * cliente abre el enlace que le llega a esa dirección. Debajo, la tarjeta para
+ * cambiar la contraseña (HU-B-017).
  */
 @Component({
   selector: 'app-cuenta-perfil',
@@ -57,6 +58,8 @@ export class CuentaPerfil {
   protected readonly guardado = signal(false);
   /** El backend avisa que el correo ya es de otra cuenta (409). */
   protected readonly correoEnUso = signal<string | null>(null);
+  /** HU-B-016: correo nuevo al que se envió el enlace para confirmarlo. */
+  protected readonly correoPendiente = signal<string | null>(null);
 
   private original: PerfilCliente | null = null;
 
@@ -93,16 +96,22 @@ export class CuentaPerfil {
     const cambios = this.cambios();
     this.guardando.set(true);
     this.guardado.set(false);
+    this.correoPendiente.set(null);
     this.errorGuardar.set(null);
     this.correoEnUso.set(null);
     this.store
       .actualizar(cambios)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (perfil) => {
+        next: ({ cambio_email_pendiente, ...perfil }) => {
           this.guardando.set(false);
           this.llenar(perfil);
-          this.guardado.set(true);
+          const pidioCorreo = cambios.email !== undefined;
+          this.correoPendiente.set(
+            pidioCorreo && cambio_email_pendiente ? cambios.email!.toLowerCase() : null,
+          );
+          // Si solo cambió el correo, el aviso del enlace basta.
+          this.guardado.set(!pidioCorreo || Object.keys(cambios).length > 1);
         },
         error: (err: unknown) => {
           this.guardando.set(false);
