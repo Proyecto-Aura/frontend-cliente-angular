@@ -43,10 +43,27 @@
     class="flex flex-col items-stretch justify-between gap-4 px-5 py-4 sm:flex-row sm:flex-wrap sm:items-center"
   >
     <div class="flex min-w-0 flex-1 items-start gap-3 sm:min-w-[180px]">
-      <span
-        class="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-accent text-primary"
-        ><app-icon name="shopping-cart" [size]="20"
-      /></span>
+      @if (miniaturas().length) {
+        <div class="relative h-10 shrink-0" [class]="miniaturas().length > 1 ? 'w-[52px]' : 'w-10'">
+          @for (item of miniaturas(); track item.id; let i = $index) {
+            <span
+              class="absolute top-0 flex size-10 items-center justify-center overflow-hidden rounded-lg border border-border bg-accent"
+              [class]="i === 0 ? 'left-0 z-10' : 'left-[18px]'"
+            >
+              @if (item.imagen_url; as url) {
+                <img [src]="url" [alt]="item.producto" class="size-full object-cover" />
+              } @else {
+                <app-icon name="shopping-cart" [size]="18" class="text-primary" />
+              }
+            </span>
+          }
+        </div>
+      } @else {
+        <span
+          class="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-accent text-primary"
+          ><app-icon name="shopping-cart" [size]="20"
+        /></span>
+      }
       <div class="min-w-0">
         @if (pedido().detalle; as detalle) {
           <p class="m-0 text-[13px] font-semibold break-words">
@@ -116,7 +133,7 @@
               [disabled]="cancelando()"
               (click)="confirmarCancelacion()"
             >
-              {{ cancelando() ? "Cancelando…" : "Sí, cancelar" }}
+              {{ cancelando() ? 'Cancelando…' : 'Sí, cancelar' }}
             </button>
             <button
               type="button"

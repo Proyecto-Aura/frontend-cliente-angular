@@ -47,6 +47,8 @@ export class CuentaPedidoCard {
   protected readonly articulos = computed(
     () => this.pedido().detalle?.items.reduce((total, item) => total + item.cantidad, 0) ?? 0,
   );
+  /** Las primeras 2 fotos para la pila de miniaturas; vacío si no hay detalle. */
+  protected readonly miniaturas = computed(() => this.pedido().detalle?.items.slice(0, 2) ?? []);
   // El backend cancela desde "confirmado" y "en_espera_inventario" (el mismo paso
   // visual que el cliente ve fusionado como "Confirmado"); se bloquea recién al
   // entrar a "en_preparacion" en adelante.

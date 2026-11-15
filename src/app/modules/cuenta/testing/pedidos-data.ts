@@ -30,6 +30,7 @@ export const PEDIDO_DETALLE_PRUEBA: PedidoPortalDetalle = {
       precio_unitario: 6,
       precio_aplicado: 6,
       subtotal: 12,
+      imagen_url: null,
     },
   ],
   pago: {

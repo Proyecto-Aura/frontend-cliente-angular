@@ -81,6 +81,24 @@ describe('CuentaPedidoDetalle', () => {
     expect(dialogo.textContent).toContain('S/ 12.00');
   });
 
+  it('shows the product photo, falling back to the cart icon when there is none', async () => {
+    const dialogo = await crear({
+      resumen,
+      detalle: {
+        ...detalle,
+        items: [{ ...detalle.items[0], imagen_url: 'https://cdn.test/producto.jpg' }],
+      },
+      errorDetalle: null,
+    });
+    const img = dialogo.querySelector<HTMLImageElement>('img')!;
+    expect(img.src).toBe('https://cdn.test/producto.jpg');
+    expect(img.alt).toBe(detalle.items[0].producto);
+
+    const sinFoto = await crear();
+    expect(sinFoto.querySelector('img')).toBeNull();
+    expect(sinFoto.querySelector('app-icon svg')).not.toBeNull();
+  });
+
   it('shows the crossed-out unit price when a discount was applied', async () => {
     const dialogo = await crear({
       resumen,

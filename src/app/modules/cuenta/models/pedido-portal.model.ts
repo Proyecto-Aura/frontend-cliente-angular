@@ -41,6 +41,8 @@ export interface PedidoPortalDetalle {
     precio_unitario: number;
     precio_aplicado: number;
     subtotal: number;
+    /** `null` si el producto no tiene imagen cargada. Solo viene en el detalle, no en el listado. */
+    imagen_url: string | null;
   }[];
   pago: {
     metodo_pago: string;

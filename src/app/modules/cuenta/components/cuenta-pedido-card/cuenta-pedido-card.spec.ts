@@ -165,6 +165,47 @@ describe('CuentaPedidoCard', () => {
     );
   });
 
+  it('shows the first product photo, falling back to the cart icon when there is none', async () => {
+    const fixture = TestBed.createComponent(CuentaPedidoCard);
+    fixture.componentRef.setInput('pedido', {
+      resumen,
+      detalle: { ...detalle, items: [{ ...detalle.items[0], imagen_url: 'https://cdn.test/a.jpg' }] },
+      errorDetalle: null,
+    });
+    await fixture.whenStable();
+    const raiz = fixture.nativeElement as HTMLElement;
+    const img = raiz.querySelector<HTMLImageElement>('img')!;
+    expect(img.src).toBe('https://cdn.test/a.jpg');
+    expect(img.alt).toBe(detalle.items[0].producto);
+
+    fixture.componentRef.setInput('pedido', { resumen, detalle, errorDetalle: null });
+    await fixture.whenStable();
+    expect(raiz.querySelector('img')).toBeNull();
+    expect(raiz.querySelector('app-icon svg')).not.toBeNull();
+  });
+
+  it('stacks up to two thumbnails without inventing a third for more items', async () => {
+    const fixture = TestBed.createComponent(CuentaPedidoCard);
+    fixture.componentRef.setInput('pedido', {
+      resumen,
+      detalle: {
+        ...detalle,
+        items: [
+          { ...detalle.items[0], id: 1, imagen_url: 'https://cdn.test/a.jpg' },
+          { ...detalle.items[0], id: 2, imagen_url: 'https://cdn.test/b.jpg' },
+          { ...detalle.items[0], id: 3, imagen_url: 'https://cdn.test/c.jpg' },
+        ],
+      },
+      errorDetalle: null,
+    });
+    await fixture.whenStable();
+    const raiz = fixture.nativeElement as HTMLElement;
+    expect([...raiz.querySelectorAll('img')].map((i) => i.src)).toEqual([
+      'https://cdn.test/a.jpg',
+      'https://cdn.test/b.jpg',
+    ]);
+  });
+
   it('emits verDetalle with the order id when detail is available, and hides the button otherwise', async () => {
     const fixture = TestBed.createComponent(CuentaPedidoCard);
     fixture.componentRef.setInput('pedido', { resumen, detalle, errorDetalle: null });
