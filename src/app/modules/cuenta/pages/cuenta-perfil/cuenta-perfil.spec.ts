@@ -7,7 +7,7 @@ import { PerfilCliente } from '../../models/perfil.model';
 import { PerfilStore } from '../../services/perfil-store';
 import { CuentaPerfil } from './cuenta-perfil';
 
-describe('CuentaPerfil (HU-B-015, RF-B43)', () => {
+describe('CuentaPerfil (HU-B-015 RF-B43, HU-B-016 RF-B44)', () => {
   const PERFIL_URL = `${environment.apiUrl}/perfil`;
   const PERFIL: PerfilCliente = {
     nombres: 'Rosa Elena',
@@ -88,13 +88,49 @@ describe('CuentaPerfil (HU-B-015, RF-B43)', () => {
     expect(boton('Descartar')).toBeUndefined();
   });
 
-  it('changes the email directly (its verification is HU-B-016)', () => {
-    escribir('pf-correo', 'rosa.nueva@francos.test');
+  it('does not change the email until it is confirmed from the link (HU-B-016)', () => {
+    escribir('pf-correo', 'Rosa.Nueva@francos.test');
     guardar();
 
     const req = httpMock.expectOne(PERFIL_URL);
-    expect(req.request.body).toEqual({ email: 'rosa.nueva@francos.test' });
-    req.flush({ ...PERFIL, email: 'rosa.nueva@francos.test' });
+    expect(req.request.body).toEqual({ email: 'Rosa.Nueva@francos.test' });
+    // El backend no aplica el correo nuevo: devuelve el actual y avisa que quedó pendiente.
+    req.flush({ ...PERFIL, cambio_email_pendiente: true });
+    fixture.detectChanges();
+
+    const aviso = raiz().querySelector('[role="status"]')!.textContent!.replace(/\s+/g, ' ');
+    expect(aviso).toContain('Te enviamos un enlace a rosa.nueva@francos.test');
+    expect(aviso).toContain('Tu correo actual sigue activo hasta que lo confirmes');
+    expect(raiz().textContent).not.toContain('Tus datos personales se guardaron.');
+    expect(campo('pf-correo').value).toBe('rosa@francos.test');
+    expect(TestBed.inject(PerfilStore).perfil()).toEqual(PERFIL);
+  });
+
+  it('saves the name and leaves the new email pending in the same request', () => {
+    escribir('pf-nombre', 'Rosa María');
+    escribir('pf-correo', 'rosa.nueva@francos.test');
+    guardar();
+
+    httpMock
+      .expectOne(PERFIL_URL)
+      .flush({ ...PERFIL, nombres: 'Rosa María', cambio_email_pendiente: true });
+    fixture.detectChanges();
+
+    const avisos = [...raiz().querySelectorAll('[role="status"]')].map((e) => e.textContent!);
+    expect(avisos.some((t) => t.includes('Tus datos personales se guardaron.'))).toBe(true);
+    expect(avisos.some((t) => t.includes('Te enviamos un enlace'))).toBe(true);
+  });
+
+  it('does not announce a pending email when only the name changed', () => {
+    escribir('pf-nombre', 'Rosa María');
+    guardar();
+
+    httpMock
+      .expectOne(PERFIL_URL)
+      .flush({ ...PERFIL, nombres: 'Rosa María', cambio_email_pendiente: false });
+    fixture.detectChanges();
+
+    expect(raiz().textContent).not.toContain('Te enviamos un enlace');
   });
 
   it.each([

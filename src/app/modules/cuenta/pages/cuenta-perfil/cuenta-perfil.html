@@ -111,6 +111,13 @@
         </div>
       }
 
+      @if (correoPendiente(); as correo) {
+        <div role="status" class="mt-4 rounded-md bg-accent px-3 py-2 text-[13px] text-primary">
+          Te enviamos un enlace a <strong class="font-bold">{{ correo }}</strong> para confirmar el
+          cambio. Tu correo actual sigue activo hasta que lo confirmes. El enlace vence en 1 hora.
+        </div>
+      }
+
       @if (errorGuardar()) {
         <div role="alert" class="mt-4 rounded-md bg-accent px-3 py-2 text-[13px] text-destructive">
           {{ errorGuardar() }}

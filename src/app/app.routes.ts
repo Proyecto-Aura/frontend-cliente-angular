@@ -23,6 +23,12 @@ export const routes: Routes = [
       inject(Router).createUrlTree(['/auth/verificar-correo'], { queryParams }),
   },
   {
+    // Enlace del correo de cambio de email (lo arma el backend): /verificar-cambio-email?token=…
+    path: 'verificar-cambio-email',
+    redirectTo: ({ queryParams }) =>
+      inject(Router).createUrlTree(['/auth/verificar-cambio-correo'], { queryParams }),
+  },
+  {
     path: '',
     loadComponent: () => import('./layouts/store-layout/store-layout').then((m) => m.StoreLayout),
     children: [

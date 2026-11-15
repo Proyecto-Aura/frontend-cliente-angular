@@ -4,7 +4,7 @@ import { Observable, tap } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
 import { Session } from '../../../shared/auth/session';
-import { ActualizarPerfil, PerfilCliente } from '../models/perfil.model';
+import { ActualizarPerfil, PerfilActualizado, PerfilCliente } from '../models/perfil.model';
 
 /**
  * Perfil del cliente (HU-B-015): lo usan la barra lateral de "Mi cuenta"
@@ -46,7 +46,14 @@ export class PerfilStore {
     return this.http.get<PerfilCliente>(this.url).pipe(tap((p) => this._perfil.set(p)));
   }
 
-  actualizar(cambios: ActualizarPerfil): Observable<PerfilCliente> {
-    return this.http.patch<PerfilCliente>(this.url, cambios).pipe(tap((p) => this._perfil.set(p)));
+  actualizar(cambios: ActualizarPerfil): Observable<PerfilActualizado> {
+    return this.http.patch<PerfilActualizado>(this.url, cambios).pipe(
+      tap((respuesta) => {
+        // El aviso del correo pendiente es de esta respuesta, no del perfil.
+        const perfil: PerfilActualizado = { ...respuesta };
+        delete perfil.cambio_email_pendiente;
+        this._perfil.set(perfil);
+      }),
+    );
   }
 }
