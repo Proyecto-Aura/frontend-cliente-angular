@@ -55,7 +55,7 @@ describe('CuentaPedidoCard', () => {
     await fixture.whenStable();
     expect(raiz.textContent).toContain('Solicitud de reembolso registrada');
     expect(raiz.textContent).toContain('Rechazado');
-    expect(raiz.querySelector('button')).toBeNull();
+    expect(raiz.querySelector('[aria-label^="Solicitar reembolso"]')).toBeNull();
   });
 
   it.each<EstadoPedido>(['confirmado', 'entregado', 'cancelado'])(
@@ -240,5 +240,17 @@ describe('CuentaPedidoCard', () => {
     raiz.querySelector('button')!.click();
     expect(reintentar).toHaveBeenCalledOnce();
     expect(raiz.textContent).not.toContain('Pagado');
+  });
+
+  it('does not offer to cancel an unverified order, even though the summary itself says confirmado', async () => {
+    const fixture = TestBed.createComponent(CuentaPedidoCard);
+    fixture.componentRef.setInput('pedido', {
+      resumen, // resumen.estado es 'confirmado'
+      detalle: null,
+      errorDetalle: 'No pudimos verificar este pedido.',
+    });
+    await fixture.whenStable();
+    const raiz = fixture.nativeElement as HTMLElement;
+    expect(raiz.querySelector('[aria-label^="Cancelar el pedido"]')).toBeNull();
   });
 });

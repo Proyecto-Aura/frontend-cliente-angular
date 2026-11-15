@@ -51,8 +51,12 @@ export class CuentaPedidoCard {
   protected readonly miniaturas = computed(() => this.pedido().detalle?.items.slice(0, 2) ?? []);
   // El backend cancela desde "confirmado" y "en_espera_inventario" (el mismo paso
   // visual que el cliente ve fusionado como "Confirmado"); se bloquea recién al
-  // entrar a "en_preparacion" en adelante.
-  protected readonly puedeCancelar = computed(() => this.estadoCliente() === 'confirmado');
+  // entrar a "en_preparacion" en adelante. Exige detalle verificado: si la
+  // verificación falló, no hay que ofrecer una acción sobre un estado que no
+  // se pudo confirmar (el resumen puede estar vencido).
+  protected readonly puedeCancelar = computed(
+    () => this.pedido().detalle !== null && this.estadoCliente() === 'confirmado',
+  );
 
   protected pedirConfirmacion(): void {
     this.confirmandoCancelar.set(true);
