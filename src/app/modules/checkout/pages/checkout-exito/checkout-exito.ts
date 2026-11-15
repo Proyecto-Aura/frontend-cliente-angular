@@ -5,14 +5,15 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { apiErrorMessage } from '../../../../shared/utils/api-error';
+import {
+  ESTADOS_PEDIDO_CLIENTE,
+  EstadoPedido,
+  estadoParaCliente,
+} from '../../../cuenta/models/pedido-portal.model';
 import { formatearPrecio } from '../../../catalogo/utils/catalogo.utils';
 import { PedidoPagado } from '../../models/checkout.model';
 import { CheckoutApi } from '../../services/checkout-api';
 import { etiquetaComprobante } from '../../utils/checkout.utils';
-
-const ETIQUETA_ESTADO: Record<string, string> = {
-  confirmado: 'Confirmado',
-};
 
 /**
  * Pedido y su estado (HU-B-013, RF-B37; antes HU-B-008, RF-B26 y RF-B28), con la
@@ -43,8 +44,12 @@ export class CheckoutExito {
     this.cargar();
   }
 
-  protected etiqueta(estado: string): string {
-    return ETIQUETA_ESTADO[estado] ?? estado.replaceAll('_', ' ');
+  protected esConfirmado(estado: EstadoPedido): boolean {
+    return estadoParaCliente(estado) === 'confirmado';
+  }
+
+  protected etiqueta(estado: EstadoPedido): string {
+    return ESTADOS_PEDIDO_CLIENTE[estadoParaCliente(estado)];
   }
 
   protected cargar(): void {

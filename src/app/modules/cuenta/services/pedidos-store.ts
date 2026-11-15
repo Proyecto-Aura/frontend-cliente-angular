@@ -1,6 +1,7 @@
 import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Subscription, catchError, forkJoin, map, of, switchMap } from 'rxjs';
+import { Avisos } from '../../../shared/ui/aviso/aviso';
 import { apiErrorMessage } from '../../../shared/utils/api-error';
 import { PaginaPedidos, PedidoPortalVista } from '../models/pedido-portal.model';
 import { esPedidoElegible, pedidoParaReembolso } from '../models/solicitud-formulario.model';
@@ -10,12 +11,15 @@ import { PedidosApi } from './pedidos-api';
 @Injectable()
 export class PedidosStore {
   private readonly api = inject(PedidosApi);
+  private readonly avisos = inject(Avisos);
   private peticion: Subscription | undefined;
   readonly pagina = signal(1);
   readonly meta = signal<PaginaPedidos['meta'] | null>(null);
   readonly filas = signal<readonly PedidoPortalVista[]>([]);
   readonly cargando = signal(true);
   readonly error = signal<string | null>(null);
+  /** Id del pedido que se está cancelando; null si ninguno. */
+  readonly cancelando = signal<number | null>(null);
   readonly opciones = computed(() =>
     this.filas().flatMap((fila) => {
       const pedido = pedidoParaReembolso(fila);
@@ -70,6 +74,32 @@ export class PedidosStore {
           this.cargando.set(false);
         },
       });
+  }
+
+  /** Solo funciona si el pedido sigue en `confirmado`; refresca la lista pase lo que pase. */
+  cancelar(id: number): void {
+    const pedido = this.filas().find((p) => p.resumen.id === id);
+    this.cancelando.set(id);
+    this.api.cancelar(id).subscribe({
+      next: () => {
+        this.cancelando.set(null);
+        this.avisos.mostrar(
+          'Pedido cancelado',
+          pedido ? `Tu pedido ${pedido.resumen.codigo} fue cancelado.` : undefined,
+        );
+        this.cargar(this.pagina());
+      },
+      error: (err: unknown) => {
+        this.cancelando.set(null);
+        this.avisos.mostrar(
+          'No se pudo cancelar',
+          apiErrorMessage(err, 'Inténtalo de nuevo en unos segundos.'),
+        );
+        // El 409 significa que el pedido ya avanzó de estado: refrescar para no dejar
+        // el botón de cancelar visible sobre un pedido que ya no se puede cancelar.
+        this.cargar(this.pagina());
+      },
+    });
   }
 
   private mensajeError(err: unknown, fallback: string): string {

@@ -9,7 +9,7 @@
         <app-icon name="circle-check" [size]="26" />
       </span>
       <h1 class="m-0 font-heading text-xl font-extrabold text-[#1f1f1f]">
-        {{ p.estado === 'confirmado' ? '¡Pedido confirmado!' : 'Estado de tu pedido' }}
+        {{ esConfirmado(p.estado) ? '¡Pedido confirmado!' : 'Estado de tu pedido' }}
       </h1>
       <p class="m-0 text-[12.5px] text-muted-foreground">
         Tu pedido <strong class="text-[#1f1f1f]">{{ p.codigo }}</strong> está

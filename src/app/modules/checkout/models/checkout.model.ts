@@ -1,5 +1,7 @@
 /** Contrato de `POST /api/v1/portal/pedidos/resumen` (HU-B-007). */
 
+import type { EstadoPedido } from '../../cuenta/models/pedido-portal.model';
+
 export type TipoEntrega = 'delivery' | 'recojo_tienda';
 
 export interface ItemResumenRequest {
@@ -108,7 +110,7 @@ export interface ComprobanteEmitido {
 export interface PedidoPagado {
   id: number;
   codigo: string;
-  estado: string;
+  estado: EstadoPedido;
   tipo_entrega: TipoEntrega;
   direccion_entrega: string | null;
   total: number;

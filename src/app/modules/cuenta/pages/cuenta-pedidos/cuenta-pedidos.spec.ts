@@ -94,7 +94,7 @@ describe('CuentaPedidos', () => {
       });
     http.expectOne(`${url}/21`).flush(PEDIDO_DETALLE_PRUEBA);
     await fixture.whenStable();
-    raiz.querySelector<HTMLButtonElement>('article button')!.click();
+    raiz.querySelector<HTMLButtonElement>('[aria-label^="Solicitar reembolso"]')!.click();
     await vi.waitFor(() => {
       const peticiones = http.match((r) => r.url === url);
       expect(peticiones).toHaveLength(1);
@@ -115,6 +115,30 @@ describe('CuentaPedidos', () => {
     expect(raiz.querySelector('dialog')).toBeNull();
   });
 
+  it('opens the order detail dialog with its already-loaded data and closes it independently', async () => {
+    const fixture = TestBed.createComponent(CuentaPedidos);
+    const raiz = fixture.nativeElement as HTMLElement;
+    http
+      .expectOne((r) => r.url === url)
+      .flush({
+        data: [PEDIDO_RESUMEN_PRUEBA],
+        meta: { total: 1, page: 1, limit: 10, total_pages: 1 },
+      });
+    http.expectOne(`${url}/21`).flush(PEDIDO_DETALLE_PRUEBA);
+    await fixture.whenStable();
+    expect(raiz.querySelector('app-cuenta-pedido-detalle')).toBeNull();
+
+    raiz.querySelector<HTMLButtonElement>('[aria-label^="Ver detalle"]')!.click();
+    await fixture.whenStable();
+    const detalle = raiz.querySelector('app-cuenta-pedido-detalle')!;
+    expect(detalle.textContent).toContain(PEDIDO_RESUMEN_PRUEBA.codigo);
+    http.expectNone((r) => r.url === `${url}/21`);
+
+    detalle.querySelector<HTMLButtonElement>('[aria-label="Cerrar detalle del pedido"]')!.click();
+    await fixture.whenStable();
+    expect(raiz.querySelector('app-cuenta-pedido-detalle')).toBeNull();
+  });
+
   it('navigates to requests only after confirmation, keeps the toast and removes the duplicate action', async () => {
     const navegar = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     const fixture = TestBed.createComponent(CuentaPedidos);
@@ -126,7 +150,7 @@ describe('CuentaPedidos', () => {
     });
     http.expectOne(`${url}/21`).flush(PEDIDO_DETALLE_PRUEBA);
     await fixture.whenStable();
-    raiz.querySelector<HTMLButtonElement>('article button')!.click();
+    raiz.querySelector<HTMLButtonElement>('[aria-label^="Solicitar reembolso"]')!.click();
     await vi.waitFor(() => {
       const reqs = http.match((r) => r.url === url);
       expect(reqs).toHaveLength(1);
@@ -170,6 +194,6 @@ describe('CuentaPedidos', () => {
     expect(raiz.querySelector('article')!.textContent).toContain(
       'Solicitud de reembolso registrada',
     );
-    expect(raiz.querySelector('article button')).toBeNull();
+    expect(raiz.querySelector('[aria-label^="Solicitar reembolso"]')).toBeNull();
   });
 });

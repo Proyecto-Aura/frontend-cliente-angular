@@ -27,7 +27,10 @@ export const PEDIDO_DETALLE_PRUEBA: PedidoPortalDetalle = {
       producto: 'Producto de prueba',
       presentacion: '250 gr',
       cantidad: 2,
+      precio_unitario: 6,
+      precio_aplicado: 6,
       subtotal: 12,
+      imagen_url: null,
     },
   ],
   pago: {
@@ -35,5 +38,6 @@ export const PEDIDO_DETALLE_PRUEBA: PedidoPortalDetalle = {
     monto: 12,
     numero_operacion: 'SIM-PRUEBA',
     fecha_pago: '2026-11-05T12:00:00Z',
+    comprobante: null,
   },
 };

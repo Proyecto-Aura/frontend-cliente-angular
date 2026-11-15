@@ -2,6 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { environment } from '../../../../environments/environment';
+import { Avisos } from '../../../shared/ui/aviso/aviso';
 import { PEDIDO_DETALLE_PRUEBA, PEDIDO_RESUMEN_PRUEBA } from '../testing/pedidos-data';
 import { PedidosStore } from './pedidos-store';
 
@@ -74,6 +75,46 @@ describe('PedidosStore', () => {
     http.expectOne((r) => r.url === url).flush({}, { status: 401, statusText: 'Unauthorized' });
     expect(store.error()).toContain('sesión ha vencido');
     expect(store.hayElegibles()).toBe(false);
+  });
+
+  it('cancels an order, toasts the confirmation, and refreshes the list', () => {
+    store.cargar();
+    responderLista();
+    http.expectOne(`${url}/21`).flush(PEDIDO_DETALLE_PRUEBA);
+    expect(store.cancelando()).toBeNull();
+
+    store.cancelar(21);
+    expect(store.cancelando()).toBe(21);
+    http
+      .expectOne((r) => r.url === `${url}/21/cancelar` && r.method === 'PATCH')
+      .flush({ ...PEDIDO_DETALLE_PRUEBA, estado: 'cancelado' });
+    expect(store.cancelando()).toBeNull();
+    expect(TestBed.inject(Avisos).actual()?.titulo).toBe('Pedido cancelado');
+    expect(TestBed.inject(Avisos).actual()?.detalle).toContain(PEDIDO_RESUMEN_PRUEBA.codigo);
+
+    // refresca la lista tras cancelar
+    responderLista();
+    http.expectOne(`${url}/21`).flush({ ...PEDIDO_DETALLE_PRUEBA, estado: 'cancelado' });
+  });
+
+  it('toasts the backend reason and still refreshes when the order can no longer be cancelled', () => {
+    store.cargar();
+    responderLista();
+    http.expectOne(`${url}/21`).flush(PEDIDO_DETALLE_PRUEBA);
+
+    store.cancelar(21);
+    http
+      .expectOne(`${url}/21/cancelar`)
+      .flush(
+        { message: 'El pedido PED-PRUEBA-021 ya no se puede cancelar: pasó a en_preparacion' },
+        { status: 409, statusText: 'Conflict' },
+      );
+    expect(store.cancelando()).toBeNull();
+    expect(TestBed.inject(Avisos).actual()?.titulo).toBe('No se pudo cancelar');
+    expect(TestBed.inject(Avisos).actual()?.detalle).toContain('ya no se puede cancelar');
+
+    responderLista();
+    http.expectOne(`${url}/21`).flush({ ...PEDIDO_DETALLE_PRUEBA, estado: 'en_preparacion' });
   });
 
   it('cancels the previous page and does not retain its orders on navigation or destruction', () => {
