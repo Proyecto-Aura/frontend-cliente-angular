@@ -44,11 +44,10 @@
   >
     <div class="flex min-w-0 flex-1 items-start gap-3 sm:min-w-[180px]">
       @if (miniaturas().length) {
-        <div class="relative h-10 shrink-0" [class]="miniaturas().length > 1 ? 'w-[52px]' : 'w-10'">
-          @for (item of miniaturas(); track item.id; let i = $index) {
+        <div class="flex shrink-0 gap-1">
+          @for (item of miniaturas(); track item.id) {
             <span
-              class="absolute top-0 flex size-10 items-center justify-center overflow-hidden rounded-lg border border-border bg-accent"
-              [class]="i === 0 ? 'left-0 z-10' : 'left-[18px]'"
+              class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-accent"
             >
               @if (item.imagen_url; as url) {
                 <img [src]="url" [alt]="item.producto" class="size-full object-cover" />
