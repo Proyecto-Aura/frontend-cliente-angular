@@ -109,9 +109,37 @@ describe('CheckoutExito (HU-B-013, RF-B37; HU-B-008)', () => {
     fixture.detectChanges();
 
     expect(raiz().querySelector('h1')!.textContent).toContain('Estado de tu pedido');
-    expect(texto()).toContain('está en camino');
+    expect(texto()).toContain('está En camino');
     expect(texto()).not.toContain('Confirmado');
   });
+
+  it.each(['confirmado', 'en_espera_inventario'] as const)(
+    'still greets as just-confirmed while the order is in the internal %s stage',
+    (estado) => {
+      abrir('7');
+      httpMock.expectOne(URL).flush({ ...PEDIDO, estado });
+      fixture.detectChanges();
+
+      expect(raiz().querySelector('h1')!.textContent).toContain('¡Pedido confirmado!');
+      expect(texto()).toContain('está Confirmado');
+    },
+  );
+
+  it.each([
+    ['en_preparacion', 'En preparación'],
+    ['pendiente_entrega', 'En preparación'],
+    ['entregado', 'Entregado'],
+    ['cancelado', 'Cancelado'],
+  ] as const)(
+    'shows the internal %s stage to the client as "%s"',
+    (estado, etiquetaCliente) => {
+      abrir('7');
+      httpMock.expectOne(URL).flush({ ...PEDIDO, estado });
+      fixture.detectChanges();
+
+      expect(texto()).toContain(`está ${etiquetaCliente}`);
+    },
+  );
 
   it('lists each line with the price that was charged, wholesale included', () => {
     abrir('7');

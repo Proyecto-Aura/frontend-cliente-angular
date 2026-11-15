@@ -15,4 +15,9 @@ export class PedidosApi {
   detalle(id: number) {
     return this.http.get<PedidoPortalDetalle>(`${this.url}/${id}`);
   }
+
+  /** Solo funciona mientras el pedido está en `confirmado`; 409 si ya pasó a preparación. */
+  cancelar(id: number) {
+    return this.http.patch<PedidoPortalDetalle>(`${this.url}/${id}/cancelar`, {});
+  }
 }

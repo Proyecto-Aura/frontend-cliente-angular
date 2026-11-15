@@ -1,0 +1,160 @@
+<dialog
+  appCuentaDialogo
+  #modal="cuentaDialogo"
+  aria-labelledby="pedido-detalle-titulo"
+  aria-modal="true"
+  class="m-auto max-h-[min(90dvh,calc(100dvh-48px))] w-[calc(100%-48px)] max-w-[560px] overflow-y-auto rounded-lg border-0 bg-surface p-0 text-foreground shadow-[0_20px_48px_rgba(33,33,33,0.24)] backdrop:bg-[rgba(33,33,33,0.45)]"
+  (cerrarSolicitado)="cerrar.emit()"
+>
+  <div class="flex items-center justify-between gap-3 rounded-t-lg bg-primary px-7 py-5 text-white">
+    <h2 id="pedido-detalle-titulo" class="m-0 min-w-0 flex-1 truncate text-xl font-semibold">
+      Pedido #{{ pedido().resumen.codigo }}
+    </h2>
+    <button
+      #botonCerrar
+      data-foco-inicial
+      type="button"
+      aria-label="Cerrar detalle del pedido"
+      class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-white hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+      (click)="modal.cerrar()"
+    >
+      <app-icon name="x" [size]="18" />
+    </button>
+  </div>
+
+  <div class="px-7 pt-5 pb-7">
+    <div class="mb-[18px] flex flex-wrap items-center justify-between gap-3 text-xs">
+      <time class="text-neutral-700" [attr.datetime]="pedido().resumen.created_at"
+        >Realizado el {{ pedido().resumen.created_at | date: 'd MMM yyyy' : 'UTC' }}</time
+      >
+      <span
+        data-testid="estado-pedido"
+        class="inline-flex items-center gap-1 rounded-full px-2 py-1 font-semibold"
+        [class]="colorEstado()"
+        ><app-icon [name]="iconoEstado()" [size]="12" />{{ etiquetaEstado() }}</span
+      >
+    </div>
+
+    @if (!cancelado()) {
+      <section aria-labelledby="pedido-seguimiento-titulo" class="mb-[22px]">
+        <h3 id="pedido-seguimiento-titulo" class="sr-only">Seguimiento del pedido</h3>
+        <ol class="m-0 flex list-none gap-1 p-0">
+          @for (paso of pasos; track paso.estado; let i = $index) {
+            <li class="flex min-w-0 flex-1 flex-col items-center gap-1.5 text-center">
+              <span
+                class="h-1.5 w-full rounded-full"
+                [class]="i <= pasoActual() ? 'bg-primary' : 'bg-[#ECECEC]'"
+                aria-hidden="true"
+              ></span>
+              <span
+                class="text-[10px] leading-tight"
+                [class]="i <= pasoActual() ? 'font-semibold text-primary' : 'text-neutral-700'"
+                >{{ paso.etiqueta }}</span
+              >
+            </li>
+          }
+        </ol>
+      </section>
+    }
+
+    @if (pedido().detalle; as detalle) {
+      <section aria-labelledby="pedido-items-titulo">
+        <h3 id="pedido-items-titulo" class="m-0 mb-2.5 text-xs font-bold">Productos</h3>
+        <ul class="m-0 flex list-none flex-col gap-2.5 p-0">
+          @for (item of detalle.items; track item.id) {
+            <li class="flex items-start justify-between gap-3 text-[13px]">
+              <div class="min-w-0">
+                <p class="m-0 font-semibold break-words">{{ item.producto }}</p>
+                <p class="mt-0.5 mb-0 text-[11px] text-neutral-700">
+                  {{ item.presentacion }} · {{ item.cantidad }}
+                  {{ item.cantidad === 1 ? 'unidad' : 'unidades' }}
+                  @if (item.precio_aplicado !== item.precio_unitario) {
+                    ·
+                    <span class="text-neutral-400 line-through">{{
+                      item.precio_unitario | currency: 'PEN' : 'S/ ' : '1.2-2'
+                    }}</span>
+                    {{ item.precio_aplicado | currency: 'PEN' : 'S/ ' : '1.2-2' }}
+                  } @else {
+                    · {{ item.precio_unitario | currency: 'PEN' : 'S/ ' : '1.2-2' }} c/u
+                  }
+                </p>
+              </div>
+              <p class="m-0 shrink-0 font-semibold">
+                {{ item.subtotal | currency: 'PEN' : 'S/ ' : '1.2-2' }}
+              </p>
+            </li>
+          }
+        </ul>
+        <div
+          class="mt-3 flex items-center justify-between border-t border-border pt-3 text-sm font-bold"
+        >
+          <span>Total</span>
+          <span>{{ detalle.total | currency: 'PEN' : 'S/ ' : '1.2-2' }}</span>
+        </div>
+      </section>
+
+      <section aria-labelledby="pedido-pago-titulo" class="mt-[18px]">
+        <h3 id="pedido-pago-titulo" class="m-0 mb-2.5 text-xs font-bold">Pago</h3>
+        @if (detalle.pago; as pago) {
+          <dl
+            class="m-0 divide-y divide-[#ECECEC] overflow-hidden rounded-lg border border-[#ECECEC] text-[13px] [&>div]:flex [&>div]:justify-between [&>div]:gap-4 [&>div]:px-3.5 [&>div]:py-2.5 [&_dt]:shrink-0 [&_dt]:whitespace-nowrap [&_dt]:text-neutral-700 [&_dd]:m-0 [&_dd]:min-w-0 [&_dd]:flex-1 [&_dd]:text-right [&_dd]:font-medium"
+          >
+            <div>
+              <dt>Método</dt>
+              <dd>{{ pago.metodo_pago }}</dd>
+            </div>
+            <div>
+              <dt>Monto</dt>
+              <dd>{{ pago.monto | currency: 'PEN' : 'S/ ' : '1.2-2' }}</dd>
+            </div>
+            <div>
+              <dt>N.º de operación</dt>
+              <dd>{{ pago.numero_operacion }}</dd>
+            </div>
+            <div>
+              <dt>Fecha de pago</dt>
+              <dd>
+                <time [attr.datetime]="pago.fecha_pago">{{
+                  pago.fecha_pago | date: 'd MMM yyyy' : 'UTC'
+                }}</time>
+              </dd>
+            </div>
+            <div>
+              <dt>Comprobante</dt>
+              <dd>
+                @if (pago.comprobante; as comprobante) {
+                  {{ etiquetaComprobante(comprobante) }}
+                  @if (comprobante.ruc) {
+                    <span class="block font-normal text-neutral-700"
+                      >RUC {{ comprobante.ruc }} · {{ comprobante.razon_social }}</span
+                    >
+                  }
+                } @else {
+                  <span class="text-neutral-700">Pendiente de emisión</span>
+                }
+              </dd>
+            </div>
+          </dl>
+        } @else {
+          <p class="m-0 text-xs text-neutral-700">
+            Todavía no se registró un pago para este pedido.
+          </p>
+        }
+      </section>
+    } @else {
+      <p role="status" class="text-xs text-neutral-700">
+        No pudimos cargar el detalle de productos.
+      </p>
+    }
+
+    <div class="mt-[18px] flex justify-end">
+      <button
+        type="button"
+        class="min-h-9 cursor-pointer rounded-md bg-primary px-4 text-[13px] font-bold text-white hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        (click)="modal.cerrar()"
+      >
+        Cerrar
+      </button>
+    </div>
+  </div>
+</dialog>

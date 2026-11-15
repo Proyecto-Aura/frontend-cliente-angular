@@ -31,8 +31,11 @@
           }}
         </span>
       }
-      <span class="inline-flex items-center gap-1 rounded-full bg-info-50 px-2 py-1 text-info-700"
-        ><app-icon name="truck" [size]="12" />{{ etiqueta() }}</span
+      <span
+        data-testid="estado-pedido"
+        class="inline-flex items-center gap-1 rounded-full px-2 py-1"
+        [class]="colorEstado()"
+        ><app-icon [name]="iconoEstado()" [size]="12" />{{ etiqueta() }}</span
       >
     </div>
   </div>
@@ -63,21 +66,70 @@
         }
       </div>
     </div>
-    @if (pedido().resumen.reembolso; as reembolso) {
-      <div class="flex flex-wrap items-center gap-2 text-xs text-neutral-700">
-        <span>Solicitud de reembolso registrada</span
-        ><app-cuenta-solicitud-estado [estado]="reembolso.estado" />
-      </div>
-    } @else if (elegible()) {
-      <button
-        type="button"
-        class="flex min-h-9 cursor-pointer items-center gap-2 self-start rounded-md border border-primary bg-surface px-3 text-xs text-primary hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:self-auto"
-        [attr.aria-label]="'Solicitar reembolso del pedido ' + pedido().resumen.codigo"
-        (click)="solicitar.emit(pedido().resumen.id)"
-      >
-        <app-icon name="message-square" [size]="14" />Solicitar reembolso
-      </button>
-    }
+    <div class="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+      @if (pedido().detalle) {
+        <button
+          type="button"
+          class="flex min-h-9 cursor-pointer items-center gap-2 rounded-md border border-border bg-surface px-3 text-xs hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          [attr.aria-label]="'Ver detalle del pedido ' + pedido().resumen.codigo"
+          (click)="verDetalle.emit(pedido().resumen.id)"
+        >
+          <app-icon name="file-text" [size]="14" />Ver detalle
+        </button>
+      }
+      @if (pedido().resumen.reembolso; as reembolso) {
+        <div class="flex flex-wrap items-center gap-2 text-xs text-neutral-700">
+          <span>Solicitud de reembolso registrada</span
+          ><app-cuenta-solicitud-estado [estado]="reembolso.estado" />
+        </div>
+      } @else if (elegible()) {
+        <button
+          type="button"
+          class="flex min-h-9 cursor-pointer items-center gap-2 rounded-md border border-primary bg-surface px-3 text-xs text-primary hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          [attr.aria-label]="'Solicitar reembolso del pedido ' + pedido().resumen.codigo"
+          (click)="solicitar.emit(pedido().resumen.id)"
+        >
+          <app-icon name="message-square" [size]="14" />Solicitar reembolso
+        </button>
+      }
+      @if (puedeCancelar()) {
+        @if (!confirmandoCancelar()) {
+          <button
+            type="button"
+            class="flex min-h-9 cursor-pointer items-center gap-1.5 rounded-full border border-destructive bg-surface px-3 text-xs font-semibold text-destructive hover:bg-danger-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-destructive disabled:cursor-default disabled:opacity-60"
+            [attr.aria-label]="'Cancelar el pedido ' + pedido().resumen.codigo"
+            [disabled]="cancelando()"
+            (click)="pedirConfirmacion()"
+          >
+            <app-icon name="x" [size]="14" />Cancelar
+          </button>
+        } @else {
+          <div
+            class="flex items-center gap-2 text-xs"
+            role="group"
+            [attr.aria-label]="'Confirmar cancelación del pedido ' + pedido().resumen.codigo"
+          >
+            <span class="text-neutral-700">¿Seguro?</span>
+            <button
+              type="button"
+              class="min-h-8 cursor-pointer rounded-full bg-destructive px-3 font-semibold text-white hover:bg-destructive-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-destructive disabled:cursor-default disabled:opacity-60"
+              [disabled]="cancelando()"
+              (click)="confirmarCancelacion()"
+            >
+              {{ cancelando() ? "Cancelando…" : "Sí, cancelar" }}
+            </button>
+            <button
+              type="button"
+              class="min-h-8 cursor-pointer rounded-full border border-border px-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-default disabled:opacity-60"
+              [disabled]="cancelando()"
+              (click)="descartarConfirmacion()"
+            >
+              No
+            </button>
+          </div>
+        }
+      }
+    </div>
     @if (pedido().errorDetalle; as error) {
       <div role="alert" class="flex w-full flex-wrap items-center justify-between gap-2 text-xs">
         <p class="m-0 text-danger-700">{{ error }}</p>

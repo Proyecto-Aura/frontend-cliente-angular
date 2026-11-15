@@ -39,8 +39,11 @@
           <li>
             <app-cuenta-pedido-card
               [pedido]="pedido"
+              [cancelando]="pedidos.cancelando() === pedido.resumen.id"
               (solicitar)="seleccionado.set($event)"
               (reintentar)="pedidos.cargar()"
+              (verDetalle)="verDetalle($event)"
+              (cancelar)="pedidos.cancelar($event)"
             />
           </li>
         } @empty {
@@ -104,4 +107,7 @@
     (registrada)="registrada()"
     (revisarPedidos)="pedidos.cargar()"
   />
+}
+@if (pedidoDetalle(); as pedido) {
+  <app-cuenta-pedido-detalle [pedido]="pedido" (cerrar)="pedidoDetalle.set(null)" />
 }
