@@ -100,8 +100,23 @@ describe('CuentaPedidoCard', () => {
     },
   );
 
-  it.each<EstadoPedido>(['en_espera_inventario', 'en_preparacion', 'en_camino', 'entregado', 'cancelado'])(
-    'does not offer to cancel once the order left confirmado (%s), even though the client groups some of these as "Confirmado"',
+  it.each<EstadoPedido>(['confirmado', 'en_espera_inventario'])(
+    'offers to cancel for both internal states the client sees fused as "Confirmado" (%s)',
+    async (estado) => {
+      const fixture = TestBed.createComponent(CuentaPedidoCard);
+      fixture.componentRef.setInput('pedido', {
+        resumen,
+        detalle: { ...detalle, estado },
+        errorDetalle: null,
+      });
+      await fixture.whenStable();
+      const raiz = fixture.nativeElement as HTMLElement;
+      expect(raiz.querySelector('[aria-label^="Cancelar el pedido"]')).not.toBeNull();
+    },
+  );
+
+  it.each<EstadoPedido>(['en_preparacion', 'pendiente_entrega', 'en_camino', 'entregado', 'cancelado'])(
+    'does not offer to cancel once the order reached en_preparacion or later (%s)',
     async (estado) => {
       const fixture = TestBed.createComponent(CuentaPedidoCard);
       fixture.componentRef.setInput('pedido', {

@@ -47,10 +47,10 @@ export class CuentaPedidoCard {
   protected readonly articulos = computed(
     () => this.pedido().detalle?.items.reduce((total, item) => total + item.cantidad, 0) ?? 0,
   );
-  // El backend solo cancela desde "confirmado" puro: en_espera_inventario ya no deja
-  // (aunque al cliente se le muestre fusionado como "Confirmado"), por eso se compara
-  // contra el estado crudo y no contra estadoCliente().
-  protected readonly puedeCancelar = computed(() => this.estado() === 'confirmado');
+  // El backend cancela desde "confirmado" y "en_espera_inventario" (el mismo paso
+  // visual que el cliente ve fusionado como "Confirmado"); se bloquea recién al
+  // entrar a "en_preparacion" en adelante.
+  protected readonly puedeCancelar = computed(() => this.estadoCliente() === 'confirmado');
 
   protected pedirConfirmacion(): void {
     this.confirmandoCancelar.set(true);

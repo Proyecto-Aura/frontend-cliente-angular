@@ -106,7 +106,7 @@ describe('PedidosStore', () => {
     http
       .expectOne(`${url}/21/cancelar`)
       .flush(
-        { message: 'El pedido PED-PRUEBA-021 ya no se puede cancelar: pasó a en_espera_inventario' },
+        { message: 'El pedido PED-PRUEBA-021 ya no se puede cancelar: pasó a en_preparacion' },
         { status: 409, statusText: 'Conflict' },
       );
     expect(store.cancelando()).toBeNull();
@@ -114,7 +114,7 @@ describe('PedidosStore', () => {
     expect(TestBed.inject(Avisos).actual()?.detalle).toContain('ya no se puede cancelar');
 
     responderLista();
-    http.expectOne(`${url}/21`).flush({ ...PEDIDO_DETALLE_PRUEBA, estado: 'en_espera_inventario' });
+    http.expectOne(`${url}/21`).flush({ ...PEDIDO_DETALLE_PRUEBA, estado: 'en_preparacion' });
   });
 
   it('cancels the previous page and does not retain its orders on navigation or destruction', () => {
