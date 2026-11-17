@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 
 import { AuthRegistroStore } from './services/auth-registro-store';
 
-// AUTH_ROUTES — hijos de auth-layout. Falta auth-recuperar (HU-B-003).
+// AUTH_ROUTES — hijos de auth-layout.
 export const AUTH_ROUTES: Routes = [
   {
     path: '',
@@ -33,6 +33,40 @@ export const AUTH_ROUTES: Routes = [
           },
           { path: '', redirectTo: 'documento', pathMatch: 'full' },
         ],
+      },
+      {
+        // HU-B-003: pedir el enlace y, desde el correo, crear la nueva contraseña.
+        path: 'recuperar',
+        loadComponent: () =>
+          import('./pages/auth-recuperar/auth-recuperar').then((m) => m.AuthRecuperar),
+      },
+      {
+        path: 'restablecer',
+        loadComponent: () =>
+          import('./pages/auth-restablecer/auth-restablecer').then((m) => m.AuthRestablecer),
+      },
+      {
+        // HU-A-005: verificar el correo desde el enlace del mensaje y pedir uno nuevo.
+        path: 'verificar-correo',
+        loadComponent: () =>
+          import('./pages/auth-verificar-correo/auth-verificar-correo').then(
+            (m) => m.AuthVerificarCorreo,
+          ),
+      },
+      {
+        // HU-B-016: confirmar el correo nuevo desde el enlace que llega a esa dirección.
+        path: 'verificar-cambio-correo',
+        loadComponent: () =>
+          import('./pages/auth-verificar-cambio-correo/auth-verificar-cambio-correo').then(
+            (m) => m.AuthVerificarCambioCorreo,
+          ),
+      },
+      {
+        path: 'reenviar-verificacion',
+        loadComponent: () =>
+          import('./pages/auth-reenviar-verificacion/auth-reenviar-verificacion').then(
+            (m) => m.AuthReenviarVerificacion,
+          ),
       },
       { path: '', redirectTo: 'login', pathMatch: 'full' },
     ],

@@ -1,0 +1,19 @@
+@for (p of presentaciones(); track p.id; let i = $index) {
+  <button
+    type="button"
+    class="h-[22px] rounded-md border px-[9px] text-[11px] transition-colors"
+    [class]="
+      !p.disponible
+        ? 'cursor-not-allowed border-border bg-[#f5f5f5] font-semibold text-[#b0b0b0] line-through'
+        : p.id === seleccionadaId()
+          ? 'cursor-pointer border-primary bg-[#fde8e8] font-bold text-primary'
+          : 'cursor-pointer border-[#f3b9b9] bg-white font-semibold text-primary'
+    "
+    [disabled]="!p.disponible"
+    [attr.aria-pressed]="p.id === seleccionadaId()"
+    [title]="p.disponible ? 'Seleccionar ' + etiqueta(p) : etiqueta(p) + ' no disponible'"
+    (click)="elegir.emit(i)"
+  >
+    {{ etiqueta(p) }}
+  </button>
+}

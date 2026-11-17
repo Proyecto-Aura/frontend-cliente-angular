@@ -1,0 +1,26 @@
+<button
+  type="button"
+  aria-label="Quitar uno"
+  class="flex items-center justify-center rounded border-0 bg-transparent transition-colors enabled:cursor-pointer enabled:text-[#424242] enabled:hover:bg-white disabled:cursor-not-allowed disabled:text-[#d0d0d0]"
+  [class]="tamano() === 'sm' ? 'size-[22px]' : 'size-[26px]'"
+  [disabled]="cantidad() <= 1"
+  (click)="cambiar.emit(cantidad() - 1)"
+>
+  <app-icon name="minus" [size]="14" />
+</button>
+<span
+  aria-live="polite"
+  class="text-center font-bold text-[#1f1f1f]"
+  [class]="tamano() === 'sm' ? 'min-w-5 text-xs' : 'min-w-[26px] text-[12.5px]'"
+  >{{ cantidad() }}</span
+>
+<button
+  type="button"
+  aria-label="Agregar uno"
+  class="flex items-center justify-center rounded border-0 bg-transparent transition-colors enabled:cursor-pointer enabled:text-primary enabled:hover:bg-white disabled:cursor-not-allowed disabled:text-[#d0d0d0]"
+  [class]="tamano() === 'sm' ? 'size-[22px]' : 'size-[26px]'"
+  [disabled]="cantidad() >= maximo()"
+  (click)="cambiar.emit(cantidad() + 1)"
+>
+  <app-icon name="plus" [size]="14" />
+</button>

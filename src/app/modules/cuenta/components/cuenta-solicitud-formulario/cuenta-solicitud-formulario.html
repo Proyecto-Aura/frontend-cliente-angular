@@ -1,0 +1,324 @@
+<dialog
+  appCuentaDialogo
+  [bloqueado]="enviando()"
+  [attr.aria-busy]="enviando()"
+  #modal="cuentaDialogo"
+  aria-labelledby="nueva-solicitud-titulo"
+  aria-modal="true"
+  class="m-auto max-h-[min(90dvh,calc(100dvh-48px))] w-[calc(100%-48px)] max-w-[520px] overflow-y-auto rounded-lg border-0 bg-surface p-7 text-foreground shadow-[0_20px_48px_rgba(33,33,33,0.24)] backdrop:bg-[rgba(33,33,33,0.45)]"
+  (cerrarSolicitado)="cerrar.emit()"
+>
+  <div class="flex items-center justify-between">
+    <h2 id="nueva-solicitud-titulo" class="m-0 min-w-0 flex-1 truncate text-xl font-semibold">
+      Nueva solicitud
+    </h2>
+    <button
+      type="button"
+      aria-label="Cerrar nueva solicitud"
+      [disabled]="enviando()"
+      class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-neutral-700 hover:bg-accent hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+      (click)="modal.cerrar()"
+    >
+      <app-icon name="x" [size]="18" />
+    </button>
+  </div>
+
+  <form
+    novalidate
+    class="mt-[18px] flex flex-col gap-[18px]"
+    (submit)="enviar($event)"
+    (input)="validacionCompleta.set(false)"
+    (change)="validacionCompleta.set(false)"
+  >
+    <div class="flex flex-col gap-1.5">
+      <label for="solicitud-pedido_id" class="text-xs font-bold">Pedido *</label>
+      <div class="relative">
+        <select
+          id="solicitud-pedido_id"
+          data-foco-inicial
+          [formField]="formulario.pedido_id"
+          aria-describedby="solicitud-pedido-error"
+          [attr.aria-invalid]="!!errorCampo('pedido_id')"
+          class="h-[38px] w-full cursor-pointer appearance-none rounded-lg border bg-surface py-0 pr-9 pl-3 text-[13px] outline-none focus:border-primary focus:shadow-focus"
+          [class]="errorCampo('pedido_id') ? 'border-danger-700' : 'border-border'"
+        >
+          <option value="">
+            {{ elegibles().length ? 'Selecciona un pedido' : 'Sin pedidos elegibles' }}
+          </option>
+          @for (pedido of elegibles(); track pedido.id) {
+            <option [value]="pedido.id">{{ etiquetaPedido(pedido) }}</option>
+          }
+        </select>
+        <span class="pointer-events-none absolute top-[11px] right-3 flex text-neutral-700"
+          ><app-icon name="chevron-down" [size]="16"
+        /></span>
+      </div>
+      <span
+        id="solicitud-pedido-error"
+        [attr.role]="errorCampo('pedido_id') ? 'alert' : null"
+        [class.hidden]="!errorCampo('pedido_id')"
+        class="text-[11px] text-danger-700"
+        >{{ errorCampo('pedido_id') }}</span
+      >
+      @if (cargandoPedidos()) {
+        <p role="status" class="m-0 text-xs text-neutral-700">
+          Cargando y verificando tus pedidos…
+        </p>
+      } @else if (errorPedidos(); as error) {
+        <div role="alert" class="text-xs">
+          <p class="m-0 text-danger-700">{{ error }}</p>
+          <button
+            type="button"
+            [disabled]="enviando()"
+            class="mt-2 min-h-8 cursor-pointer rounded-md border border-border px-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            (click)="reintentarPedidos.emit()"
+          >
+            Volver a intentar
+          </button>
+        </div>
+      } @else if (!elegibles().length) {
+        <p role="status" class="m-0 text-xs text-neutral-700">
+          {{
+            totalPaginasPedidos() > 1
+              ? 'No hay pedidos elegibles en esta página. Revisa las otras páginas.'
+              : 'No hay pedidos pagados disponibles para solicitar un reembolso.'
+          }}
+        </p>
+      }
+      @if (detalleIncompleto() && !cargandoPedidos() && !errorPedidos()) {
+        <div role="alert" class="text-xs">
+          <p class="m-0 text-danger-700">
+            No pudimos verificar todos los pedidos. Solo se muestran los que pudimos comprobar.
+          </p>
+          <button
+            type="button"
+            [disabled]="enviando()"
+            class="mt-2 min-h-8 cursor-pointer rounded-md border border-border px-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            (click)="reintentarPedidos.emit()"
+          >
+            Volver a verificar
+          </button>
+        </div>
+      }
+      @if (totalPaginasPedidos() > 1) {
+        <nav
+          aria-label="Páginas para seleccionar pedido"
+          class="flex flex-wrap items-center justify-between gap-2 text-[11px]"
+        >
+          <button
+            type="button"
+            [disabled]="enviando() || cargandoPedidos() || paginaPedidos() <= 1"
+            class="min-h-8 rounded-md border border-border px-2 enabled:cursor-pointer disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            (click)="cambiarPaginaPedidos.emit(paginaPedidos() - 1)"
+          >
+            Anterior
+          </button>
+          <span role="status">Página {{ paginaPedidos() }} de {{ totalPaginasPedidos() }}</span>
+          <button
+            type="button"
+            [disabled]="enviando() || cargandoPedidos() || paginaPedidos() >= totalPaginasPedidos()"
+            class="min-h-8 rounded-md border border-border px-2 enabled:cursor-pointer disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            (click)="cambiarPaginaPedidos.emit(paginaPedidos() + 1)"
+          >
+            Siguiente
+          </button>
+        </nav>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1.5">
+      <label for="solicitud-producto" class="text-xs font-bold">Producto</label>
+      <div class="relative">
+        <select
+          id="solicitud-producto"
+          disabled
+          class="h-[38px] w-full appearance-none rounded-lg border border-border bg-surface py-0 pr-9 pl-3 text-[13px] text-foreground opacity-100"
+        >
+          <option>Pedido completo</option>
+        </select>
+        <span class="pointer-events-none absolute top-[11px] right-3 flex text-neutral-700"
+          ><app-icon name="chevron-down" [size]="16"
+        /></span>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-1.5">
+      <label for="solicitud-motivo" class="text-xs font-bold">Motivo *</label>
+      <div class="relative">
+        <select
+          id="solicitud-motivo"
+          [formField]="formulario.motivo"
+          aria-describedby="solicitud-motivo-error"
+          [attr.aria-invalid]="!!errorCampo('motivo')"
+          class="h-[38px] w-full cursor-pointer appearance-none rounded-lg border bg-surface py-0 pr-9 pl-3 text-[13px] outline-none focus:border-primary focus:shadow-focus"
+          [class]="errorCampo('motivo') ? 'border-danger-700' : 'border-border'"
+        >
+          <option value="">Selecciona un motivo</option>
+          @for (motivo of motivos; track motivo) {
+            <option [value]="motivo">{{ motivo }}</option>
+          }
+        </select>
+        <span class="pointer-events-none absolute top-[11px] right-3 flex text-neutral-700"
+          ><app-icon name="chevron-down" [size]="16"
+        /></span>
+      </div>
+      <span
+        id="solicitud-motivo-error"
+        [attr.role]="errorCampo('motivo') ? 'alert' : null"
+        [class.hidden]="!errorCampo('motivo')"
+        class="text-[11px] text-danger-700"
+        >{{ errorCampo('motivo') }}</span
+      >
+    </div>
+
+    <div class="flex flex-col gap-1.5">
+      <label for="solicitud-descripcion" class="text-xs font-bold"
+        >Descripción del problema *</label
+      >
+      <textarea
+        id="solicitud-descripcion"
+        [formField]="formulario.descripcion"
+        placeholder="Describe lo que sucedió con tu pedido"
+        rows="3"
+        aria-describedby="solicitud-descripcion-error"
+        [attr.aria-invalid]="!!errorCampo('descripcion')"
+        class="min-h-20 w-full resize-y rounded-lg border bg-surface px-3 py-2.5 text-[13px] outline-none placeholder:text-neutral-700 focus:border-primary focus:shadow-focus"
+        [class]="errorCampo('descripcion') ? 'border-danger-700' : 'border-border'"
+      ></textarea>
+      <span
+        id="solicitud-descripcion-error"
+        [attr.role]="errorCampo('descripcion') ? 'alert' : null"
+        [class.hidden]="!errorCampo('descripcion')"
+        class="text-[11px] text-danger-700"
+        >{{ errorCampo('descripcion') }}</span
+      >
+    </div>
+
+    <div class="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-3.5">
+      <div class="flex min-w-0 flex-col gap-1.5">
+        <label for="solicitud-importe" class="text-xs font-bold">Importe solicitado (S/) *</label>
+        <input
+          id="solicitud-importe"
+          readonly
+          [value]="importe()"
+          aria-describedby="solicitud-importe-ayuda"
+          class="h-[38px] w-full rounded-lg border border-border bg-surface px-3 text-[13px] outline-none focus:border-primary focus:shadow-focus"
+        />
+        <span id="solicitud-importe-ayuda" class="text-[11px] text-neutral-700"
+          >Monto total pagado.</span
+        >
+      </div>
+      <div class="flex min-w-0 flex-col gap-1.5">
+        <span id="solicitud-evidencia-etiqueta" class="text-xs font-bold">Evidencia *</span>
+        <label
+          for="solicitud-evidencia"
+          class="relative flex h-[38px] min-w-0 cursor-pointer items-center gap-2 overflow-hidden rounded-lg border border-dashed bg-surface px-3 text-xs text-neutral-700 hover:border-primary hover:text-primary focus-within:border-primary focus-within:shadow-focus"
+          [class]="
+            (intentado() || archivoRevisado()) && errorArchivo()
+              ? 'border-danger-700'
+              : 'border-border'
+          "
+        >
+          <input
+            #selectorArchivo
+            id="solicitud-evidencia"
+            aria-labelledby="solicitud-evidencia-etiqueta"
+            type="file"
+            required
+            accept="application/pdf,image/jpeg,image/png,image/webp,.pdf,.jpg,.jpeg,.png,.webp"
+            class="sr-only"
+            [disabled]="enviando() || cargandoPedidos() || !!errorPedidos()"
+            [attr.aria-invalid]="(intentado() || archivoRevisado()) && !!errorArchivo()"
+            aria-describedby="solicitud-evidencia-ayuda solicitud-evidencia-error"
+            (change)="elegirArchivo($event)"
+          />
+          <app-icon name="paperclip" [size]="14" /><span
+            class="min-w-0 truncate"
+            [attr.title]="archivo()?.name"
+            >{{ archivo()?.name || 'Adjuntar imagen o PDF' }}</span
+          >
+        </label>
+        <span id="solicitud-evidencia-ayuda" class="sr-only"
+          >PDF, JPG, PNG o WEBP · Menos de 5 MiB.</span
+        >
+        @if (archivo()) {
+          <button
+            type="button"
+            [disabled]="enviando()"
+            class="self-start text-[11px] font-semibold text-primary underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            (click)="quitarArchivo()"
+          >
+            Quitar archivo
+          </button>
+        }
+        <span
+          id="solicitud-evidencia-error"
+          [attr.role]="(intentado() || archivoRevisado()) && errorArchivo() ? 'alert' : null"
+          [class.hidden]="!(intentado() || archivoRevisado()) || !errorArchivo()"
+          class="text-[11px] text-danger-700"
+          >{{ intentado() || archivoRevisado() ? errorArchivo() : '' }}</span
+        >
+      </div>
+    </div>
+
+    @if (demostracion()) {
+      <p class="m-0 text-[11px] leading-relaxed text-neutral-700">
+        Demostración visual: los datos y la evidencia no se envían ni se guardan.
+      </p>
+    }
+    @if (demostracion() && validacionCompleta()) {
+      <p role="status" class="m-0 rounded-md bg-info-50 px-3 py-2 text-xs text-info-700">
+        Validaciones correctas. No se ha enviado ni guardado ninguna solicitud.
+      </p>
+    }
+    @if (enviando()) {
+      <p
+        #estadoEnvioNodo
+        tabindex="-1"
+        role="status"
+        class="m-0 text-xs text-neutral-700 focus:outline-none"
+      >
+        Enviando solicitud… Espera la confirmación.
+      </p>
+    }
+    @if (errorEnvio(); as error) {
+      <p
+        #errorEnvioNodo
+        tabindex="-1"
+        role="alert"
+        class="m-0 rounded-lg border border-destructive/40 bg-danger-50 px-3 py-2 text-xs text-danger-700 focus:outline-2 focus:outline-primary"
+      >
+        {{ error }}
+      </p>
+    }
+    @if (!envioDisponible() && !errorEnvio()) {
+      <p id="solicitud-envio-ayuda" role="status" class="m-0 text-xs text-neutral-700">
+        Por el momento no puedes enviar solicitudes de reembolso.
+      </p>
+    }
+    <div class="flex flex-wrap justify-end gap-2">
+      <button
+        type="button"
+        [disabled]="enviando()"
+        class="min-h-9 cursor-pointer rounded-md border border-border bg-surface px-3.5 text-[13px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        (click)="modal.cerrar()"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        [disabled]="
+          !envioDisponible() ||
+          enviando() ||
+          cargandoPedidos() ||
+          !!errorPedidos() ||
+          !elegibles().length
+        "
+        [attr.aria-describedby]="envioDisponible() ? null : 'solicitud-envio-ayuda'"
+        class="min-h-9 rounded-md bg-primary px-3.5 text-[13px] font-bold text-white enabled:cursor-pointer enabled:hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {{ enviando() ? 'Enviando…' : 'Enviar solicitud' }}
+      </button>
+    </div>
+  </form>
+</dialog>

@@ -1,0 +1,54 @@
+@if (item().promocion && item().disponible) {
+  <span
+    class="absolute top-2.5 right-2.5 rounded-md bg-[#f9a825] px-1.5 py-0.5 text-[9.5px] font-extrabold text-[#3e2700]"
+    >{{ item().promocion }}</span
+  >
+}
+<span
+  class="flex size-[54px] shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[#f0f0f0] bg-white"
+>
+  @if (item().imagenUrl; as url) {
+    <img [src]="url" [alt]="item().nombre" class="size-full object-contain" />
+  } @else {
+    <span class="text-[9px] text-[#9e9e9e]">Sin imagen</span>
+  }
+</span>
+
+<div class="flex min-w-0 flex-1 flex-col">
+  <div class="pr-[34px] text-xs font-bold text-[#1f1f1f]">{{ item().nombre }}</div>
+  <span
+    class="mt-1 flex h-[18px] w-fit items-center rounded-[5px] border border-[#f3b9b9] px-[7px] text-[10px] font-semibold text-primary"
+    >{{ item().presentacion }}</span
+  >
+  @if (item().disponible) {
+    <div class="mt-1 text-[10.5px] text-[#9e9e9e]">{{ precio(item().precioFinal) }} c/u</div>
+  } @else {
+    <div class="mt-1 text-[10.5px] font-semibold text-primary">
+      No disponible: elimínalo para continuar
+    </div>
+  }
+
+  <div class="mt-2 flex items-center gap-2">
+    @if (item().disponible) {
+      <app-cantidad-stepper
+        class="bg-[#f5f5f5] p-0.5"
+        tamano="sm"
+        [cantidad]="item().cantidad"
+        [maximo]="maximo"
+        (cambiar)="cambiar($event)"
+      />
+      <span class="ml-auto text-[13px] font-extrabold whitespace-nowrap text-primary">{{
+        precio(item().precioFinal * item().cantidad)
+      }}</span>
+    }
+    <button
+      type="button"
+      class="flex size-[22px] cursor-pointer items-center justify-center rounded border-0 bg-transparent text-[#bdbdbd] transition-colors hover:bg-[#fdecec] hover:text-primary"
+      [class.ml-auto]="!item().disponible"
+      [attr.aria-label]="'Eliminar ' + item().nombre"
+      (click)="eliminar()"
+    >
+      <app-icon name="x" [size]="14" />
+    </button>
+  </div>
+</div>

@@ -1,0 +1,12 @@
+<div class="flex flex-wrap items-center justify-between gap-3">
+  <div class="min-w-0">
+    <p class="m-0 font-semibold break-words">Solicitud #{{ solicitud().codigo }} registrada</p>
+    <p class="mt-1 mb-0 break-words">
+      Pedido #{{ solicitud().pedido.codigo }} ·
+      {{ solicitud().monto | currency: 'PEN' : 'S/ ' : '1.2-2' }}
+    </p>
+  </div>
+  <div class="flex items-center gap-2">
+    <span>Estado:</span><app-cuenta-solicitud-estado [estado]="solicitud().estado" />
+  </div>
+</div>

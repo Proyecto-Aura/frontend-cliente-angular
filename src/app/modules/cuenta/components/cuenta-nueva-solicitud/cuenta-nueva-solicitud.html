@@ -1,0 +1,16 @@
+<app-cuenta-solicitud-formulario
+  [pedidos]="pedidos.opciones()"
+  [pedidoInicialId]="pedidoInicialId()"
+  [cargandoPedidos]="pedidos.cargando()"
+  [errorPedidos]="pedidos.error()"
+  [detalleIncompleto]="pedidos.detalleIncompleto()"
+  [paginaPedidos]="pedidos.pagina()"
+  [totalPaginasPedidos]="pedidos.meta()?.total_pages ?? 0"
+  [enviando]="enviando()"
+  [errorEnvio]="errorEnvio()"
+  [envioDisponible]="!requiereRevision()"
+  (cambiarPaginaPedidos)="!enviando() && pedidos.cargar($event)"
+  (reintentarPedidos)="!enviando() && pedidos.cargar()"
+  (validado)="enviar($event)"
+  (cerrar)="cerrarFormulario()"
+/>

@@ -1,0 +1,162 @@
+<dialog
+  appCuentaDialogo
+  #modal="cuentaDialogo"
+  aria-labelledby="solicitud-detalle-titulo"
+  aria-modal="true"
+  [attr.aria-busy]="cargando()"
+  class="m-auto max-h-[min(90dvh,calc(100dvh-48px))] w-[calc(100%-48px)] max-w-[520px] overflow-y-auto rounded-lg border-0 bg-surface p-7 text-foreground shadow-[0_20px_48px_rgba(33,33,33,0.24)] backdrop:bg-[rgba(33,33,33,0.45)]"
+  (cerrarSolicitado)="cerrar.emit()"
+>
+  <div class="flex items-center justify-between">
+    <h2 id="solicitud-detalle-titulo" class="m-0 min-w-0 flex-1 truncate text-xl font-semibold">
+      {{ titulo() }}
+    </h2>
+    <button
+      #botonCerrar
+      data-foco-inicial
+      type="button"
+      aria-label="Cerrar detalle"
+      class="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-neutral-700 hover:bg-accent hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+      (click)="modal.cerrar()"
+    >
+      <app-icon name="x" [size]="18" />
+    </button>
+  </div>
+
+  @if (cargando()) {
+    <p
+      #estadoCarga
+      tabindex="-1"
+      role="status"
+      class="mt-5 mb-0 text-sm text-neutral-700 focus:outline-none"
+    >
+      Cargando detalle de la solicitud…
+    </p>
+  } @else if (error(); as mensaje) {
+    <div
+      #errorCarga
+      tabindex="-1"
+      role="alert"
+      class="mt-5 rounded-lg border border-destructive/40 bg-danger-50 p-4 text-xs text-danger-700 focus:outline-2 focus:outline-primary"
+    >
+      <p class="m-0">{{ mensaje }}</p>
+      <button
+        type="button"
+        class="mt-3 min-h-9 cursor-pointer rounded-md border border-border bg-surface px-3 text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        (click)="reintentar.emit()"
+      >
+        Volver a intentar
+      </button>
+    </div>
+  } @else if (solicitud(); as solicitud) {
+    <div class="my-[18px] flex flex-wrap items-center justify-between gap-3">
+      @if (solicitud.motivo; as motivo) {
+        <span
+          class="min-w-0 flex-1 text-[13px] font-bold [overflow-wrap:anywhere] text-danger-700"
+          >{{ motivo }}</span
+        >
+      }
+      <app-cuenta-solicitud-estado [estado]="solicitud.estado" />
+    </div>
+
+    <dl
+      class="m-0 divide-y divide-[#ECECEC] overflow-hidden rounded-lg border border-[#ECECEC] text-[13px] [&>div]:flex [&>div]:justify-between [&>div]:gap-4 [&>div]:px-3.5 [&>div]:py-2.5 [&_dt]:shrink-0 [&_dt]:whitespace-nowrap [&_dt]:text-neutral-700 [&_dd]:m-0 [&_dd]:min-w-0 [&_dd]:flex-1 [&_dd]:text-right [&_dd]:font-medium [&_dd]:[overflow-wrap:anywhere]"
+    >
+      <div>
+        <dt>Tipo</dt>
+        <dd>Reembolso</dd>
+      </div>
+      <div>
+        <dt>Pedido</dt>
+        <dd>#{{ solicitud.pedido.codigo }}</dd>
+      </div>
+      <div>
+        <dt>Producto</dt>
+        <dd>Pedido completo</dd>
+      </div>
+      <div>
+        <dt>Fecha de solicitud</dt>
+        <dd>
+          <time [attr.datetime]="solicitud.fecha_solicitud">{{ fechaSolicitud() }}</time>
+        </dd>
+      </div>
+      <div>
+        <dt>Importe</dt>
+        <dd>{{ monto() }}</dd>
+      </div>
+      @if (solicitud.descripcion; as descripcion) {
+        <div>
+          <dt>Descripción</dt>
+          <dd class="whitespace-pre-wrap">{{ descripcion }}</dd>
+        </div>
+      }
+      @if (solicitud.estado === 'rechazado' && solicitud.motivo_rechazo; as motivo) {
+        <div>
+          <dt>Motivo del rechazo</dt>
+          <dd class="whitespace-pre-wrap">
+            {{ motivo }}
+          </dd>
+        </div>
+      }
+      @if (solicitud.evidencia; as evidencia) {
+        <div>
+          <dt>Evidencia</dt>
+          <dd>
+            @if (enlaceEvidencia(); as enlace) {
+              <a
+                [href]="enlace"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-semibold break-words text-primary underline underline-offset-2 [overflow-wrap:anywhere] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                >{{ evidencia.nombre }}<span class="sr-only"> (se abre en otra pestaña)</span></a
+              >
+            } @else {
+              <span class="break-words [overflow-wrap:anywhere]">{{ evidencia.nombre }}</span>
+              <p class="mt-1 mb-0 text-xs text-danger-700">
+                El enlace de evidencia no está disponible.
+              </p>
+            }
+          </dd>
+        </div>
+      }
+    </dl>
+
+    <section aria-labelledby="solicitud-seguimiento-titulo" class="mt-[18px]">
+      <h3 id="solicitud-seguimiento-titulo" class="m-0 mb-2.5 text-xs font-bold">Seguimiento</h3>
+      <ol class="m-0 list-none p-0">
+        @for (etapa of seguimiento(); track etapa.texto; let ultima = $last) {
+          <li class="flex gap-3">
+            <span class="flex flex-col items-center" aria-hidden="true">
+              <span
+                class="mt-1 size-2.5 shrink-0 rounded-full"
+                [class]="etapa.pendiente ? 'bg-[#E0E0E0]' : colorSeguimiento()"
+              ></span>
+              @if (!ultima) {
+                <span class="min-h-[18px] w-0.5 flex-1 bg-[#ECECEC]"></span>
+              }
+            </span>
+            <div class="min-w-0 flex-1 pb-3">
+              <p class="m-0 text-[12.5px] font-semibold">{{ etapa.texto }}</p>
+              @if (etapa.fechaTexto) {
+                <time class="block text-[11px] text-neutral-700" [attr.datetime]="etapa.fecha">{{
+                  etapa.fechaTexto
+                }}</time>
+              } @else if (etapa.pendiente) {
+                <p class="m-0 text-[11px] text-neutral-700">Pendiente de respuesta</p>
+              }
+            </div>
+          </li>
+        }
+      </ol>
+    </section>
+  }
+  <div class="mt-[18px] flex justify-end">
+    <button
+      type="button"
+      class="min-h-9 cursor-pointer rounded-md bg-primary px-4 text-[13px] font-bold text-white hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+      (click)="modal.cerrar()"
+    >
+      Cerrar
+    </button>
+  </div>
+</dialog>

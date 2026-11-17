@@ -15,8 +15,30 @@
     >
       Tu cuenta fue creada. Te enviamos un correo de verificación: debes verificar tu email antes de
       tu primer ingreso.
+      <a routerLink="/auth/reenviar-verificacion" class="font-semibold underline"
+        >¿No te llegó? Reenviar</a
+      >
     </p>
   }
 
-  <app-auth-login-form [enviando]="enviando()" [error]="error()" (submitted)="onLogin($event)" />
+  @if (contrasenaRestablecida) {
+    <p
+      class="animate-fade-in rounded-lg bg-success-50 px-4 py-3 text-[13px] text-success-700"
+      role="status"
+    >
+      Tu contraseña se cambió correctamente. Inicia sesión con tu nueva contraseña.
+    </p>
+  }
+
+  <app-auth-login-form [enviando]="enviando()" [error]="error()" (submitted)="onLogin($event)">
+    @if (sinVerificar()) {
+      <a
+        slot="error-action"
+        routerLink="/auth/reenviar-verificacion"
+        [queryParams]="emailSugerido() ? { email: emailSugerido() } : null"
+        class="w-fit font-semibold text-brand-600 hover:underline"
+        >Reenviar correo de verificación</a
+      >
+    }
+  </app-auth-login-form>
 </section>

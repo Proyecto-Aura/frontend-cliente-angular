@@ -47,6 +47,10 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
+                },
+                {
+                  "replace": "src/app/modules/cuenta/testing/cuenta-preview.routes.ts",
+                  "with": "src/app/modules/cuenta/testing/cuenta-preview.routes.prod.ts"
                 }
               ]
             },

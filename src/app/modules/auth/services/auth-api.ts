@@ -1,12 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, catchError, of, switchMap, tap, throwError } from 'rxjs';
+import { Observable, catchError, map, of, switchMap, tap, throwError } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
 import { Session } from '../../../shared/auth/session';
 import {
   LoginRequest,
   LoginResponse,
+  MensajeResponse,
+  RefreshResponse,
+  RestablecerContrasenaRequest,
   ROL_CLIENTE,
   RegistroResponse,
   SinAccesoAlPortalError,
@@ -41,6 +44,58 @@ export class AuthApi {
    */
   registrarCliente(body: RegisterClientePayload): Observable<RegistroResponse> {
     return this.http.post<RegistroResponse>(`${this.base}/register`, body);
+  }
+
+  /**
+   * Renueva el access_token vencido con el refresh_token (cookie httpOnly).
+   * No devuelve roles: la sesión ya los tiene de cuando se inició.
+   */
+  refrescar(): Observable<RefreshResponse> {
+    return this.http
+      .post<RefreshResponse>(`${this.base}/refresh`, {}, { withCredentials: true })
+      .pipe(tap((res) => this.session.actualizarToken(res.access_token)));
+  }
+
+  /**
+   * HU-B-004: el backend revoca la sesión de la cookie y con ella el JWT, que
+   * deja de servir. La sesión local se borra aunque la llamada falle: el
+   * cliente quiere salir y no debe quedar dentro.
+   */
+  cerrarSesion(): Observable<void> {
+    return this.http.post(`${this.base}/logout`, {}, { withCredentials: true }).pipe(
+      catchError(() => of(null)),
+      map(() => this.session.clear()),
+    );
+  }
+
+  /**
+   * HU-B-003 (RF-B11): pide el enlace para restablecer la contraseña. El
+   * backend responde lo mismo exista o no el correo, para no revelar cuentas.
+   */
+  solicitarRecuperacion(email: string): Observable<MensajeResponse> {
+    return this.http.post<MensajeResponse>(`${this.base}/forgot-password`, { email });
+  }
+
+  /** HU-B-003 (RF-B12): nueva contraseña con el token del enlace del correo. */
+  restablecerContrasena(body: RestablecerContrasenaRequest): Observable<MensajeResponse> {
+    return this.http.post<MensajeResponse>(`${this.base}/reset-password`, body);
+  }
+
+  /**
+   * HU-A-005: confirma el correo con el token del enlace del mensaje (vence en
+   * 24 h y se usa una sola vez). 400 si es inválido, venció o ya se usó.
+   */
+  verificarCorreo(token: string): Observable<MensajeResponse> {
+    return this.http.post<MensajeResponse>(`${this.base}/verify-email`, { token });
+  }
+
+  /**
+   * HU-A-005: pide un enlace de verificación nuevo (invalida el anterior). El
+   * backend responde 200 con el mismo mensaje exista o no el correo, y no envía
+   * otro si se pidió hace menos de 60 s.
+   */
+  reenviarVerificacion(email: string): Observable<MensajeResponse> {
+    return this.http.post<MensajeResponse>(`${this.base}/resend-verification`, { email });
   }
 
   // Revoca el refresh token recién creado; si falla, igual no se deja entrar.

@@ -1,0 +1,98 @@
+<div
+  role="dialog"
+  aria-modal="true"
+  [attr.aria-label]="producto().nombre"
+  class="animate-scale-in relative max-h-[calc(100vh-40px)] w-full max-w-[340px] overflow-auto rounded-[14px] bg-white shadow-[0_24px_60px_rgba(33,33,33,0.28)]"
+>
+  <button
+    type="button"
+    aria-label="Cerrar"
+    class="absolute top-2.5 right-2.5 z-[1] flex size-[26px] cursor-pointer items-center justify-center rounded-full border-0 bg-white text-[#616161] shadow-[0_1px_4px_rgba(33,33,33,0.12)] hover:text-primary"
+    (click)="cerrar.emit()"
+  >
+    <app-icon name="x" [size]="14" />
+  </button>
+
+  <div class="flex h-[150px] items-center justify-center rounded-t-[14px] bg-[#f7f7f7]">
+    @if (actual().imagen_url; as url) {
+      <img [src]="url" [alt]="producto().nombre" class="size-[120px] object-contain" />
+    } @else {
+      <span class="text-[11px] text-[#9e9e9e]">Sin imagen</span>
+    }
+  </div>
+
+  <div class="px-[18px] pt-3.5 pb-[18px]">
+    <div class="text-[9.5px] font-bold tracking-[0.05em] text-primary uppercase">
+      {{ producto().categoria.nombre }}
+    </div>
+    <h2 class="mt-[3px] mb-0 font-heading text-[17px] leading-tight font-extrabold text-[#1f1f1f]">
+      {{ producto().nombre }}
+    </h2>
+    @if (producto().descripcion) {
+      <p class="mt-[3px] mb-0 text-[10.5px] text-[#9e9e9e]">{{ producto().descripcion }}</p>
+    }
+
+    <div class="mt-4 text-[11px] font-semibold text-[#424242]">Selecciona una presentación</div>
+    <div role="radiogroup" aria-label="Presentación" class="mt-2 flex flex-wrap gap-2">
+      @for (p of producto().presentaciones; track p.id) {
+        <button
+          type="button"
+          role="radio"
+          class="flex min-w-[72px] flex-col items-center gap-px rounded-lg border-[1.5px] px-3 py-[7px] transition-colors"
+          [class]="
+            !p.disponible
+              ? 'cursor-not-allowed border-[#ececec] bg-white opacity-70'
+              : p.id === actual().id
+                ? 'cursor-pointer border-primary bg-[#fff5f5]'
+                : 'cursor-pointer border-border bg-white'
+          "
+          [attr.aria-checked]="p.id === actual().id"
+          [disabled]="!p.disponible"
+          (click)="elegir(p.id)"
+        >
+          <span
+            class="text-[11.5px] font-extrabold whitespace-nowrap"
+            [class]="
+              !p.disponible
+                ? 'text-[#bdbdbd] line-through'
+                : p.id === actual().id
+                  ? 'text-primary'
+                  : 'text-[#1f1f1f]'
+            "
+            >{{ etiqueta(p) }}</span
+          >
+          <span class="text-[10px] whitespace-nowrap text-[#9e9e9e]">{{
+            precio(p.precio_final)
+          }}</span>
+          @if (!p.disponible) {
+            <span class="text-[9px] text-[#9e9e9e]">Agotado</span>
+          } @else if (p.promocion; as vigente) {
+            <span class="text-[9px] font-bold text-[#e8901a]">{{ promo(vigente) }}</span>
+          }
+        </button>
+      }
+    </div>
+
+    <div class="mt-4 flex items-center gap-2.5">
+      <app-cantidad-stepper
+        class="h-[34px] shrink-0 border border-[#ececec] px-1"
+        [cantidad]="cantidad()"
+        [maximo]="maximo"
+        (cambiar)="cantidad.set($event)"
+      />
+      <button
+        type="button"
+        class="flex h-[34px] min-w-0 flex-1 cursor-pointer items-center justify-center gap-[7px] rounded-lg border-0 bg-primary text-xs font-bold whitespace-nowrap text-white transition-colors hover:bg-[#b71c1c] disabled:cursor-not-allowed disabled:opacity-60"
+        [disabled]="!actual().disponible"
+        (click)="agregar()"
+      >
+        <app-icon name="shopping-cart" [size]="15" />
+        @if (actual().disponible) {
+          Agregar · {{ precio(actual().precio_final * cantidad()) }}
+        } @else {
+          No disponible
+        }
+      </button>
+    </div>
+  </div>
+</div>

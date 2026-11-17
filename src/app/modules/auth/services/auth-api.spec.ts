@@ -77,6 +77,72 @@ describe('AuthApi', () => {
     expect(session.isAuthenticated()).toBe(false);
   });
 
+  it('logs out: the API revokes the session and the local session is cleared (HU-B-004)', () => {
+    session.start('jwt', ['cliente']);
+    let terminado = false;
+    api.cerrarSesion().subscribe(() => (terminado = true));
+
+    const req = httpMock.expectOne(`${AUTH}/logout`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.withCredentials).toBe(true);
+    req.flush({ message: 'Sesión cerrada' });
+
+    expect(terminado).toBe(true);
+    expect(session.isAuthenticated()).toBe(false);
+    expect(localStorage.getItem('francos.access_token')).toBeNull();
+  });
+
+  it('clears the local session even if the logout call fails', () => {
+    session.start('jwt', ['cliente']);
+    let terminado = false;
+    api.cerrarSesion().subscribe(() => (terminado = true));
+
+    httpMock.expectOne(`${AUTH}/logout`).flush(null, { status: 500, statusText: 'Error' });
+
+    expect(terminado).toBe(true);
+    expect(session.isAuthenticated()).toBe(false);
+  });
+
+  it('refreshes the access_token with the refresh cookie, keeping the roles', () => {
+    session.start('jwt-viejo', ['cliente']);
+    let nuevo: string | undefined;
+    api.refrescar().subscribe((r) => (nuevo = r.access_token));
+
+    const req = httpMock.expectOne(`${AUTH}/refresh`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.withCredentials).toBe(true);
+    req.flush({ access_token: 'jwt-nuevo' });
+
+    expect(nuevo).toBe('jwt-nuevo');
+    expect(session.accessToken()).toBe('jwt-nuevo');
+    expect(session.roles()).toEqual(['cliente']);
+  });
+
+  it('asks for the password recovery link (HU-B-003)', () => {
+    let mensaje = '';
+    api.solicitarRecuperacion('rosa@francos.test').subscribe((r) => (mensaje = r.message));
+
+    const req = httpMock.expectOne(`${AUTH}/forgot-password`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ email: 'rosa@francos.test' });
+    req.flush({ message: 'Si el correo está registrado, recibirás un enlace' });
+
+    expect(mensaje).toContain('Si el correo está registrado');
+  });
+
+  it('sets the new password with the token of the link (HU-B-003)', () => {
+    const body = {
+      token: 'abc123',
+      nueva_contrasena: 'Clave1234',
+      confirmar_contrasena: 'Clave1234',
+    };
+    api.restablecerContrasena(body).subscribe();
+
+    const req = httpMock.expectOne(`${AUTH}/reset-password`);
+    expect(req.request.body).toEqual(body);
+    req.flush({ message: 'Contraseña restablecida correctamente' });
+  });
+
   it('registers a client without starting a session (HU-B-002)', () => {
     api
       .registrarCliente({
@@ -99,6 +165,27 @@ describe('AuthApi', () => {
     req.flush({ id: 'u-1', email_verificado: false });
 
     expect(session.isAuthenticated()).toBe(false);
+  });
+
+  it('verifies the email by POSTing the token to /auth/verify-email (HU-A-005)', () => {
+    let mensaje: string | undefined;
+    api.verificarCorreo('abc123').subscribe((res) => (mensaje = res.message));
+
+    const req = httpMock.expectOne(`${AUTH}/verify-email`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ token: 'abc123' });
+    req.flush({ message: 'Correo verificado correctamente' });
+
+    expect(mensaje).toBe('Correo verificado correctamente');
+  });
+
+  it('asks for a new verification link by POSTing the email to /auth/resend-verification', () => {
+    api.reenviarVerificacion('ana@francos.test').subscribe();
+
+    const req = httpMock.expectOne(`${AUTH}/resend-verification`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ email: 'ana@francos.test' });
+    req.flush({ message: 'Si el correo está registrado, recibirás un enlace de verificación' });
   });
 
   it('passes the API error through when the credentials are wrong', () => {

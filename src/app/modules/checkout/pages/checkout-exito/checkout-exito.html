@@ -1,0 +1,129 @@
+<main class="mx-auto flex max-w-[640px] flex-col gap-[18px] px-[clamp(16px,3vw,40px)] pt-8 pb-14">
+  @if (pedido(); as p) {
+    <section
+      class="flex flex-col items-center gap-1.5 rounded-xl border border-[#ececec] bg-white px-6 py-9 text-center"
+    >
+      <span
+        class="mb-2 flex size-12 items-center justify-center rounded-full bg-success-50 text-success-700"
+      >
+        <app-icon name="circle-check" [size]="26" />
+      </span>
+      <h1 class="m-0 font-heading text-xl font-extrabold text-[#1f1f1f]">
+        {{ esConfirmado(p.estado) ? '¡Pedido confirmado!' : 'Estado de tu pedido' }}
+      </h1>
+      <p class="m-0 text-[12.5px] text-muted-foreground">
+        Tu pedido <strong class="text-[#1f1f1f]">{{ p.codigo }}</strong> está
+        <span
+          class="rounded bg-success-50 px-1.5 py-px text-[11px] font-bold text-success-700"
+          data-testid="estado-pedido"
+          >{{ etiqueta(p.estado) }}</span
+        >.
+      </p>
+      @if (p.pago?.comprobante; as c) {
+        <p class="m-0 text-[12.5px] text-muted-foreground" data-testid="aviso-comprobante">
+          Te enviamos tu {{ c.tipo === 'factura' ? 'factura' : 'boleta' }} a tu correo.
+        </p>
+      }
+    </section>
+
+    <section class="rounded-xl border border-[#ececec] bg-white px-5 py-[18px]">
+      <h2 class="m-0 mb-3 font-heading text-sm font-extrabold text-[#1f1f1f]">
+        Detalle del pedido
+      </h2>
+      <ul class="m-0 flex list-none flex-col gap-2 border-b border-[#f0f0f0] p-0 pb-3.5">
+        @for (item of p.items; track item.producto_presentacion_id) {
+          <li class="flex items-baseline justify-between gap-3 text-xs">
+            <span class="min-w-0 text-[#1f1f1f]">
+              <span class="font-bold">{{ item.producto }}</span>
+              <span class="text-muted-foreground">
+                · {{ item.presentacion }} · {{ item.cantidad }} × {{ precio(item.precio_aplicado) }}
+              </span>
+            </span>
+            <span class="font-extrabold whitespace-nowrap text-[#1f1f1f]">{{
+              precio(item.subtotal)
+            }}</span>
+          </li>
+        }
+      </ul>
+      <dl class="m-0 flex flex-col gap-2 pt-3.5 text-[11.5px]">
+        @if (p.direccion_entrega) {
+          <div class="flex justify-between gap-3">
+            <dt class="whitespace-nowrap text-muted-foreground">Entrega en</dt>
+            <dd class="m-0 text-right font-semibold text-[#1f1f1f]">{{ p.direccion_entrega }}</dd>
+          </div>
+        }
+        <div class="flex justify-between gap-3">
+          <dt class="whitespace-nowrap text-muted-foreground">Medio de pago</dt>
+          <dd class="m-0 text-right font-semibold text-[#1f1f1f]">Culqi</dd>
+        </div>
+        <div class="flex justify-between gap-3">
+          <dt class="whitespace-nowrap text-muted-foreground">Comprobante</dt>
+          <dd class="m-0 text-right font-semibold text-[#1f1f1f]" data-testid="comprobante">
+            @if (p.pago?.comprobante; as c) {
+              {{ etiquetaComprobante(c) }}
+              @if (c.ruc) {
+                <span class="block font-normal break-all text-muted-foreground"
+                  >RUC {{ c.ruc }} · {{ c.razon_social }}</span
+                >
+              }
+            } @else {
+              Pendiente de emisión
+            }
+          </dd>
+        </div>
+        @if (p.pago?.numero_operacion; as operacion) {
+          <div class="flex justify-between gap-3">
+            <dt class="whitespace-nowrap text-muted-foreground">N.º de operación</dt>
+            <dd class="m-0 text-right font-semibold break-all text-[#1f1f1f]">{{ operacion }}</dd>
+          </div>
+        }
+        <div class="flex items-baseline justify-between gap-3 pt-2">
+          <dt class="font-heading text-sm font-extrabold text-[#1f1f1f]">Total pagado</dt>
+          <dd class="m-0 font-heading text-[22px] font-extrabold whitespace-nowrap text-primary">
+            {{ precio(p.total) }}
+          </dd>
+        </div>
+      </dl>
+    </section>
+
+    <a
+      routerLink="/catalogo"
+      class="flex h-10 items-center justify-center rounded-lg bg-primary text-[13px] font-bold text-white hover:bg-primary-hover"
+      >Seguir comprando</a
+    >
+  } @else if (noEncontrado()) {
+    <section
+      role="alert"
+      class="flex flex-col items-center gap-3 rounded-xl border border-[#ececec] bg-white px-6 py-9 text-center"
+    >
+      <h1 class="m-0 font-heading text-xl font-extrabold text-[#1f1f1f]">Pedido no encontrado</h1>
+      <p class="m-0 text-[12.5px] text-muted-foreground">
+        No encontramos este pedido en tu cuenta.
+      </p>
+      <a
+        routerLink="/catalogo"
+        class="flex h-10 items-center justify-center rounded-lg bg-primary px-6 text-[13px] font-bold text-white hover:bg-primary-hover"
+        >Ir al catálogo</a
+      >
+    </section>
+  } @else if (error()) {
+    <section
+      role="alert"
+      class="flex w-full flex-wrap items-center gap-3 rounded-xl border border-[#ececec] bg-white px-5 py-[18px] text-[13px] text-foreground"
+    >
+      {{ error() }}
+      <button
+        type="button"
+        class="h-8 cursor-pointer rounded-md border-0 bg-primary px-3.5 text-xs font-bold text-white hover:bg-primary-hover"
+        (click)="cargar()"
+      >
+        Reintentar
+      </button>
+    </section>
+  } @else {
+    <div class="flex animate-pulse flex-col gap-[18px]" aria-label="Cargando tu pedido">
+      <div class="h-36 rounded-xl bg-[#ececec]"></div>
+      <div class="h-56 rounded-xl bg-[#ececec]"></div>
+    </div>
+  }
+</main>

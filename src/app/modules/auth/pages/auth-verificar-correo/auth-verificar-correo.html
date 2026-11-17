@@ -1,0 +1,48 @@
+<section
+  class="flex w-full flex-col gap-8 rounded-[25px] bg-surface px-[30px] py-[50px] shadow-[0px_8px_32px_rgba(0,0,0,0.12)]"
+>
+  <div class="flex flex-col gap-2">
+    <h1 class="font-display text-[36px] font-extrabold leading-tight tracking-[-0.96px] text-black">
+      Verificar correo
+    </h1>
+    <p class="text-[15px] font-medium text-ink-soft">
+      Confirmamos que tu correo es tuyo para que puedas iniciar sesión.
+    </p>
+  </div>
+
+  @switch (estado()) {
+    @case ('verificando') {
+      <p class="text-[14px] font-medium text-ink-soft" role="status">Verificando tu correo…</p>
+    }
+    @case ('verificado') {
+      <div
+        class="animate-fade-in flex flex-col gap-1 rounded-lg bg-success-50 px-4 py-3 text-[13px] text-success-700"
+        role="status"
+      >
+        <strong class="font-semibold">¡Correo verificado!</strong>
+        <span>Ya puedes iniciar sesión con tu cuenta.</span>
+      </div>
+      <a
+        routerLink="/auth/login"
+        class="flex h-[38px] w-full items-center justify-center rounded-[6px] border border-brand-600 bg-brand-600 text-[15px] font-medium text-white no-underline transition duration-150 hover:bg-brand-700"
+      >
+        Ir a iniciar sesión
+      </a>
+    }
+    @case ('fallido') {
+      <p class="rounded-lg bg-brand-50 px-4 py-3 text-[13px] text-brand-700" role="alert">
+        {{ error() }}
+      </p>
+      <a
+        routerLink="/auth/reenviar-verificacion"
+        class="flex h-[38px] w-full items-center justify-center rounded-[6px] border border-brand-600 bg-brand-600 text-[15px] font-medium text-white no-underline transition duration-150 hover:bg-brand-700"
+      >
+        Enviarme un nuevo enlace
+      </a>
+    }
+  }
+
+  <p class="flex items-center gap-1 text-[14px] font-medium text-muted">
+    <a routerLink="/auth/login" class="text-brand-600 hover:underline">Volver a iniciar sesión</a>
+  </p>
+</section>

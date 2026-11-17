@@ -1,0 +1,50 @@
+<button
+  type="button"
+  class="flex h-[34px] cursor-pointer items-center gap-2 rounded-lg border bg-white pr-2.5 pl-3.5 text-xs font-semibold whitespace-nowrap transition-colors hover:border-primary"
+  [class]="
+    elegida()
+      ? 'border-primary text-primary'
+      : abierto()
+        ? 'border-primary text-foreground'
+        : 'border-border text-foreground'
+  "
+  [attr.aria-expanded]="abierto()"
+  [attr.aria-label]="label()"
+  (click)="alternar.emit()"
+>
+  {{ elegida() ?? label() }}
+  <span
+    class="flex text-[#8a8a8a] transition-transform duration-200"
+    [class.rotate-180]="abierto()"
+  >
+    <app-icon name="chevron-down" [size]="14" />
+  </span>
+</button>
+
+@if (abierto()) {
+  <div
+    role="listbox"
+    [attr.aria-label]="label()"
+    class="animate-fade-in absolute top-10 right-0 z-30 flex min-w-[210px] flex-col gap-0.5 rounded-[10px] border border-[#ececec] bg-white p-1.5 shadow-[0_14px_34px_rgba(33,33,33,0.12)]"
+  >
+    @for (op of todas(); track op.valor) {
+      <button
+        type="button"
+        role="option"
+        [attr.aria-selected]="op.valor === seleccionado()"
+        class="flex h-9 cursor-pointer items-center justify-between gap-3 rounded-lg px-3 text-left text-[13px] whitespace-nowrap transition-colors hover:bg-[#fdecec]"
+        [class]="
+          op.valor === seleccionado()
+            ? 'bg-[#fdecec] font-semibold text-primary'
+            : 'text-foreground'
+        "
+        (click)="elegir.emit(op.valor)"
+      >
+        {{ op.label }}
+        @if (op.valor === seleccionado()) {
+          <app-icon name="check" [size]="16" />
+        }
+      </button>
+    }
+  </div>
+}

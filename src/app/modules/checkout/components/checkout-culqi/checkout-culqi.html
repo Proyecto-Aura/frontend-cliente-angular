@@ -1,0 +1,107 @@
+<div
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="culqi-titulo"
+  class="animate-scale-in flex max-h-[90vh] w-full max-w-[460px] flex-col gap-4 overflow-auto rounded-lg bg-white p-7 shadow-[0_20px_48px_rgba(33,33,33,0.24)]"
+>
+  <div class="flex items-center justify-between">
+    <h2 id="culqi-titulo" class="m-0 min-w-0 flex-1 truncate text-xl font-semibold">
+      Pagar con Culqi
+    </h2>
+    <button
+      type="button"
+      aria-label="Cerrar"
+      [disabled]="procesando()"
+      class="flex size-8 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent text-muted-foreground transition-colors hover:bg-accent hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
+      (click)="cerrar.emit()"
+    >
+      <app-icon name="x" [size]="18" />
+    </button>
+  </div>
+
+  <div
+    class="flex items-start gap-3 rounded-lg border border-[#d5d9f7] bg-[#eef0fd] px-3.5 py-3 text-[12.5px] text-[#4a52b8]"
+  >
+    <span class="mt-px flex"><app-icon name="shield-check" [size]="18" /></span>
+    <span
+      >Modo demostración: la pasarela de Culqi aún no está conectada. No se realiza ningún cargo y
+      no se piden datos de tarjeta.</span
+    >
+  </div>
+
+  <fieldset class="m-0 flex flex-col gap-2 border-0 p-0" [disabled]="procesando()">
+    <legend class="mb-2 p-0 text-xs font-bold text-[#1f1f1f]">Elige cómo pagar</legend>
+    <div class="grid grid-cols-3 gap-2">
+      @for (o of opciones; track o.medio) {
+        <label
+          class="flex cursor-pointer flex-col items-center gap-1.5 rounded-lg border px-2 py-3 text-xs font-semibold transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-primary has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-60"
+          [class]="
+            medio() === o.medio
+              ? 'border-primary bg-[#fde4e4] text-primary'
+              : 'border-border bg-white text-[#424242] hover:border-primary'
+          "
+        >
+          <input
+            type="radio"
+            name="medio-pago"
+            class="sr-only"
+            [value]="o.medio"
+            [checked]="medio() === o.medio"
+            (change)="elegir(o.medio)"
+          />
+          <app-icon [name]="o.icono" [size]="20" />
+          {{ o.etiqueta }}
+        </label>
+      }
+    </div>
+  </fieldset>
+
+  <div class="flex items-baseline justify-between text-[13px]">
+    <span class="text-muted-foreground">Total a pagar</span>
+    <strong class="font-heading text-lg text-primary">{{ precio(total()) }}</strong>
+  </div>
+
+  @if (error(); as mensaje) {
+    <div
+      role="alert"
+      class="flex items-start gap-2 rounded-lg border border-[#f1c0c0] bg-danger-50 px-3.5 py-3 text-[12.5px] text-danger-700"
+    >
+      <span class="mt-px flex"><app-icon name="circle-x" [size]="16" /></span>
+      <span
+        ><strong class="font-bold">Pago rechazado.</strong> {{ mensaje }} No se creó ningún pedido:
+        puedes intentarlo de nuevo.</span
+      >
+    </div>
+  }
+
+  <div class="flex flex-wrap justify-end gap-2">
+    <button
+      type="button"
+      [disabled]="procesando()"
+      class="h-9 cursor-pointer rounded-md border border-border bg-white px-4 text-[13px] font-semibold whitespace-nowrap text-[#424242] hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
+      (click)="cerrar.emit()"
+    >
+      Volver
+    </button>
+    <button
+      type="button"
+      [disabled]="procesando()"
+      class="h-9 cursor-pointer rounded-md border border-border bg-white px-4 text-[13px] font-semibold whitespace-nowrap text-[#424242] hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
+      (click)="simular('rechazado')"
+    >
+      Simular pago rechazado
+    </button>
+    <button
+      type="button"
+      [disabled]="procesando()"
+      class="h-9 cursor-pointer rounded-md border-0 bg-primary px-4 text-[13px] font-bold whitespace-nowrap text-white hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+      (click)="simular('aprobado')"
+    >
+      @if (procesando()) {
+        Procesando pago…
+      } @else {
+        Simular pago aprobado
+      }
+    </button>
+  </div>
+</div>

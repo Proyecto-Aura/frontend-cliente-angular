@@ -1,0 +1,118 @@
+<div class="flex items-center gap-2.5">
+  <span
+    class="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#fde4e4] text-primary"
+  >
+    <app-icon name="file-text" [size]="14" />
+  </span>
+  <h2 id="co-comp-titulo" class="m-0 font-heading text-[15px] font-extrabold text-[#1f1f1f]">
+    Comprobante de pago
+  </h2>
+</div>
+
+<div
+  role="radiogroup"
+  aria-labelledby="co-comp-titulo"
+  class="mt-3.5 grid grid-cols-[repeat(auto-fit,minmax(min(100%,180px),1fr))] gap-3"
+>
+  @for (opcion of opciones; track opcion.tipo) {
+    <label
+      class="flex items-center gap-3 rounded-[10px] border-[1.5px] px-3.5 py-3 transition-colors has-[:focus-visible]:shadow-[0_0_0_3px_rgba(210,43,43,0.15)]"
+      [class]="
+        (tipo() === opcion.tipo ? 'border-primary bg-[#fff5f5]' : 'border-[#e6e6e6] bg-white') +
+        (bloqueado() ? ' cursor-not-allowed opacity-70' : ' cursor-pointer')
+      "
+    >
+      <input
+        type="radio"
+        name="co-comprobante"
+        class="sr-only"
+        [value]="opcion.tipo"
+        [checked]="tipo() === opcion.tipo"
+        [disabled]="bloqueado()"
+        (change)="elegir(opcion.tipo)"
+      />
+      <span
+        class="flex size-4 shrink-0 items-center justify-center rounded-full border-[1.5px] bg-white"
+        [class]="tipo() === opcion.tipo ? 'border-primary' : 'border-[#bdbdbd]'"
+        aria-hidden="true"
+      >
+        @if (tipo() === opcion.tipo) {
+          <span class="size-2 rounded-full bg-primary"></span>
+        }
+      </span>
+      <span>
+        <span
+          class="block text-[12.5px] font-bold"
+          [class]="tipo() === opcion.tipo ? 'text-[#c62828]' : 'text-[#1f1f1f]'"
+          >{{ opcion.etiqueta }}</span
+        >
+        <span class="mt-px block text-[10.5px] text-muted-foreground">{{ opcion.detalle }}</span>
+      </span>
+    </label>
+  }
+</div>
+
+@if (esFactura()) {
+  <div
+    class="mt-3.5 grid grid-cols-[repeat(auto-fit,minmax(min(100%,200px),1fr))] gap-x-[18px] gap-y-3"
+  >
+    <div class="flex flex-col gap-1.5">
+      <label for="co-ruc" class="text-[11.5px] font-bold text-[#1f1f1f]"
+        >RUC <span class="text-primary" aria-hidden="true">*</span></label
+      >
+      <input
+        #campoRuc
+        id="co-ruc"
+        type="text"
+        inputmode="numeric"
+        autocomplete="off"
+        maxlength="11"
+        placeholder="20XXXXXXXXX"
+        required
+        [value]="ruc()"
+        [disabled]="bloqueado()"
+        class="h-9 w-full rounded-lg border bg-white px-3 text-[12.5px] text-foreground transition outline-none focus:border-primary focus:shadow-[0_0_0_3px_rgba(210,43,43,0.15)] disabled:bg-[#f5f5f5]"
+        [class]="errorRuc() ? 'border-destructive' : 'border-border'"
+        [attr.aria-invalid]="!!errorRuc()"
+        [attr.aria-describedby]="errorRuc() ? 'co-ruc-error' : null"
+        (input)="escribirRuc(campoRuc)"
+        (blur)="tocar('ruc')"
+      />
+      @if (errorRuc(); as mensaje) {
+        <span id="co-ruc-error" class="text-[11px] text-destructive">{{ mensaje }}</span>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1.5">
+      <label for="co-razon" class="text-[11.5px] font-bold text-[#1f1f1f]"
+        >Razón social <span class="text-primary" aria-hidden="true">*</span></label
+      >
+      <input
+        #campoRazon
+        id="co-razon"
+        type="text"
+        autocomplete="organization"
+        placeholder="Empresa S.A.C."
+        required
+        [attr.maxlength]="maxRazonSocial"
+        [value]="razonSocial()"
+        [disabled]="bloqueado()"
+        class="h-9 w-full rounded-lg border bg-white px-3 text-[12.5px] text-foreground transition outline-none focus:border-primary focus:shadow-[0_0_0_3px_rgba(210,43,43,0.15)] disabled:bg-[#f5f5f5]"
+        [class]="errorRazonSocial() ? 'border-destructive' : 'border-border'"
+        [attr.aria-invalid]="!!errorRazonSocial()"
+        [attr.aria-describedby]="errorRazonSocial() ? 'co-razon-error' : null"
+        (input)="escribirRazonSocial(campoRazon.value)"
+        (blur)="tocar('razonSocial')"
+      />
+      @if (errorRazonSocial(); as mensaje) {
+        <span id="co-razon-error" class="text-[11px] text-destructive">{{ mensaje }}</span>
+      }
+    </div>
+  </div>
+}
+
+@if (errorServidor(); as mensaje) {
+  <div role="alert" class="mt-3.5 rounded-lg bg-accent px-3 py-2 text-[12px] text-destructive">
+    {{ mensaje }}
+  </div>
+}

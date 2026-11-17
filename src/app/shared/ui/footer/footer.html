@@ -1,0 +1,91 @@
+<footer class="bg-[linear-gradient(180deg,#c62828_0%,#b71c1c_100%)] text-white">
+  <div
+    class="mx-auto grid max-w-[1440px] grid-cols-[repeat(auto-fit,minmax(min(100%,220px),1fr))] gap-9 px-[clamp(16px,3vw,40px)] pt-12 pb-9"
+  >
+    <div class="flex max-w-[300px] flex-col gap-3.5">
+      <div class="flex items-center gap-2.5">
+        <span
+          class="flex size-[34px] items-center justify-center overflow-hidden rounded-lg border border-white/35 bg-white/18"
+        >
+          <img ngSrc="/francos-mark.png" width="30" height="28" alt="" class="object-contain" />
+        </span>
+        <span class="font-heading text-[19px] font-extrabold">Franco's</span>
+      </div>
+      <p class="m-0 text-[13px] leading-[1.65] text-white/88">
+        Snacks peruanos elaborados con ingredientes 100% naturales. Del campo a tu mesa, con el
+        sabor auténtico del Perú.
+      </p>
+      <div class="mt-1 flex gap-2">
+        @for (red of redes; track red.nombre) {
+          <span
+            [attr.aria-label]="red.nombre"
+            [title]="red.nombre"
+            class="flex size-8 items-center justify-center rounded-lg bg-white/15 text-xs font-bold"
+            >{{ red.label }}</span
+          >
+        }
+      </div>
+    </div>
+
+    <div>
+      <h2 class="mt-0 mb-4 font-heading text-xs font-extrabold tracking-[0.08em]">NAVEGACIÓN</h2>
+      <div class="flex flex-col gap-2.5">
+        @for (enlace of navegacion; track enlace.ruta) {
+          <a
+            [routerLink]="enlace.ruta"
+            class="w-fit text-[13px] leading-[1.4] whitespace-nowrap text-white/88 no-underline hover:text-white hover:underline"
+            >{{ enlace.label }}</a
+          >
+        }
+      </div>
+    </div>
+
+    @if (categorias().length) {
+      <div>
+        <h2 class="mt-0 mb-4 font-heading text-xs font-extrabold tracking-[0.08em]">CATEGORÍAS</h2>
+        <div class="flex flex-col gap-2.5">
+          @for (categoria of categorias(); track categoria.id) {
+            <a
+              routerLink="/catalogo"
+              [queryParams]="{ categoria: categoria.id }"
+              class="w-fit text-[13px] leading-[1.4] whitespace-nowrap text-white/88 no-underline hover:text-white hover:underline"
+              >{{ categoria.nombre }}</a
+            >
+          }
+        </div>
+      </div>
+    }
+
+    <div>
+      <h2 class="mt-0 mb-4 font-heading text-xs font-extrabold tracking-[0.08em]">CONTACTO</h2>
+      <div class="flex flex-col gap-2.5 text-[13px] text-white/88">
+        <span class="flex items-center gap-2.5">
+          <span class="flex text-[#ffcdd2]"><app-icon name="map-pin" [size]="16" /></span>Av. Grau
+          1450, Piura, Perú
+        </span>
+        <a
+          href="tel:+51987654321"
+          class="flex items-center gap-2.5 text-white/88 no-underline hover:text-white"
+        >
+          <span class="flex text-[#ffcdd2]"><app-icon name="phone" [size]="16" /></span>+51 987 654
+          321
+        </a>
+        <a
+          href="mailto:soporte@francos.pe"
+          class="flex items-center gap-2.5 text-white/88 no-underline hover:text-white"
+        >
+          <span class="flex text-[#ffcdd2]"><app-icon name="mail" [size]="16" /></span
+          >soporte&#64;francos.pe
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="border-t border-white/18">
+    <div
+      class="mx-auto flex max-w-[1440px] flex-wrap justify-between gap-3 px-[clamp(16px,3vw,40px)] py-4 text-xs text-white/82"
+    >
+      <span>© {{ anio }} Franco's · Todos los derechos reservados</span>
+    </div>
+  </div>
+</footer>
