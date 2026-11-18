@@ -94,6 +94,7 @@ export class PedidosStore {
         this.avisos.mostrar(
           'No se pudo cancelar',
           apiErrorMessage(err, 'Inténtalo de nuevo en unos segundos.'),
+          'error',
         );
         // El 409 significa que el pedido ya avanzó de estado: refrescar para no dejar
         // el botón de cancelar visible sobre un pedido que ya no se puede cancelar.

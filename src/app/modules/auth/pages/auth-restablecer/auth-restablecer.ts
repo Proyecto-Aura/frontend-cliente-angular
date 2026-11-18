@@ -13,6 +13,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthInput } from '../../components/auth-input/auth-input';
 import { AuthApi } from '../../services/auth-api';
 import { apiErrorMessage } from '../../../../shared/utils/api-error';
+import { Alert } from '../../../../shared/ui/alert/alert';
+import { Avisos } from '../../../../shared/ui/aviso/aviso';
 
 /** Mínimo que exige el backend para la nueva contraseña. */
 export const MIN_CONTRASENA = 8;
@@ -30,13 +32,14 @@ function igualANueva(confirmar: AbstractControl<string>): ValidationErrors | nul
  */
 @Component({
   selector: 'app-auth-restablecer',
-  imports: [ReactiveFormsModule, RouterLink, AuthInput],
+  imports: [ReactiveFormsModule, RouterLink, AuthInput, Alert],
   host: { class: 'block w-full max-w-[512px] my-auto animate-fade-up' },
   templateUrl: './auth-restablecer.html',
 })
 export class AuthRestablecer {
   private readonly api = inject(AuthApi);
   private readonly router = inject(Router);
+  private readonly avisos = inject(Avisos);
 
   protected readonly token = inject(ActivatedRoute).snapshot.queryParamMap.get('token') ?? '';
   protected readonly minimo = MIN_CONTRASENA;
@@ -56,7 +59,6 @@ export class AuthRestablecer {
     }),
   });
   protected readonly enviando = signal(false);
-  protected readonly error = signal<string | null>(null);
 
   constructor() {
     // Si cambia la nueva, la confirmación se vuelve a comparar.
@@ -71,7 +73,6 @@ export class AuthRestablecer {
 
     const { nueva, confirmar } = this.form.getRawValue();
     this.enviando.set(true);
-    this.error.set(null);
     this.api
       .restablecerContrasena({
         token: this.token,
@@ -89,8 +90,11 @@ export class AuthRestablecer {
         },
         error: (err: unknown) => {
           this.enviando.set(false);
-          this.error.set(
+          this.avisos.mostrar(
             apiErrorMessage(err, 'No pudimos cambiar tu contraseña. Inténtalo de nuevo.'),
+            undefined,
+            'error',
+            { etiqueta: 'Pedir un nuevo enlace', ruta: '/auth/recuperar' },
           );
         },
       });

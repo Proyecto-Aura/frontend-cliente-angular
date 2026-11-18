@@ -4,6 +4,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 
 import { environment } from '../../../../../environments/environment';
+import { Avisos } from '../../../../shared/ui/aviso/aviso';
 import { AuthReenviarVerificacion, ESPERA_REENVIO_SEGUNDOS } from './auth-reenviar-verificacion';
 
 describe('AuthReenviarVerificacion (HU-A-005)', () => {
@@ -59,8 +60,10 @@ describe('AuthReenviarVerificacion (HU-A-005)', () => {
     req.flush({ message: MENSAJE });
     fixture.detectChanges();
 
-    expect(raiz().querySelector('[role="status"]')?.textContent).toContain(MENSAJE);
-    expect(texto()).toContain('El enlace vence en 24 horas');
+    const aviso = TestBed.inject(Avisos).actual();
+    expect(aviso?.titulo).toBe(MENSAJE);
+    expect(aviso?.tono).toBe('success');
+    expect(aviso?.detalle).toContain('El enlace vence en 24 horas');
   });
 
   it('prefills the email that comes from the login (?email=)', () => {
@@ -120,9 +123,9 @@ describe('AuthReenviarVerificacion (HU-A-005)', () => {
     httpMock.expectOne(RESEND).flush(null, { status: 500, statusText: 'Error' });
     fixture.detectChanges();
 
-    expect(raiz().querySelector('[role="alert"]')?.textContent).toContain(
-      'No pudimos enviar el enlace',
-    );
+    const aviso = TestBed.inject(Avisos).actual();
+    expect(aviso?.titulo).toContain('No pudimos enviar el enlace');
+    expect(aviso?.tono).toBe('error');
     expect(boton().disabled).toBe(false);
   });
 

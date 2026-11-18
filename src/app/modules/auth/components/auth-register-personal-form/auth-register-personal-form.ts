@@ -26,7 +26,6 @@ export class AuthRegisterPersonalForm {
   private readonly store = inject(AuthRegistroStore);
 
   readonly enviando = input(false);
-  readonly error = input<string | null>(null);
   readonly submitted = output<RegisterClientePayload>();
 
   protected readonly paso = signal<1 | 2>(1);

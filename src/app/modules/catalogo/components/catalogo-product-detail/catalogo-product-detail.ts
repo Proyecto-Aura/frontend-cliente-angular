@@ -1,6 +1,7 @@
 import { Component, ElementRef, computed, inject, input, output, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 
+import { Alert } from '../../../../shared/ui/alert/alert';
 import { Avisos } from '../../../../shared/ui/aviso/aviso';
 import { CantidadStepper } from '../../../../shared/ui/cantidad-stepper/cantidad-stepper';
 import { Icon } from '../../../../shared/ui/icon/icon';
@@ -16,6 +17,9 @@ import {
 } from '../../utils/catalogo.utils';
 import { CatalogoPresentacionChips } from '../catalogo-presentacion-chips/catalogo-presentacion-chips';
 
+/** El toast de "agregado al carrito" es breve: no hace falta que dure lo normal. */
+const DURACION_AVISO_CARRITO_MS = 3000;
+
 /**
  * Modal "Ver detalle" de un producto (HU-B-005, RF-B17): presentaciones
  * disponibles, precios y promociones vigentes; desde aquí se agrega al
@@ -23,7 +27,7 @@ import { CatalogoPresentacionChips } from '../catalogo-presentacion-chips/catalo
  */
 @Component({
   selector: 'app-catalogo-product-detail',
-  imports: [Icon, CantidadStepper, CatalogoPresentacionChips],
+  imports: [Icon, Alert, CantidadStepper, CatalogoPresentacionChips],
   host: {
     class: 'fixed inset-0 z-50 flex items-center justify-center bg-[rgba(33,33,33,0.45)] p-4',
     '(click)': 'alClicFuera($event)',
@@ -81,8 +85,11 @@ export class CatalogoProductDetail {
     const cantidad = this.cantidad();
     if (!this.carrito.agregar(producto, presentacion, cantidad)) return;
     this.avisos.mostrar(
-      `${producto.nombre} agregado`,
-      `${cantidad} × ${this.etiqueta(presentacion)} · ${this.precio(presentacion.precio_final * cantidad)}`,
+      'Producto agregado',
+      `${cantidad} ${producto.nombre} · ${this.etiqueta(presentacion)}`,
+      'success',
+      undefined,
+      DURACION_AVISO_CARRITO_MS,
     );
     this.cerrar.emit();
   }

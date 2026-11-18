@@ -62,16 +62,12 @@
   </div>
 
   @if (error(); as mensaje) {
-    <div
-      role="alert"
-      class="flex items-start gap-2 rounded-lg border border-[#f1c0c0] bg-danger-50 px-3.5 py-3 text-[12.5px] text-danger-700"
-    >
-      <span class="mt-px flex"><app-icon name="circle-x" [size]="16" /></span>
-      <span
-        ><strong class="font-bold">Pago rechazado.</strong> {{ mensaje }} No se creó ningún pedido:
-        puedes intentarlo de nuevo.</span
-      >
-    </div>
+    <app-alert
+      tone="error"
+      title="Pago rechazado"
+      [description]="mensaje + ' No se creó ningún pedido: puedes intentarlo de nuevo.'"
+      [closable]="false"
+    />
   }
 
   <div class="flex flex-wrap justify-end gap-2">

@@ -5,6 +5,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AuthInput } from '../../components/auth-input/auth-input';
 import { AuthApi } from '../../services/auth-api';
 import { apiErrorMessage } from '../../../../shared/utils/api-error';
+import { Avisos } from '../../../../shared/ui/aviso/aviso';
 
 /** El backend no envía otro correo al mismo email si se pidió hace menos de esto. */
 export const ESPERA_REENVIO_SEGUNDOS = 60;
@@ -22,6 +23,7 @@ export const ESPERA_REENVIO_SEGUNDOS = 60;
 })
 export class AuthReenviarVerificacion {
   private readonly api = inject(AuthApi);
+  private readonly avisos = inject(Avisos);
 
   protected readonly form = new FormGroup({
     email: new FormControl(inject(ActivatedRoute).snapshot.queryParamMap.get('email') ?? '', {
@@ -30,9 +32,8 @@ export class AuthReenviarVerificacion {
     }),
   });
   protected readonly enviando = signal(false);
-  protected readonly error = signal<string | null>(null);
-  /** Mensaje del backend tras enviar la solicitud. */
-  protected readonly enviado = signal<string | null>(null);
+  /** Si ya se envió al menos una vez: cambia el texto del botón. */
+  protected readonly enviado = signal(false);
   /** Segundos que faltan para poder pedir otro enlace. */
   protected readonly restante = signal(0);
 
@@ -47,17 +48,23 @@ export class AuthReenviarVerificacion {
     if (this.form.invalid || this.enviando() || this.restante() > 0) return;
 
     this.enviando.set(true);
-    this.error.set(null);
     this.api.reenviarVerificacion(this.form.controls.email.value.trim()).subscribe({
       next: ({ message }) => {
         this.enviando.set(false);
-        this.enviado.set(message);
+        this.enviado.set(true);
+        this.avisos.mostrar(
+          message,
+          'Revisa tu bandeja de entrada y la carpeta de spam. El enlace vence en 24 horas.',
+          'success',
+        );
         this.iniciarEspera();
       },
       error: (err: unknown) => {
         this.enviando.set(false);
-        this.error.set(
+        this.avisos.mostrar(
           apiErrorMessage(err, 'No pudimos enviar el enlace. Inténtalo de nuevo en unos minutos.'),
+          undefined,
+          'error',
         );
       },
     });

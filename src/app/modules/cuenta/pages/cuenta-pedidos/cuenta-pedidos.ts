@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { Alert } from '../../../../shared/ui/alert/alert';
 import { PedidosStore } from '../../services/pedidos-store';
 import { CuentaPedidoCard } from '../../components/cuenta-pedido-card/cuenta-pedido-card';
 import { CuentaPedidoDetalle } from '../../components/cuenta-pedido-detalle/cuenta-pedido-detalle';
@@ -7,7 +8,7 @@ import { CuentaNuevaSolicitud } from '../../components/cuenta-nueva-solicitud/cu
 import { PedidoPortalVista } from '../../models/pedido-portal.model';
 
 @Component({
-  imports: [RouterLink, CuentaPedidoCard, CuentaPedidoDetalle, CuentaNuevaSolicitud],
+  imports: [RouterLink, Alert, CuentaPedidoCard, CuentaPedidoDetalle, CuentaNuevaSolicitud],
   providers: [PedidosStore],
   host: { class: 'block' },
   selector: 'app-cuenta-pedidos',

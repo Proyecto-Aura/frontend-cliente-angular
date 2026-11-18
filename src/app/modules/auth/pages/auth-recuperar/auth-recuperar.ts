@@ -5,6 +5,8 @@ import { RouterLink } from '@angular/router';
 import { AuthInput } from '../../components/auth-input/auth-input';
 import { AuthApi } from '../../services/auth-api';
 import { apiErrorMessage } from '../../../../shared/utils/api-error';
+import { Alert } from '../../../../shared/ui/alert/alert';
+import { Avisos } from '../../../../shared/ui/aviso/aviso';
 
 /**
  * HU-B-003 (RF-B11): el cliente pide el enlace para restablecer su contraseña.
@@ -12,12 +14,13 @@ import { apiErrorMessage } from '../../../../shared/utils/api-error';
  */
 @Component({
   selector: 'app-auth-recuperar',
-  imports: [ReactiveFormsModule, RouterLink, AuthInput],
+  imports: [ReactiveFormsModule, RouterLink, AuthInput, Alert],
   host: { class: 'block w-full max-w-[512px] my-auto animate-fade-up' },
   templateUrl: './auth-recuperar.html',
 })
 export class AuthRecuperar {
   private readonly api = inject(AuthApi);
+  private readonly avisos = inject(Avisos);
 
   protected readonly form = new FormGroup({
     email: new FormControl('', {
@@ -26,7 +29,6 @@ export class AuthRecuperar {
     }),
   });
   protected readonly enviando = signal(false);
-  protected readonly error = signal<string | null>(null);
   /** Mensaje del backend tras enviar la solicitud. */
   protected readonly enviado = signal<string | null>(null);
 
@@ -35,7 +37,6 @@ export class AuthRecuperar {
     if (this.form.invalid || this.enviando()) return;
 
     this.enviando.set(true);
-    this.error.set(null);
     this.api.solicitarRecuperacion(this.form.controls.email.value.trim()).subscribe({
       next: ({ message }) => {
         this.enviando.set(false);
@@ -43,8 +44,10 @@ export class AuthRecuperar {
       },
       error: (err: unknown) => {
         this.enviando.set(false);
-        this.error.set(
+        this.avisos.mostrar(
           apiErrorMessage(err, 'No pudimos enviar el enlace. Inténtalo de nuevo en unos minutos.'),
+          undefined,
+          'error',
         );
       },
     });

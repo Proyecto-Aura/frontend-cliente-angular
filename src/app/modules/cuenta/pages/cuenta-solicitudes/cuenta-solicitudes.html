@@ -45,19 +45,15 @@
       Cargando solicitudes…
     </p>
   } @else if (error(); as mensaje) {
-    <div
-      role="alert"
-      class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-destructive/50 bg-surface p-5"
-    >
-      <p class="m-0 text-sm text-danger-700">{{ mensaje }}</p>
+    <app-alert tone="error" [title]="mensaje" [closable]="false">
       <button
         type="button"
-        class="min-h-9 cursor-pointer rounded-md border border-border px-3 text-xs font-semibold text-foreground hover:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        class="mt-2 min-h-9 w-fit cursor-pointer rounded-md border border-border px-3 text-xs font-semibold text-foreground hover:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         (click)="reintentar.emit()"
       >
         Volver a intentar
       </button>
-    </div>
+    </app-alert>
   } @else if (solicitudes(); as listado) {
     <ul class="m-0 flex list-none flex-col gap-3.5 p-0" aria-label="Solicitudes de reembolso">
       @for (solicitud of listado; track solicitud.id) {

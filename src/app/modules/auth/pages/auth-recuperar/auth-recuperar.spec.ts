@@ -4,6 +4,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
 import { environment } from '../../../../../environments/environment';
+import { Avisos } from '../../../../shared/ui/aviso/aviso';
 import { AuthRecuperar } from './auth-recuperar';
 
 describe('AuthRecuperar (HU-B-003, RF-B11)', () => {
@@ -62,9 +63,9 @@ describe('AuthRecuperar (HU-B-003, RF-B11)', () => {
     httpMock.expectOne(FORGOT).flush(null, { status: 500, statusText: 'Error' });
     fixture.detectChanges();
 
-    expect(raiz().querySelector('[role="alert"]')?.textContent).toContain(
-      'No pudimos enviar el enlace',
-    );
+    const aviso = TestBed.inject(Avisos).actual();
+    expect(aviso?.titulo).toContain('No pudimos enviar el enlace');
+    expect(aviso?.tono).toBe('error');
   });
 
   it('links back to the login', () => {

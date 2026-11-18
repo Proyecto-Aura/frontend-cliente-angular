@@ -105,14 +105,6 @@ describe('CheckoutComprobante (HU-B-009, RF-B29)', () => {
     expect(campo('co-ruc')!.getAttribute('aria-invalid')).toBe('false');
   });
 
-  it('shows the server error as an alert', () => {
-    entrada('errorServidor', 'comprobante.ruc no es un RUC válido');
-
-    expect(raiz().querySelector('[role="alert"]')!.textContent).toContain(
-      'comprobante.ruc no es un RUC válido',
-    );
-  });
-
   it('cannot be changed while locked', () => {
     entrada('tipo', 'factura');
     entrada('bloqueado', true);

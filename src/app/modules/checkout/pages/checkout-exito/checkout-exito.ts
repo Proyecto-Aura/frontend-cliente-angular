@@ -3,6 +3,7 @@ import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
+import { Alert } from '../../../../shared/ui/alert/alert';
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { apiErrorMessage } from '../../../../shared/utils/api-error';
 import {
@@ -24,7 +25,7 @@ import { etiquetaComprobante } from '../../utils/checkout.utils';
  */
 @Component({
   selector: 'app-checkout-exito',
-  imports: [RouterLink, Icon],
+  imports: [RouterLink, Icon, Alert],
   host: { class: 'block min-h-[calc(100vh-64px)] bg-[#f7f7f7]' },
   templateUrl: './checkout-exito.html',
 })

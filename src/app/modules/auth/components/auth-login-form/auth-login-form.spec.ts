@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
+import { Avisos } from '../../../../shared/ui/aviso/aviso';
 import { LoginRequest } from '../../models/auth.model';
 import { AuthLoginForm } from './auth-login-form';
 
@@ -30,12 +31,15 @@ describe('AuthLoginForm', () => {
     fixture.detectChanges();
   });
 
-  it('shows a message for each empty field and does not submit (RF-B05)', () => {
+  it('shows a message for each empty field, a warning toast, and does not submit (RF-B05)', () => {
     enviar();
 
     expect(texto()).toContain('Ingresa tu correo o nombre de usuario');
     expect(texto()).toContain('Ingresa tu contraseña');
     expect(enviados).toEqual([]);
+    const aviso = TestBed.inject(Avisos).actual();
+    expect(aviso?.titulo).toBe('Faltan campos por completar');
+    expect(aviso?.tono).toBe('warning');
   });
 
   it('treats a username of only spaces as empty', () => {
@@ -56,6 +60,7 @@ describe('AuthLoginForm', () => {
     expect(enviados).toEqual([
       { identificador: 'rosa@francos.pe', password: 'Clave123', recordar: true },
     ]);
+    expect(TestBed.inject(Avisos).actual()).toBeNull();
   });
 
   it('shows and hides the password with the eye icon (RF-B02)', () => {
@@ -73,12 +78,10 @@ describe('AuthLoginForm', () => {
     expect(enlaces).toEqual(expect.arrayContaining(['/auth/recuperar', '/auth/registro']));
   });
 
-  it('shows the API error and disables the button while sending', () => {
-    fixture.componentRef.setInput('error', 'Credenciales inválidas');
+  it('disables the button while sending', () => {
     fixture.componentRef.setInput('enviando', true);
     fixture.detectChanges();
 
-    expect(raiz().querySelector('[role="alert"]')?.textContent).toContain('Credenciales inválidas');
     const boton = raiz().querySelector<HTMLButtonElement>('button[type="submit"]')!;
     expect(boton.disabled).toBe(true);
     expect(boton.textContent).toContain('Ingresando');

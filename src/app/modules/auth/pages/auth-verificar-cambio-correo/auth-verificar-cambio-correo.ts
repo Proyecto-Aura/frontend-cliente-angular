@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
+import { Alert } from '../../../../shared/ui/alert/alert';
 import { Session } from '../../../../shared/auth/session';
 import { apiErrorMessage } from '../../../../shared/utils/api-error';
 import { CambioCorreoApi } from '../../services/cambio-correo-api';
@@ -15,7 +16,7 @@ type Estado = 'verificando' | 'verificado' | 'fallido';
  */
 @Component({
   selector: 'app-auth-verificar-cambio-correo',
-  imports: [RouterLink],
+  imports: [RouterLink, Alert],
   host: { class: 'block w-full max-w-[512px] my-auto animate-fade-up' },
   templateUrl: './auth-verificar-cambio-correo.html',
 })

@@ -1,13 +1,15 @@
-import { Component, input, output } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
+import { Avisos } from '../../../../shared/ui/aviso/aviso';
 import { AuthInput } from '../auth-input/auth-input';
 import { LoginRequest } from '../../models/auth.model';
 
 /**
- * Formulario de inicio de sesión (HU-B-001). Avisa de los campos vacíos (RF-B05)
- * y emite las credenciales; la API la resuelve el padre.
+ * Formulario de inicio de sesión (HU-B-001). Avisa de los campos vacíos (RF-B05,
+ * toast amarillo) y emite las credenciales; la API y su error (toast rojo) los
+ * resuelve el padre.
  */
 @Component({
   selector: 'app-auth-login-form',
@@ -18,10 +20,10 @@ import { LoginRequest } from '../../models/auth.model';
 export class AuthLoginForm {
   /** El padre lo pone en `true` mientras la petición está en curso. */
   readonly enviando = input(false);
-  /** Mensaje de error de la API (credenciales inválidas, etc.). */
-  readonly error = input<string | null>(null);
 
   readonly submitted = output<LoginRequest>();
+
+  private readonly avisos = inject(Avisos);
 
   protected readonly form = new FormGroup({
     // Un identificador de solo espacios también cuenta como vacío.
@@ -44,6 +46,11 @@ export class AuthLoginForm {
   protected onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.avisos.mostrar(
+        'Faltan campos por completar',
+        'Completa tu usuario y contraseña para continuar.',
+        'warning',
+      );
       return;
     }
     const { identificador, password, recordar } = this.form.getRawValue();

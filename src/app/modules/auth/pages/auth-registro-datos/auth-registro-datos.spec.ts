@@ -4,6 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 
 import { environment } from '../../../../../environments/environment';
+import { Avisos } from '../../../../shared/ui/aviso/aviso';
 import { AuthRegistroStore } from '../../services/auth-registro-store';
 import { authDom } from '../../testing/auth-dom';
 import { AuthRegistroDatos } from './auth-registro-datos';
@@ -81,7 +82,7 @@ describe('AuthRegistroDatos', () => {
   });
 
   it('shows the API message when the data is rejected (RF-B09)', () => {
-    const { fixture, dom } = montarYEnviar();
+    const { fixture } = montarYEnviar();
     httpMock
       .expectOne(REGISTER)
       .flush(
@@ -90,9 +91,9 @@ describe('AuthRegistroDatos', () => {
       );
     fixture.detectChanges();
 
-    expect(dom.raiz().querySelector('[role="alert"]')?.textContent?.trim()).toBe(
-      'Ya existe una cuenta con ese correo electrónico',
-    );
+    const aviso = TestBed.inject(Avisos).actual();
+    expect(aviso?.titulo).toBe('Ya existe una cuenta con ese correo electrónico');
+    expect(aviso?.tono).toBe('error');
     expect(navegar).not.toHaveBeenCalledWith(['/auth/login'], expect.anything());
   });
 

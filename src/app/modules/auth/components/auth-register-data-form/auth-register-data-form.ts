@@ -16,6 +16,5 @@ export class AuthRegisterDataForm {
   protected readonly store = inject(AuthRegistroStore);
 
   readonly enviando = input(false);
-  readonly error = input<string | null>(null);
   readonly submitted = output<RegisterClientePayload>();
 }

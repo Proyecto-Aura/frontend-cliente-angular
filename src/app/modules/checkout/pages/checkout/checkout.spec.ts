@@ -217,7 +217,7 @@ describe('Checkout (HU-B-007, RF-B20 a RF-B23; HU-B-008, RF-B24 a RF-B28)', () =
         expect(pasoActual()).toContain('Datos de entrega');
       });
 
-      it('shows the server error and keeps the address editable', () => {
+      it('shows the server error as a toast and keeps the address editable', () => {
         abrir();
 
         boton('Confirmar dirección')!.click();
@@ -230,9 +230,9 @@ describe('Checkout (HU-B-007, RF-B20 a RF-B23; HU-B-008, RF-B24 a RF-B28)', () =
           );
         fixture.detectChanges();
 
-        expect(raiz().querySelector('[role="alert"]')!.textContent).toContain(
-          'no está disponible en el catálogo',
-        );
+        const aviso = TestBed.inject(Avisos).actual();
+        expect(aviso?.titulo).toContain('no está disponible en el catálogo');
+        expect(aviso?.tono).toBe('error');
         expect(campo('co-dir').disabled).toBe(false);
         expect(pasoActual()).toContain('Datos de entrega');
       });
@@ -561,7 +561,7 @@ describe('Checkout (HU-B-007, RF-B20 a RF-B23; HU-B-008, RF-B24 a RF-B28)', () =
         expect(ventana()).not.toBeNull();
       });
 
-      it('shows the server error, keeps the payment closed and clears it when the client edits', () => {
+      it('shows the server error as a toast and keeps the payment closed', () => {
         abrir();
         confirmarDelivery();
         elegir('factura');
@@ -577,12 +577,10 @@ describe('Checkout (HU-B-007, RF-B20 a RF-B23; HU-B-008, RF-B24 a RF-B28)', () =
           );
         fixture.detectChanges();
 
-        expect(raiz().querySelector('app-checkout-comprobante [role="alert"]')).not.toBeNull();
+        const aviso = TestBed.inject(Avisos).actual();
+        expect(aviso?.titulo).toBe('comprobante.ruc no es un RUC válido');
+        expect(aviso?.tono).toBe('error');
         expect(ventana()).toBeNull();
-
-        escribir('co-razon', 'Otra Empresa S.A.C.');
-
-        expect(raiz().querySelector('app-checkout-comprobante [role="alert"]')).toBeNull();
       });
 
       it('cannot validate twice while the server is answering', () => {
@@ -796,9 +794,9 @@ describe('Checkout (HU-B-007, RF-B20 a RF-B23; HU-B-008, RF-B24 a RF-B28)', () =
       req.flush(resumenPedido());
       fixture.detectChanges();
 
-      expect(raiz().querySelector('[role="alert"]')!.textContent).toContain(
-        'Un producto de tu carrito no está disponible y no se incluye en el pedido',
-      );
+      const alerta = raiz().querySelector('[role="status"]')!.textContent!;
+      expect(alerta).toContain('Un producto de tu carrito no está disponible');
+      expect(alerta).toContain('No se incluyen en el pedido.');
     });
 
     it('opens the cart so the client can review it', () => {
