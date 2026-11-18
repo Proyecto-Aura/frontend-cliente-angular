@@ -61,7 +61,8 @@ describe('AuthRestablecer (HU-B-003, RF-B12 y RF-B13)', () => {
     harness.detectChanges();
 
     expect(url()).toBe('/auth/login?restablecida=1');
-    expect(texto()).toContain('Tu contraseña se cambió correctamente');
+    // El aviso de confirmación lo muestra el login (HU-B-003 RF-B13), como un toast.
+    expect(TestBed.inject(Avisos).actual()?.titulo).toBe('Tu contraseña se cambió correctamente');
   });
 
   it.each([
