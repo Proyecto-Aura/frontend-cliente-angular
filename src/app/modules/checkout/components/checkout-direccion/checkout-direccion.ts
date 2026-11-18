@@ -27,8 +27,6 @@ export class CheckoutDireccion {
   readonly confirmada = input(false);
   /** Mientras el servidor valida la dirección. */
   readonly confirmando = input(false);
-  /** Motivo por el que el servidor no aceptó la dirección. */
-  readonly errorServidor = input<string | null>(null);
 
   /** La dirección lista para el pedido ("Av. X 123 · Ref: frente al parque"). */
   readonly confirmar = output<string>();

@@ -5,6 +5,7 @@ import { Router, provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 
 import { environment } from '../../../../../environments/environment';
+import { Avisos } from '../../../../shared/ui/aviso/aviso';
 import { routes } from '../../../../app.routes';
 
 describe('AuthRestablecer (HU-B-003, RF-B12 y RF-B13)', () => {
@@ -84,9 +85,10 @@ describe('AuthRestablecer (HU-B-003, RF-B12 y RF-B13)', () => {
       );
     harness.detectChanges();
 
-    const alerta = raiz().querySelector('[role="alert"]')!;
-    expect(alerta.textContent).toContain('el enlace expiró');
-    expect(alerta.querySelector('a')?.getAttribute('href')).toBe('/auth/recuperar');
+    const aviso = TestBed.inject(Avisos).actual();
+    expect(aviso?.titulo).toContain('el enlace expiró');
+    expect(aviso?.tono).toBe('error');
+    expect(aviso?.enlace).toEqual({ etiqueta: 'Pedir un nuevo enlace', ruta: '/auth/recuperar' });
   });
 
   it('without a token asks for a new link', async () => {

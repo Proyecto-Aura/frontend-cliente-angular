@@ -33,21 +33,22 @@
       Cargando detalle de la solicitud…
     </p>
   } @else if (error(); as mensaje) {
-    <div
+    <app-alert
       #errorCarga
       tabindex="-1"
-      role="alert"
-      class="mt-5 rounded-lg border border-destructive/40 bg-danger-50 p-4 text-xs text-danger-700 focus:outline-2 focus:outline-primary"
+      tone="error"
+      [title]="mensaje"
+      [closable]="false"
+      class="mt-5 focus:outline-2 focus:outline-primary"
     >
-      <p class="m-0">{{ mensaje }}</p>
       <button
         type="button"
-        class="mt-3 min-h-9 cursor-pointer rounded-md border border-border bg-surface px-3 text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        class="mt-3 min-h-9 w-fit cursor-pointer rounded-md border border-border bg-surface px-3 text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         (click)="reintentar.emit()"
       >
         Volver a intentar
       </button>
-    </div>
+    </app-alert>
   } @else if (solicitud(); as solicitud) {
     <div class="my-[18px] flex flex-wrap items-center justify-between gap-3">
       @if (solicitud.motivo; as motivo) {

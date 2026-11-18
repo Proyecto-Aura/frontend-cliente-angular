@@ -7,6 +7,9 @@ import { formatearPrecio } from '../../../catalogo/utils/catalogo.utils';
 import { ItemCarrito } from '../../models/carrito.model';
 import { CANTIDAD_MAXIMA, CarritoStore } from '../../services/carrito-store';
 
+/** El toast de "eliminado del carrito" es breve: no hace falta que dure lo normal. */
+const DURACION_AVISO_CARRITO_MS = 3000;
+
 /** Una línea del carrito: cambiar cantidad o eliminar (HU-B-006, RF-B19). */
 @Component({
   selector: 'app-carrito-item',
@@ -28,7 +31,14 @@ export class CarritoItem {
   }
 
   protected eliminar(): void {
-    this.carrito.eliminar(this.item().presentacionId);
-    this.avisos.mostrar(`${this.item().nombre} eliminado`, 'Se quitó del carrito.');
+    const item = this.item();
+    this.carrito.eliminar(item.presentacionId);
+    this.avisos.mostrar(
+      'Producto eliminado',
+      `${item.cantidad} ${item.nombre} · ${item.presentacion}`,
+      'success',
+      undefined,
+      DURACION_AVISO_CARRITO_MS,
+    );
   }
 }

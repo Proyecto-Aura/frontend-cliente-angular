@@ -12,6 +12,9 @@ import {
 } from '../../../catalogo/utils/catalogo.utils';
 import { CANTIDAD_MAXIMA, CarritoStore } from '../../services/carrito-store';
 
+/** El toast de "agregado al carrito" es breve: no hace falta que dure lo normal. */
+const DURACION_AVISO_CARRITO_MS = 3000;
+
 /**
  * Ventana rápida "Agregar" de la tarjeta del catálogo (HU-B-006, RF-B18):
  * elegir presentación —las agotadas no se pueden elegir— y cantidad.
@@ -59,8 +62,11 @@ export class CarritoAgregar {
     const cantidad = this.cantidad();
     if (!this.carrito.agregar(this.producto(), presentacion, cantidad)) return;
     this.avisos.mostrar(
-      `${this.producto().nombre} agregado`,
-      `${cantidad} × ${this.etiqueta(presentacion)} · ${this.precio(presentacion.precio_final * cantidad)}`,
+      'Producto agregado',
+      `${cantidad} ${this.producto().nombre} · ${this.etiqueta(presentacion)}`,
+      'success',
+      undefined,
+      DURACION_AVISO_CARRITO_MS,
     );
     this.cerrar.emit();
   }

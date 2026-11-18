@@ -27,6 +27,7 @@ export type IconName =
   | 'shield-check'
   | 'shopping-cart'
   | 'sliders-horizontal'
+  | 'triangle-alert'
   | 'truck'
   | 'undo-2'
   | 'user'

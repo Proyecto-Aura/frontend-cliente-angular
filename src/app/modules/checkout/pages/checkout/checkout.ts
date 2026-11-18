@@ -1,4 +1,4 @@
-import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import {
@@ -13,6 +13,7 @@ import {
   tap,
 } from 'rxjs';
 
+import { Alert } from '../../../../shared/ui/alert/alert';
 import { Avisos } from '../../../../shared/ui/aviso/aviso';
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { apiErrorMessage } from '../../../../shared/utils/api-error';
@@ -49,6 +50,7 @@ import {
   imports: [
     RouterLink,
     Icon,
+    Alert,
     CheckoutStepper,
     CheckoutCliente,
     CheckoutComprobante,
@@ -74,7 +76,6 @@ export class Checkout {
   /** La dirección ya confirmada (con su referencia), o `null` si falta confirmar. */
   protected readonly direccionConfirmada = signal<string | null>(null);
   protected readonly confirmando = signal(false);
-  protected readonly errorDireccion = signal<string | null>(null);
   private readonly intentos = signal(0);
 
   /** La ventana "Pagar con Culqi" está abierta. */
@@ -91,7 +92,6 @@ export class Checkout {
   protected readonly intentoPagar = signal(false);
   /** Mientras el servidor valida los datos de la factura. */
   protected readonly validandoComprobante = signal(false);
-  protected readonly errorComprobante = signal<string | null>(null);
   /** La factura con los datos del perfil se propone una sola vez. */
   private sugerenciaAplicada = false;
   private readonly comprobanteValido = computed(() => {
@@ -137,14 +137,6 @@ export class Checkout {
       )
       .subscribe();
 
-    // Si el cliente cambia el comprobante, el error anterior del servidor ya no aplica.
-    effect(() => {
-      this.tipoComprobante();
-      this.rucComprobante();
-      this.razonSocialComprobante();
-      this.errorComprobante.set(null);
-    });
-
     // Nombre y teléfono del perfil: si no se pueden traer, el resumen sigue funcionando.
     if (!this.perfil.perfil()) {
       this.perfil
@@ -169,7 +161,6 @@ export class Checkout {
   protected confirmarDireccion(direccion: string): void {
     if (this.confirmando()) return;
     this.confirmando.set(true);
-    this.errorDireccion.set(null);
     this.api
       .resumir({
         items: itemsDelPedido(this.carrito.items()),
@@ -185,8 +176,10 @@ export class Checkout {
           this.avisos.mostrar('Dirección confirmada', 'La usaremos para entregar tu pedido.');
         },
         error: (err: unknown) => {
-          this.errorDireccion.set(
+          this.avisos.mostrar(
             apiErrorMessage(err, 'No pudimos confirmar la dirección. Inténtalo de nuevo.'),
+            undefined,
+            'error',
           );
           this.confirmando.set(false);
         },
@@ -211,7 +204,6 @@ export class Checkout {
     }
 
     this.validandoComprobante.set(true);
-    this.errorComprobante.set(null);
     this.api
       .resumir({
         items: itemsDelPedido(this.carrito.items()),
@@ -231,8 +223,10 @@ export class Checkout {
           this.mostrarPago();
         },
         error: (err: unknown) => {
-          this.errorComprobante.set(
+          this.avisos.mostrar(
             apiErrorMessage(err, 'No pudimos validar los datos de la factura. Inténtalo de nuevo.'),
+            undefined,
+            'error',
           );
           this.validandoComprobante.set(false);
         },
@@ -294,7 +288,6 @@ export class Checkout {
   /** "Deshacer": cancela la confirmación para poder cambiar la dirección. */
   protected deshacerDireccion(): void {
     this.direccionConfirmada.set(null);
-    this.errorDireccion.set(null);
   }
 
   /**

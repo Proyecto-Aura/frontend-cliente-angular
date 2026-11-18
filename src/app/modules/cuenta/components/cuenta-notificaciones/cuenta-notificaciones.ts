@@ -1,5 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, afterRenderEffect, computed, inject } from '@angular/core';
+import { Alert } from '../../../../shared/ui/alert/alert';
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { reembolsoDeNotificacion } from '../../models/notificacion-portal.model';
 import { NotificacionesStore } from '../../services/notificaciones-store';
@@ -9,7 +10,7 @@ import { CuentaSolicitudDetalle } from '../cuenta-solicitud-detalle/cuenta-solic
 const fecha = new Intl.DateTimeFormat('es-PE', { dateStyle: 'medium', timeStyle: 'short' });
 
 @Component({
-  imports: [Icon, CuentaSolicitudDetalle],
+  imports: [Icon, Alert, CuentaSolicitudDetalle],
   providers: [NotificacionesStore, SolicitudesStore],
   selector: 'app-cuenta-notificaciones',
   templateUrl: './cuenta-notificaciones.html',

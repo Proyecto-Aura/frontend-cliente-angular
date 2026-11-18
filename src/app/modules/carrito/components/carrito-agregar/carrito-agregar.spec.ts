@@ -52,7 +52,9 @@ describe('CarritoAgregar (HU-B-006, RF-B18)', () => {
     expect(TestBed.inject(CarritoStore).items()).toEqual([
       expect.objectContaining({ presentacionId: 102, cantidad: 2 }),
     ]);
-    expect(TestBed.inject(Avisos).actual()?.titulo).toBe('Chifle salado agregado');
+    const aviso = TestBed.inject(Avisos).actual();
+    expect(aviso?.titulo).toBe('Producto agregado');
+    expect(aviso?.detalle).toContain('2 Chifle salado');
     expect(cerrado).toBe(true);
   });
 

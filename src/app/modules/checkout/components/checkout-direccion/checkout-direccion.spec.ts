@@ -156,14 +156,6 @@ describe('CheckoutDireccion (HU-B-007, RF-B20/RF-B21)', () => {
     expect(boton('Confirmando…')!.getAttribute('aria-disabled')).toBe('true');
   });
 
-  it('shows why the server did not accept the address', () => {
-    entrada('errorServidor', 'Indica una dirección de entrega');
-
-    expect(raiz().querySelector('[role="alert"]')!.textContent).toContain(
-      'Indica una dirección de entrega',
-    );
-  });
-
   it('labels every field for assistive technology', () => {
     expect(raiz().querySelector('label[for="co-dir"]')).not.toBeNull();
     expect(raiz().querySelector('label[for="co-ref"]')).not.toBeNull();

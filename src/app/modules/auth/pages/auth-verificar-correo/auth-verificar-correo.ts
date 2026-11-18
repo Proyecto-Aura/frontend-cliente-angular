@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { AuthApi } from '../../services/auth-api';
 import { apiErrorMessage } from '../../../../shared/utils/api-error';
+import { Alert } from '../../../../shared/ui/alert/alert';
 
 type Estado = 'verificando' | 'verificado' | 'fallido';
 
@@ -14,7 +15,7 @@ type Estado = 'verificando' | 'verificado' | 'fallido';
  */
 @Component({
   selector: 'app-auth-verificar-correo',
-  imports: [RouterLink],
+  imports: [RouterLink, Alert],
   host: { class: 'block w-full max-w-[512px] my-auto animate-fade-up' },
   templateUrl: './auth-verificar-correo.html',
 })

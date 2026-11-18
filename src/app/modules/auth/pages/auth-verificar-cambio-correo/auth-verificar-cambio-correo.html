@@ -17,13 +17,12 @@
       </p>
     }
     @case ('verificado') {
-      <div
-        class="animate-fade-in flex flex-col gap-1 rounded-lg bg-success-50 px-4 py-3 text-[13px] text-success-700"
-        role="status"
-      >
-        <strong class="font-semibold">¡Correo actualizado!</strong>
-        <span>Desde ahora inicia sesión con tu nuevo correo.</span>
-      </div>
+      <app-alert
+        tone="success"
+        title="¡Correo actualizado!"
+        description="Desde ahora inicia sesión con tu nuevo correo."
+        [closable]="false"
+      />
       <a
         [routerLink]="conSesion() ? '/mi-cuenta/perfil' : '/auth/login'"
         class="flex h-[38px] w-full items-center justify-center rounded-[6px] border border-brand-600 bg-brand-600 text-[15px] font-medium text-white no-underline transition duration-150 hover:bg-brand-700"
@@ -32,9 +31,7 @@
       </a>
     }
     @case ('fallido') {
-      <p class="rounded-lg bg-brand-50 px-4 py-3 text-[13px] text-brand-700" role="alert">
-        {{ error() }}
-      </p>
+      <app-alert tone="error" [title]="error()!" [closable]="false" />
       <a
         routerLink="/mi-cuenta/perfil"
         class="flex h-[38px] w-full items-center justify-center rounded-[6px] border border-brand-600 bg-brand-600 text-[15px] font-medium text-white no-underline transition duration-150 hover:bg-brand-700"

@@ -3,6 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 
+import { Avisos } from '../../../../shared/ui/aviso/aviso';
 import { environment } from '../../../../../environments/environment';
 import { AuthLogin } from './auth-login';
 
@@ -13,7 +14,7 @@ describe('AuthLogin', () => {
   let navegar: ReturnType<typeof vi.spyOn>;
 
   const raiz = () => fixture.nativeElement as HTMLElement;
-  const alerta = () => raiz().querySelector('[role="alert"]')?.textContent?.trim();
+  const aviso = () => TestBed.inject(Avisos).actual();
 
   const iniciarSesion = () => {
     const escribir = (autocomplete: string, valor: string) => {
@@ -40,9 +41,13 @@ describe('AuthLogin', () => {
     fixture.detectChanges();
   });
 
-  afterEach(() => httpMock.verify());
+  afterEach(() => {
+    httpMock.verify();
+    vi.useRealTimers();
+  });
 
-  it('goes to the catalog after a client logs in', () => {
+  it('shows a green "Inicio de sesión exitoso" toast and then goes to the catalog', () => {
+    vi.useFakeTimers();
     iniciarSesion();
     httpMock.expectOne(`${AUTH}/login`).flush({
       access_token: 'jwt',
@@ -52,11 +57,16 @@ describe('AuthLogin', () => {
     });
     fixture.detectChanges();
 
+    expect(aviso()?.titulo).toBe('Inicio de sesión exitoso');
+    expect(aviso()?.tono).toBe('success');
+    expect(navegar).not.toHaveBeenCalled();
+
+    vi.runAllTimers();
+
     expect(navegar).toHaveBeenCalledWith(['/catalogo']);
-    expect(alerta()).toBeUndefined();
   });
 
-  it('shows "Credenciales inválidas" when the API rejects the credentials (RF-B05)', () => {
+  it('shows "Credenciales inválidas" as a red toast when the API rejects the credentials (RF-B05)', () => {
     iniciarSesion();
     httpMock
       .expectOne(`${AUTH}/login`)
@@ -66,7 +76,9 @@ describe('AuthLogin', () => {
       );
     fixture.detectChanges();
 
-    expect(alerta()).toBe('Credenciales inválidas');
+    expect(aviso()?.titulo).toBe('Credenciales inválidas');
+    expect(aviso()?.tono).toBe('error');
+    expect(aviso()?.enlace).toBeUndefined();
     expect(navegar).not.toHaveBeenCalled();
   });
 
@@ -81,7 +93,7 @@ describe('AuthLogin', () => {
     httpMock.expectOne(`${AUTH}/logout`).flush({ message: 'Sesión cerrada' });
     fixture.detectChanges();
 
-    expect(alerta()).toBe('Credenciales inválidas');
+    expect(aviso()?.titulo).toBe('Credenciales inválidas');
     expect(navegar).not.toHaveBeenCalled();
   });
 
@@ -90,16 +102,16 @@ describe('AuthLogin', () => {
     httpMock.expectOne(`${AUTH}/login`).error(new ProgressEvent('error'), { status: 0 });
     fixture.detectChanges();
 
-    expect(alerta()).toContain('No se pudo conectar con el servidor');
+    expect(aviso()?.titulo).toContain('No se pudo conectar con el servidor');
   });
 
-  it('shows no registration notice when arriving normally', () => {
-    expect(raiz().querySelector('[role="status"]')).toBeNull();
+  it('shows no toast when arriving normally', () => {
+    expect(aviso()).toBeNull();
   });
 });
 
 describe('AuthLogin after signing up (HU-B-002, RF-B10)', () => {
-  it('tells the client to verify the email before the first login', () => {
+  it('tells the client to verify the email before the first login, with a resend link', () => {
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
@@ -114,12 +126,19 @@ describe('AuthLogin after signing up (HU-B-002, RF-B10)', () => {
     const fixture = TestBed.createComponent(AuthLogin);
     fixture.detectChanges();
 
-    const aviso = (fixture.nativeElement as HTMLElement).querySelector('[role="status"]');
-    expect(aviso?.textContent).toContain('Te enviamos un correo de verificación');
-    expect(aviso?.textContent).toContain('antes de tu primer ingreso');
+    const aviso = TestBed.inject(Avisos).actual();
+    expect(aviso?.tono).toBe('success');
+    expect(aviso?.detalle).toContain('Te enviamos un correo de verificación');
+    expect(aviso?.detalle).toContain('antes de tu primer ingreso');
+    expect(aviso?.enlace).toEqual({
+      etiqueta: '¿No te llegó? Reenviar',
+      ruta: '/auth/reenviar-verificacion',
+    });
   });
+});
 
-  it('offers to resend the verification email (HU-A-005)', () => {
+describe('AuthLogin after resetting the password (HU-B-003, RF-B13)', () => {
+  it('confirms the change with a green toast', () => {
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
@@ -127,16 +146,16 @@ describe('AuthLogin after signing up (HU-B-002, RF-B10)', () => {
         provideHttpClientTesting(),
         {
           provide: ActivatedRoute,
-          useValue: { snapshot: { queryParamMap: convertToParamMap({ registrado: '1' }) } },
+          useValue: { snapshot: { queryParamMap: convertToParamMap({ restablecida: '1' }) } },
         },
       ],
     });
     const fixture = TestBed.createComponent(AuthLogin);
     fixture.detectChanges();
 
-    const enlace = (fixture.nativeElement as HTMLElement).querySelector('[role="status"] a');
-    expect(enlace?.textContent).toContain('¿No te llegó? Reenviar');
-    expect(enlace?.getAttribute('href')).toBe('/auth/reenviar-verificacion');
+    const aviso = TestBed.inject(Avisos).actual();
+    expect(aviso?.titulo).toBe('Tu contraseña se cambió correctamente');
+    expect(aviso?.tono).toBe('success');
   });
 });
 
@@ -148,8 +167,7 @@ describe('AuthLogin with an unverified email (HU-A-005)', () => {
   let httpMock: HttpTestingController;
 
   const raiz = () => fixture.nativeElement as HTMLElement;
-  const alerta = () => raiz().querySelector('[role="alert"]');
-  const enlaceReenvio = () => alerta()?.querySelector('a');
+  const aviso = () => TestBed.inject(Avisos).actual();
   const iniciarSesion = (identificador: string) => {
     const escribir = (autocomplete: string, valor: string) => {
       const input = raiz().querySelector<HTMLInputElement>(
@@ -187,26 +205,30 @@ describe('AuthLogin with an unverified email (HU-A-005)', () => {
     iniciarSesion('rosa@francos.test');
     rechazar(403, MENSAJE);
 
-    expect(alerta()?.textContent).toContain(MENSAJE);
-    expect(enlaceReenvio()?.textContent).toContain('Reenviar correo de verificación');
-    expect(enlaceReenvio()?.getAttribute('href')).toBe(
-      '/auth/reenviar-verificacion?email=rosa@francos.test',
-    );
+    expect(aviso()?.titulo).toBe(MENSAJE);
+    expect(aviso()?.enlace).toEqual({
+      etiqueta: 'Reenviar correo de verificación',
+      ruta: '/auth/reenviar-verificacion',
+      queryParams: { email: 'rosa@francos.test' },
+    });
   });
 
   it('links to the resend page without an email when the client logged in with a username', () => {
     iniciarSesion('rosa');
     rechazar(403, MENSAJE);
 
-    expect(enlaceReenvio()?.getAttribute('href')).toBe('/auth/reenviar-verificacion');
+    expect(aviso()?.enlace).toEqual({
+      etiqueta: 'Reenviar correo de verificación',
+      ruta: '/auth/reenviar-verificacion',
+    });
   });
 
   it('does not offer to resend on wrong credentials (401)', () => {
     iniciarSesion('rosa@francos.test');
     rechazar(401, 'Credenciales inválidas');
 
-    expect(alerta()?.textContent).toContain('Credenciales inválidas');
-    expect(enlaceReenvio()).toBeNull();
+    expect(aviso()?.titulo).toBe('Credenciales inválidas');
+    expect(aviso()?.enlace).toBeUndefined();
   });
 
   it('removes the resend link on the next attempt', () => {
@@ -215,6 +237,6 @@ describe('AuthLogin with an unverified email (HU-A-005)', () => {
     iniciarSesion('rosa@francos.test');
     rechazar(401, 'Credenciales inválidas');
 
-    expect(enlaceReenvio()).toBeNull();
+    expect(aviso()?.enlace).toBeUndefined();
   });
 });

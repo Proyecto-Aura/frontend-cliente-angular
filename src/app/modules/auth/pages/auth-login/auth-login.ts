@@ -1,60 +1,92 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { AuthLoginForm } from '../../components/auth-login-form/auth-login-form';
 import { AuthApi } from '../../services/auth-api';
 import { apiErrorMessage } from '../../../../shared/utils/api-error';
+import { Avisos } from '../../../../shared/ui/aviso/aviso';
 import { LoginRequest, SinAccesoAlPortalError } from '../../models/auth.model';
+
+/** El aviso de login exitoso dura menos que el resto: solo hay que confirmar y salir. */
+const DURACION_AVISO_LOGIN_MS = 3000;
 
 /** HU-B-001: inicio de sesión del portal cliente (hija de auth-layout). */
 @Component({
   selector: 'app-auth-login',
-  imports: [AuthLoginForm, RouterLink],
+  imports: [AuthLoginForm],
   host: { class: 'block w-full max-w-[512px] my-auto animate-fade-up' },
   templateUrl: './auth-login.html',
 })
 export class AuthLogin {
   private readonly api = inject(AuthApi);
   private readonly router = inject(Router);
+  private readonly avisos = inject(Avisos);
 
-  /** HU-B-002 (RF-B10): llega desde el registro con `?registrado=1`. */
-  private readonly query = inject(ActivatedRoute).snapshot.queryParamMap;
-  protected readonly recienRegistrado = this.query.get('registrado') === '1';
-  /** HU-B-003 (RF-B13): llega tras cambiar la contraseña con `?restablecida=1`. */
-  protected readonly contrasenaRestablecida = this.query.get('restablecida') === '1';
   protected readonly enviando = signal(false);
-  protected readonly error = signal<string | null>(null);
-  /** HU-A-005: el backend responde 403 si el correo del cliente no está verificado. */
-  protected readonly sinVerificar = signal(false);
-  /** Si el cliente entró con su correo, se lleva prellenado a pedir otro enlace. */
-  protected readonly emailSugerido = signal<string | null>(null);
+
+  constructor() {
+    // Fuera de un modal el toast va siempre, aunque la vista no se cierre.
+    const query = inject(ActivatedRoute).snapshot.queryParamMap;
+    /** HU-B-002 (RF-B10): llega desde el registro con `?registrado=1`. */
+    if (query.get('registrado') === '1') {
+      this.avisos.mostrar(
+        'Tu cuenta fue creada',
+        'Te enviamos un correo de verificación: debes verificar tu email antes de tu primer ingreso.',
+        'success',
+        { etiqueta: '¿No te llegó? Reenviar', ruta: '/auth/reenviar-verificacion' },
+      );
+    }
+    /** HU-B-003 (RF-B13): llega tras cambiar la contraseña con `?restablecida=1`. */
+    if (query.get('restablecida') === '1') {
+      this.avisos.mostrar(
+        'Tu contraseña se cambió correctamente',
+        'Inicia sesión con tu nueva contraseña.',
+        'success',
+      );
+    }
+  }
 
   protected onLogin(credentials: LoginRequest): void {
     this.enviando.set(true);
-    this.error.set(null);
-    this.sinVerificar.set(false);
     this.api.login(credentials).subscribe({
       next: () => {
         this.enviando.set(false);
-        void this.router.navigate(['/catalogo']);
+        this.avisos.mostrar(
+          'Inicio de sesión exitoso',
+          `Bienvenido, ${credentials.identificador}.`,
+          'success',
+          undefined,
+          DURACION_AVISO_LOGIN_MS,
+        );
+        // Navega justo cuando el toast se autocierra, no antes: que de tiempo a leerlo.
+        setTimeout(() => void this.router.navigate(['/catalogo']), DURACION_AVISO_LOGIN_MS);
       },
       error: (err: unknown) => {
         this.enviando.set(false);
+        /** HU-A-005: el backend responde 403 si el correo del cliente no está verificado. */
         const sinVerificar = err instanceof HttpErrorResponse && err.status === 403;
-        this.sinVerificar.set(sinVerificar);
-        this.emailSugerido.set(
-          sinVerificar && credentials.identificador.includes('@')
-            ? credentials.identificador
-            : null,
-        );
-        this.error.set(
+        const mensaje =
           err instanceof SinAccesoAlPortalError
             ? err.message
             : apiErrorMessage(
                 err,
                 'No pudimos iniciar sesión. Verifica tus datos e inténtalo de nuevo.',
-              ),
+              );
+        this.avisos.mostrar(
+          mensaje,
+          undefined,
+          'error',
+          sinVerificar
+            ? {
+                etiqueta: 'Reenviar correo de verificación',
+                ruta: '/auth/reenviar-verificacion',
+                // Si entró con su correo, se lo lleva prellenado a pedir otro enlace.
+                ...(credentials.identificador.includes('@')
+                  ? { queryParams: { email: credentials.identificador } }
+                  : {}),
+              }
+            : undefined,
         );
       },
     });
