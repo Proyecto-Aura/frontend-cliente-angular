@@ -1,5 +1,6 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
+import { Alert } from '../../../../shared/ui/alert/alert';
 import { Icon } from '../../../../shared/ui/icon/icon';
 import {
   COLOR_ESTADO_CLIENTE,
@@ -12,7 +13,7 @@ import { esPedidoElegible, pedidoParaReembolso } from '../../models/solicitud-fo
 import { CuentaSolicitudEstado } from '../cuenta-solicitud-estado/cuenta-solicitud-estado';
 
 @Component({
-  imports: [CurrencyPipe, DatePipe, Icon, CuentaSolicitudEstado],
+  imports: [CurrencyPipe, DatePipe, Icon, Alert, CuentaSolicitudEstado],
   selector: 'app-cuenta-pedido-card',
   templateUrl: './cuenta-pedido-card.html',
 })

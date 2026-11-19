@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 
 import { CuentaDialogo } from '../cuenta-dialogo/cuenta-dialogo';
+import { Alert } from '../../../../shared/ui/alert/alert';
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { SolicitudDetalle } from '../../models/solicitud-detalle.model';
 import { CuentaSolicitudEstado } from '../cuenta-solicitud-estado/cuenta-solicitud-estado';
@@ -31,7 +32,7 @@ const formatearFecha = (fecha: string): string => {
 };
 
 @Component({
-  imports: [Icon, CuentaSolicitudEstado, CuentaDialogo],
+  imports: [Icon, Alert, CuentaSolicitudEstado, CuentaDialogo],
   selector: 'app-cuenta-solicitud-detalle',
   templateUrl: './cuenta-solicitud-detalle.html',
 })
@@ -44,7 +45,12 @@ export class CuentaSolicitudDetalle {
   private readonly documento = inject(DOCUMENT);
   private readonly botonCerrar = viewChild<ElementRef<HTMLButtonElement>>('botonCerrar');
   private readonly estadoCarga = viewChild<ElementRef<HTMLElement>>('estadoCarga');
-  private readonly errorCarga = viewChild<ElementRef<HTMLElement>>('errorCarga');
+  // `#errorCarga` está en `<app-alert>`: sin `read: ElementRef` traería la
+  // instancia del componente, no el elemento nativo que hay que enfocar.
+  private readonly errorCarga = viewChild<ElementRef<HTMLElement>, ElementRef<HTMLElement>>(
+    'errorCarga',
+    { read: ElementRef },
+  );
   protected readonly titulo = computed(() => {
     const solicitud = this.solicitud();
     return solicitud ? `Solicitud ${solicitud.codigo}` : 'Detalle de solicitud';

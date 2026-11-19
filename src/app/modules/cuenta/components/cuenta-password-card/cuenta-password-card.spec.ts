@@ -3,6 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { environment } from '../../../../../environments/environment';
+import { Avisos } from '../../../../shared/ui/aviso/aviso';
 import { CuentaPasswordCard } from './cuenta-password-card';
 
 describe('CuentaPasswordCard (HU-B-017, RF-B45)', () => {
@@ -97,9 +98,9 @@ describe('CuentaPasswordCard (HU-B-017, RF-B45)', () => {
     req.flush({ message: 'Contraseña actualizada' });
     fixture.detectChanges();
 
-    expect(raiz().querySelector('[role="status"]')!.textContent).toContain(
-      'Tu contraseña se actualizó.',
-    );
+    const aviso = TestBed.inject(Avisos).actual();
+    expect(aviso?.titulo).toBe('Tu contraseña se actualizó');
+    expect(aviso?.tono).toBe('success');
     expect(campo('pw-actual').value).toBe('');
     expect(campo('pw-nueva').value).toBe('');
   });
@@ -126,13 +127,13 @@ describe('CuentaPasswordCard (HU-B-017, RF-B45)', () => {
     expect(raiz().querySelector('#pw-actual-error')!.textContent).toContain(
       'La contraseña actual no es correcta',
     );
-    expect(raiz().querySelector('[role="alert"]')).toBeNull();
+    expect(TestBed.inject(Avisos).actual()).toBeNull();
 
     escribir('pw-actual', 'Actual1234');
     expect(raiz().querySelector('#pw-actual-error')).toBeNull();
   });
 
-  it('shows other server errors in the form', () => {
+  it('shows other server errors as a toast', () => {
     llenar();
     enviar();
     httpMock
@@ -140,7 +141,9 @@ describe('CuentaPasswordCard (HU-B-017, RF-B45)', () => {
       .flush({ message: 'Error interno' }, { status: 500, statusText: 'Server Error' });
     fixture.detectChanges();
 
-    expect(raiz().querySelector('[role="alert"]')!.textContent).toContain('Error interno');
+    const aviso = TestBed.inject(Avisos).actual();
+    expect(aviso?.titulo).toBe('Error interno');
+    expect(aviso?.tono).toBe('error');
     expect(boton().textContent).toContain('Cambiar contraseña');
   });
 });

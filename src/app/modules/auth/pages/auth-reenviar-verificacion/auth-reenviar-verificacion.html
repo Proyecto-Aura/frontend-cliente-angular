@@ -11,25 +11,6 @@
   </div>
 
   <form [formGroup]="form" class="flex flex-col gap-8" novalidate (ngSubmit)="enviar()">
-    @if (enviado(); as mensaje) {
-      <div
-        class="animate-fade-in flex flex-col gap-1 rounded-lg bg-success-50 px-4 py-3 text-[13px] text-success-700"
-        role="status"
-      >
-        <strong class="font-semibold">{{ mensaje }}.</strong>
-        <span>Revisa tu bandeja de entrada y la carpeta de spam. El enlace vence en 24 horas.</span>
-      </div>
-    }
-
-    @if (error()) {
-      <p
-        class="animate-fade-in rounded-lg bg-brand-50 px-4 py-3 text-[13px] text-brand-700"
-        role="alert"
-      >
-        {{ error() }}
-      </p>
-    }
-
     <app-auth-input
       label="Correo electrónico"
       type="email"

@@ -1,0 +1,158 @@
+<!-- Cabecera -->
+<section
+  class="relative overflow-hidden bg-linear-to-br from-brand-700 via-brand-600 to-brand-800 text-white"
+>
+  <span
+    aria-hidden="true"
+    class="pointer-events-none absolute -top-[70px] -right-[90px] size-[380px] rounded-full bg-white/10"
+  ></span>
+  <div
+    class="relative mx-auto max-w-[1440px] px-[clamp(16px,3vw,40px)] py-[clamp(36px,4.5vw,56px)]"
+  >
+    <p class="text-[10.5px] font-extrabold tracking-[0.08em]">ESTAMOS PARA AYUDARTE</p>
+    <h1
+      class="mt-3 mb-2 font-heading text-[clamp(32px,3.6vw,46px)] leading-[1.12] font-extrabold tracking-[-0.01em]"
+    >
+      Contáctanos
+    </h1>
+    <p class="text-sm">
+      ¿Quieres conocer nuestros productos o hacer una consulta? Elige la forma de contacto que
+      prefieras.
+    </p>
+  </div>
+</section>
+
+<div class="mx-auto flex max-w-[1440px] flex-col gap-6 px-[clamp(16px,3vw,40px)] pt-8 pb-16">
+  <!-- Canales -->
+  <div class="grid gap-6 md:grid-cols-3">
+    @for (canal of canales; track canal.titulo) {
+      @let e = estilo(canal);
+      <section
+        [attr.aria-labelledby]="'canal-' + $index"
+        [class]="e.tarjeta"
+        class="flex flex-col rounded-[22px] p-[clamp(24px,3vw,40px)]"
+      >
+        <span
+          [class]="e.icono"
+          class="flex size-14 items-center justify-center rounded-2xl text-brand-600"
+        >
+          <app-icon [name]="canal.icono" [size]="24" />
+        </span>
+
+        <p [class]="e.etiqueta" class="mt-7 text-xs font-extrabold tracking-[0.18em]">
+          {{ canal.etiqueta }}
+        </p>
+        <h2
+          [id]="'canal-' + $index"
+          [class]="e.titulo"
+          class="mt-2 font-heading text-[28px] leading-tight font-semibold"
+        >
+          {{ canal.titulo }}
+        </h2>
+        <p [class]="e.descripcion" class="mt-3 text-[15px] leading-relaxed">
+          {{ canal.descripcion }}
+        </p>
+
+        <ul class="mt-6 flex flex-col gap-1">
+          @for (enlace of canal.enlaces; track enlace.texto) {
+            <li>
+              @if (enlace.href) {
+                <a
+                  [href]="enlace.href"
+                  [attr.target]="enlace.externo ? '_blank' : null"
+                  [attr.rel]="enlace.externo ? 'noopener noreferrer' : null"
+                  [class]="e.enlace"
+                  class="flex items-center justify-between gap-3 rounded-md py-2.5 text-[15px] font-extrabold break-all transition-colors"
+                >
+                  {{ enlace.texto }}
+                  <svg
+                    aria-hidden="true"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="shrink-0"
+                  >
+                    <path d="M7 7h10v10" />
+                    <path d="M7 17 17 7" />
+                  </svg>
+                </a>
+              } @else {
+                <span [class]="e.textoPlano" class="block py-2.5 text-[15px] font-extrabold">
+                  {{ enlace.texto }}
+                </span>
+              }
+            </li>
+          }
+        </ul>
+      </section>
+    }
+  </div>
+
+  <!-- Ubicación -->
+  <section
+    aria-labelledby="contacto-ubicacion"
+    class="grid gap-6 rounded-[28px] border border-line bg-surface p-[clamp(12px,1.6vw,24px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]"
+  >
+    <div
+      class="flex flex-col items-start gap-6 rounded-[22px] bg-brand-600 p-[clamp(24px,3vw,48px)] text-white"
+    >
+      <div>
+        <p class="flex items-center gap-2 text-xs font-extrabold tracking-[0.18em] text-[#fff3a3]">
+          <app-icon name="map-pin" [size]="16" />
+          ENCUÉNTRANOS
+        </p>
+        <h2
+          id="contacto-ubicacion"
+          class="mt-2 font-heading text-[clamp(26px,3vw,36px)] leading-tight font-semibold"
+        >
+          Nuestra ubicación
+        </h2>
+        <address class="mt-3 text-[15px] leading-relaxed not-italic">
+          Industrias Alimentarias Vera S.A.C.<br />
+          Mz. P Lt. 24 Int. 2 C.V. Santa Martha de Lima<br />
+          San Juan de Lurigancho, Lima 15400, Perú
+        </address>
+      </div>
+      <a
+        [href]="mapa"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="mt-auto inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-white px-6 font-heading text-sm font-bold text-brand-600 transition-colors hover:bg-[#fff3a3]"
+      >
+        Ver en Google Maps
+        <svg
+          aria-hidden="true"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M7 7h10v10" />
+          <path d="M7 17 17 7" />
+        </svg>
+      </a>
+    </div>
+
+    <!-- Mapa insertado de Google Maps (gratuito, sin API key). El src es fijo a propósito:
+         como atributo estático Angular no lo sanea y no hace falta bypassSecurityTrust*. -->
+    <div class="min-h-[320px] overflow-hidden rounded-[22px] bg-canvas lg:min-h-[420px]">
+      <iframe
+        title="Mapa con la ubicación de Industrias Alimentarias Vera S.A.C."
+        src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3903.118613552618!2d-76.98235464911603!3d-11.966288799999994!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105c53f31629c17%3A0xeb9d6c745a26033b!2sINDUSTRIAS%20ALIMENTARIAS%20VERA%20S.A.C.!5e0!3m2!1ses!2spe!4v1789570413973!5m2!1ses!2spe"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        allowfullscreen
+        class="block size-full min-h-[320px] border-0 lg:min-h-[420px]"
+      ></iframe>
+    </div>
+  </section>
+</div>

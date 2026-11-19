@@ -3,12 +3,14 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { environment } from '../../../../../environments/environment';
+import { Avisos } from '../../../../shared/ui/aviso/aviso';
 import { PerfilCliente } from '../../models/perfil.model';
 import { PerfilStore } from '../../services/perfil-store';
 import { CuentaPerfil } from './cuenta-perfil';
 
 describe('CuentaPerfil (HU-B-015 RF-B43, HU-B-016 RF-B44)', () => {
   const PERFIL_URL = `${environment.apiUrl}/perfil`;
+  const DEPARTAMENTOS_URL = `${environment.apiUrl}/ubigeo/departamentos`;
   const PERFIL: PerfilCliente = {
     nombres: 'Rosa Elena',
     apellido_paterno: 'Quispe',
@@ -51,6 +53,8 @@ describe('CuentaPerfil (HU-B-015 RF-B43, HU-B-016 RF-B44)', () => {
     fixture.detectChanges();
     httpMock.expectOne(PERFIL_URL).flush(PERFIL);
     fixture.detectChanges();
+    // La tarjeta de dirección (HU-B-018) pide el catálogo apenas aparece.
+    httpMock.expectOne(DEPARTAMENTOS_URL).flush([]);
   });
 
   afterEach(() => httpMock.verify());
@@ -63,6 +67,11 @@ describe('CuentaPerfil (HU-B-015 RF-B43, HU-B-016 RF-B44)', () => {
     expect(boton('Descartar')).toBeUndefined();
     guardar();
     httpMock.expectNone(PERFIL_URL);
+  });
+
+  it('shows the delivery address card below the personal data (HU-B-018)', () => {
+    expect(raiz().querySelector('app-cuenta-direccion-card')).not.toBeNull();
+    expect(campo('dir-direccion')).not.toBeNull();
   });
 
   it('offers changing the password below the personal data (HU-B-017)', () => {
@@ -82,9 +91,9 @@ describe('CuentaPerfil (HU-B-015 RF-B43, HU-B-016 RF-B44)', () => {
     fixture.detectChanges();
 
     expect(TestBed.inject(PerfilStore).nombreVisible()).toBe('Rosa María Quispe');
-    expect(fixture.nativeElement.querySelector('[role="status"]')?.textContent).toContain(
-      'Tus datos personales se guardaron.',
-    );
+    const aviso = TestBed.inject(Avisos).actual();
+    expect(aviso?.titulo).toBe('Tus datos personales se guardaron');
+    expect(aviso?.tono).toBe('success');
     expect(boton('Descartar')).toBeUndefined();
   });
 
@@ -101,7 +110,7 @@ describe('CuentaPerfil (HU-B-015 RF-B43, HU-B-016 RF-B44)', () => {
     const aviso = raiz().querySelector('[role="status"]')!.textContent!.replace(/\s+/g, ' ');
     expect(aviso).toContain('Te enviamos un enlace a rosa.nueva@francos.test');
     expect(aviso).toContain('Tu correo actual sigue activo hasta que lo confirmes');
-    expect(raiz().textContent).not.toContain('Tus datos personales se guardaron.');
+    expect(TestBed.inject(Avisos).actual()).toBeNull();
     expect(campo('pf-correo').value).toBe('rosa@francos.test');
     expect(TestBed.inject(PerfilStore).perfil()).toEqual(PERFIL);
   });
@@ -116,9 +125,8 @@ describe('CuentaPerfil (HU-B-015 RF-B43, HU-B-016 RF-B44)', () => {
       .flush({ ...PERFIL, nombres: 'Rosa María', cambio_email_pendiente: true });
     fixture.detectChanges();
 
-    const avisos = [...raiz().querySelectorAll('[role="status"]')].map((e) => e.textContent!);
-    expect(avisos.some((t) => t.includes('Tus datos personales se guardaron.'))).toBe(true);
-    expect(avisos.some((t) => t.includes('Te enviamos un enlace'))).toBe(true);
+    expect(TestBed.inject(Avisos).actual()?.titulo).toBe('Tus datos personales se guardaron');
+    expect(raiz().textContent).toContain('Te enviamos un enlace');
   });
 
   it('does not announce a pending email when only the name changed', () => {

@@ -10,6 +10,7 @@ import {
   Validators,
 } from '@angular/forms';
 
+import { Avisos } from '../../../../shared/ui/aviso/aviso';
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { apiErrorMessage } from '../../../../shared/utils/api-error';
 import { ContrasenaApi } from '../../services/contrasena-api';
@@ -43,6 +44,7 @@ function distintaDeLaActual(grupo: AbstractControl): ValidationErrors | null {
 })
 export class CuentaPasswordCard {
   private readonly api = inject(ContrasenaApi);
+  private readonly avisos = inject(Avisos);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly minimo = CONTRASENA_MINIMA;
@@ -67,17 +69,10 @@ export class CuentaPasswordCard {
 
   protected readonly mostrar = signal(false);
   protected readonly guardando = signal(false);
-  protected readonly guardado = signal(false);
-  protected readonly errorGuardar = signal<string | null>(null);
   /** El servidor dijo que la contraseña actual no es correcta. */
   protected readonly actualIncorrecta = signal(false);
 
   constructor() {
-    // Al escribir de nuevo, el aviso anterior ya no aplica.
-    this.form.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
-      if (this.form.dirty) this.guardado.set(false);
-      this.errorGuardar.set(null);
-    });
     this.form.controls.actual.valueChanges
       .pipe(takeUntilDestroyed())
       .subscribe(() => this.actualIncorrecta.set(false));
@@ -89,7 +84,6 @@ export class CuentaPasswordCard {
 
     const { actual, nueva, confirmar } = this.form.getRawValue();
     this.guardando.set(true);
-    this.errorGuardar.set(null);
     this.api
       .cambiar({
         contrasena_actual: actual,
@@ -102,7 +96,11 @@ export class CuentaPasswordCard {
           this.guardando.set(false);
           this.form.reset();
           this.mostrar.set(false);
-          this.guardado.set(true);
+          this.avisos.mostrar(
+            'Tu contraseña se actualizó',
+            'Cerramos tus otras sesiones abiertas.',
+            'success',
+          );
         },
         error: (err: unknown) => {
           this.guardando.set(false);
@@ -117,7 +115,7 @@ export class CuentaPasswordCard {
           ) {
             this.actualIncorrecta.set(true);
           } else {
-            this.errorGuardar.set(mensaje);
+            this.avisos.mostrar(mensaje, undefined, 'error');
           }
         },
       });

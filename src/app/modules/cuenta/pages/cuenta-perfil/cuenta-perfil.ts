@@ -10,7 +10,10 @@ import {
   Validators,
 } from '@angular/forms';
 
+import { Alert } from '../../../../shared/ui/alert/alert';
+import { Avisos } from '../../../../shared/ui/aviso/aviso';
 import { Icon } from '../../../../shared/ui/icon/icon';
+import { CuentaDireccionCard } from '../../components/cuenta-direccion-card/cuenta-direccion-card';
 import { CuentaPasswordCard } from '../../components/cuenta-password-card/cuenta-password-card';
 import { apiErrorMessage } from '../../../../shared/utils/api-error';
 import { ActualizarPerfil, PerfilCliente } from '../../models/perfil.model';
@@ -26,17 +29,18 @@ function telefonoValido(control: AbstractControl<string>): ValidationErrors | nu
 /**
  * HU-B-015 (RF-B43): "Mi Perfil", donde el cliente edita su nombre, email y
  * teléfono. HU-B-016 (RF-B44): el email nuevo no se aplica hasta que el
- * cliente abre el enlace que le llega a esa dirección. Debajo, la tarjeta para
- * cambiar la contraseña (HU-B-017).
+ * cliente abre el enlace que le llega a esa dirección. Debajo, la tarjeta de
+ * dirección de entrega (HU-B-018) y la de cambiar la contraseña (HU-B-017).
  */
 @Component({
   selector: 'app-cuenta-perfil',
-  imports: [ReactiveFormsModule, Icon, CuentaPasswordCard],
+  imports: [ReactiveFormsModule, Icon, Alert, CuentaDireccionCard, CuentaPasswordCard],
   host: { class: 'flex flex-col gap-[18px]' },
   templateUrl: './cuenta-perfil.html',
 })
 export class CuentaPerfil {
   private readonly store = inject(PerfilStore);
+  private readonly avisos = inject(Avisos);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly form = new FormGroup({
@@ -54,8 +58,6 @@ export class CuentaPerfil {
   protected readonly cargando = signal(true);
   protected readonly errorCarga = signal<string | null>(null);
   protected readonly guardando = signal(false);
-  protected readonly errorGuardar = signal<string | null>(null);
-  protected readonly guardado = signal(false);
   /** El backend avisa que el correo ya es de otra cuenta (409). */
   protected readonly correoEnUso = signal<string | null>(null);
   /** HU-B-016: correo nuevo al que se envió el enlace para confirmarlo. */
@@ -95,9 +97,7 @@ export class CuentaPerfil {
 
     const cambios = this.cambios();
     this.guardando.set(true);
-    this.guardado.set(false);
     this.correoPendiente.set(null);
-    this.errorGuardar.set(null);
     this.correoEnUso.set(null);
     this.store
       .actualizar(cambios)
@@ -111,7 +111,9 @@ export class CuentaPerfil {
             pidioCorreo && cambio_email_pendiente ? cambios.email!.toLowerCase() : null,
           );
           // Si solo cambió el correo, el aviso del enlace basta.
-          this.guardado.set(!pidioCorreo || Object.keys(cambios).length > 1);
+          if (!pidioCorreo || Object.keys(cambios).length > 1) {
+            this.avisos.mostrar('Tus datos personales se guardaron', undefined, 'success');
+          }
         },
         error: (err: unknown) => {
           this.guardando.set(false);
@@ -119,7 +121,7 @@ export class CuentaPerfil {
           if (err instanceof HttpErrorResponse && err.status === 409) {
             this.correoEnUso.set(mensaje);
           } else {
-            this.errorGuardar.set(mensaje);
+            this.avisos.mostrar(mensaje, undefined, 'error');
           }
         },
       });
@@ -156,7 +158,6 @@ export class CuentaPerfil {
     );
     this.form.controls.telefono.updateValueAndValidity();
     this.correoEnUso.set(null);
-    this.errorGuardar.set(null);
   }
 
   /** Solo lo que cambió, ya sin espacios sobrantes. */

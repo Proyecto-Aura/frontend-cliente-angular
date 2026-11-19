@@ -12,6 +12,7 @@ import {
 } from '@angular/core';
 import { FormField, disabled, form, required, validate } from '@angular/forms/signals';
 
+import { Alert } from '../../../../shared/ui/alert/alert';
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { CuentaDialogo } from '../cuenta-dialogo/cuenta-dialogo';
 import {
@@ -32,7 +33,7 @@ const fecha = new Intl.DateTimeFormat('es-PE', {
 });
 
 @Component({
-  imports: [FormField, Icon, CuentaDialogo],
+  imports: [FormField, Icon, Alert, CuentaDialogo],
   selector: 'app-cuenta-solicitud-formulario',
   templateUrl: './cuenta-solicitud-formulario.html',
 })
@@ -55,7 +56,12 @@ export class CuentaSolicitudFormulario {
 
   private readonly elemento = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly selectorArchivo = viewChild<ElementRef<HTMLInputElement>>('selectorArchivo');
-  private readonly errorEnvioNodo = viewChild<ElementRef<HTMLElement>>('errorEnvioNodo');
+  // `#errorEnvioNodo` ahora está en `<app-alert>`: sin `read: ElementRef` traería
+  // la instancia del componente, no el elemento nativo que hay que enfocar.
+  private readonly errorEnvioNodo = viewChild<ElementRef<HTMLElement>, ElementRef<HTMLElement>>(
+    'errorEnvioNodo',
+    { read: ElementRef },
+  );
   private readonly estadoEnvioNodo = viewChild<ElementRef<HTMLElement>>('estadoEnvioNodo');
   protected readonly motivos = MOTIVOS_SOLICITUD;
   protected readonly intentado = signal(false);

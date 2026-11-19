@@ -1,5 +1,6 @@
 import { Component, input, output } from '@angular/core';
 
+import { Alert } from '../../../../shared/ui/alert/alert';
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { CuentaSolicitudCard } from '../../components/cuenta-solicitud-card/cuenta-solicitud-card';
 import { CuentaSolicitudEstado } from '../../components/cuenta-solicitud-estado/cuenta-solicitud-estado';
@@ -7,7 +8,7 @@ import { ESTADOS_SOLICITUD, SolicitudVista } from '../../models/solicitud-vista.
 
 @Component({
   selector: 'app-cuenta-solicitudes',
-  imports: [Icon, CuentaSolicitudCard, CuentaSolicitudEstado],
+  imports: [Icon, Alert, CuentaSolicitudCard, CuentaSolicitudEstado],
   host: { class: 'block' },
   templateUrl: './cuenta-solicitudes.html',
 })

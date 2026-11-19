@@ -112,6 +112,7 @@ describe('PedidosStore', () => {
     expect(store.cancelando()).toBeNull();
     expect(TestBed.inject(Avisos).actual()?.titulo).toBe('No se pudo cancelar');
     expect(TestBed.inject(Avisos).actual()?.detalle).toContain('ya no se puede cancelar');
+    expect(TestBed.inject(Avisos).actual()?.tono).toBe('error');
 
     responderLista();
     http.expectOne(`${url}/21`).flush({ ...PEDIDO_DETALLE_PRUEBA, estado: 'en_preparacion' });

@@ -1,0 +1,144 @@
+<div class="grain"></div>
+
+<!-- Defs compartidos -->
+<svg width="0" height="0" aria-hidden="true" style="position: absolute">
+  <defs>
+    <radialGradient id="chipGrad" cx="38%" cy="32%" r="75%">
+      <stop offset="0%" stop-color="#ffe6a0" />
+      <stop offset="52%" stop-color="#f0ad3c" />
+      <stop offset="100%" stop-color="#c9791b" />
+    </radialGradient>
+    <linearGradient id="plastic" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.34" />
+      <stop offset="45%" stop-color="#e7eef4" stop-opacity="0.22" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.14" />
+    </linearGradient>
+    <linearGradient id="glare" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0" />
+      <stop offset="48%" stop-color="#ffffff" stop-opacity="0.35" />
+      <stop offset="56%" stop-color="#ffffff" stop-opacity="0.05" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+    </linearGradient>
+    <g id="chipShape">
+      <path d="M6 21C1 11 11 2 25 3c9 .6 14-3 24-1 11 2 9 15 7 24-2 8-4 16-15 20-10 4-22 2-29-6C5 33 10 30 6 21Z"
+        fill="url(#chipGrad)" stroke="#b9781a" stroke-width="1" />
+      <circle cx="22" cy="19" r="2.2" fill="#00000022" />
+      <circle cx="38" cy="30" r="2.8" fill="#00000022" />
+      <circle cx="30" cy="38" r="1.6" fill="#00000022" />
+    </g>
+  </defs>
+</svg>
+
+<!-- ══════════ ACTO 1 · la bolsa ══════════ -->
+<section class="act">
+  <div class="stage">
+    <div class="stage-bg"></div>
+
+    <h1 class="wordmark">FRANCO'S</h1>
+
+    <div class="bag-scene">
+      <div class="bag">
+        <img class="bag-svg" ngSrc="/nosotros/bolsa-papas.png" alt="Bolsa de papas Franco's"
+          width="1254" height="1254" priority />
+        <img class="bag-torn" ngSrc="/nosotros/bolsa-rota.png" alt="Bolsa de papas Franco's abierta"
+          width="1024" height="1536" priority />
+      </div>
+    </div>
+
+    <div class="chips" aria-hidden="true">
+      @for (c of chips; track $index) {
+        <span class="chip">
+          <img ngSrc="/nosotros/papita.png" alt="" width="1536" height="1024" />
+        </span>
+      }
+    </div>
+
+    <div class="story">
+      <h2>
+        <span class="line"><span class="rise">Del campo peruano</span></span>
+        <span class="line"><span class="rise">a tu mesa</span></span>
+      </h2>
+      <p>
+        @for (linea of historia; track $index) {
+          <span class="line"><span class="rise">{{ linea }}</span></span>
+        }
+      </p>
+    </div>
+
+    <p class="act-title">Cada papa, un valor.</p>
+  </div>
+</section>
+
+<!-- ══════════ Valores ══════════ -->
+<section class="scene scene-valores">
+  <p class="eyebrow">Lo que nos mueve</p>
+  <h2>Nuestros valores</h2>
+  <div class="valores">
+    @for (v of valores; track v.title) {
+      <div class="valor">
+        <span class="valor-ico" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            @switch (v.icon) {
+              @case ('hoja') {
+                <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" />
+                <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
+              }
+              @case ('balanza') {
+                <path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" />
+                <path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" />
+                <path d="M7 21h10" />
+                <path d="M12 3v18" />
+                <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2" />
+              }
+              @case ('medalla') {
+                <path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526" />
+                <circle cx="12" cy="8" r="6" />
+              }
+            }
+          </svg>
+        </span>
+        <h3>{{ v.title }}</h3>
+        <p>{{ v.desc }}</p>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ══════════ Cifras ══════════ -->
+<section class="scene scene-stats">
+  <p class="eyebrow">En números</p>
+  <h2>14 años haciendo Perú</h2>
+  <div class="stats">
+    @for (s of stats; track s.label) {
+      <div class="stat">
+        <div class="num"><span class="v" [attr.data-count]="s.count">0</span>{{ s.suffix }}</div>
+        <div class="cap">{{ s.label }}</div>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ══════════ Equipo ══════════ -->
+<section class="scene scene-equipo">
+  <p class="eyebrow">Quiénes somos</p>
+  <h2>El equipo Franco's</h2>
+  <div class="equipo">
+    @for (m of equipo; track m.name) {
+      <div class="miembro">
+        <div class="ini" [style.background]="m.bg" [style.color]="m.fg">{{ m.ini }}</div>
+        <div class="name">{{ m.name }}</div>
+        <div class="role">{{ m.role }}</div>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ══════════ Cierre ══════════ -->
+<section class="scene-cierre">
+  <div class="lockup">Del campo<br />a tu mesa</div>
+  <p class="sub">Snacks naturales del Perú · desde 2010</p>
+  <a class="cta" routerLink="/catalogo">
+    Ver catálogo
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
+  </a>
+</section>

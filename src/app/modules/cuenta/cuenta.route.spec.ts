@@ -110,6 +110,8 @@ describe('CUENTA_ROUTES (HU-B-014)', () => {
     const harness = await RouterTestingHarness.create('/mi-cuenta/perfil');
     responderPerfil();
     await harness.fixture.whenStable();
+    // La tarjeta de dirección (HU-B-018) pide el catálogo al aparecer el perfil.
+    for (const req of httpMock.match(`${environment.apiUrl}/ubigeo/departamentos`)) req.flush([]);
     expect(harness.routeNativeElement?.querySelector('h1')?.textContent?.trim()).toBe('Mi Perfil');
 
     session.clear();

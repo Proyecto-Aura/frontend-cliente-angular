@@ -33,8 +33,6 @@ export class CheckoutComprobante {
   readonly razonSocial = model('');
   /** Al intentar pagar se muestran todos los errores, aunque el cliente no haya pasado por los campos. */
   readonly mostrarErrores = input(false);
-  /** Motivo por el que el servidor no aceptó los datos de la factura. */
-  readonly errorServidor = input<string | null>(null);
   /** Mientras se valida o se paga no se puede cambiar. */
   readonly bloqueado = input(false);
 

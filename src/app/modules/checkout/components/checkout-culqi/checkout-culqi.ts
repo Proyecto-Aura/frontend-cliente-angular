@@ -1,5 +1,6 @@
 import { Component, ElementRef, inject, input, output, signal } from '@angular/core';
 
+import { Alert } from '../../../../shared/ui/alert/alert';
 import { Icon, IconName } from '../../../../shared/ui/icon/icon';
 import { formatearPrecio } from '../../../catalogo/utils/catalogo.utils';
 import { MedioPago } from '../../models/checkout.model';
@@ -21,7 +22,7 @@ interface OpcionPago {
  */
 @Component({
   selector: 'app-checkout-culqi',
-  imports: [Icon],
+  imports: [Icon, Alert],
   host: {
     class: 'fixed inset-0 z-50 flex items-center justify-center bg-[rgba(33,33,33,0.45)] p-4',
     '(click)': 'alClicFuera($event)',

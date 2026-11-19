@@ -1,0 +1,36 @@
+<span
+  [class]="'inline-flex size-9 flex-none items-center justify-center rounded-md text-white ' + claseInsignia()"
+>
+  <app-icon [name]="icono()" [size]="18" />
+</span>
+
+<div class="flex min-w-0 flex-1 flex-col gap-1">
+  <p [class]="'m-0 text-[11px] font-semibold tracking-wide uppercase ' + claseTexto()">
+    {{ etiqueta() }}
+  </p>
+  <p class="m-0 text-[14px] font-semibold text-foreground">{{ title() }}</p>
+  @if (description()) {
+    <p class="m-0 text-[13px] text-muted-foreground">{{ description() }}</p>
+  }
+  <ng-content />
+  @if (linkLabel()) {
+    <button
+      type="button"
+      [class]="'mt-1 w-fit cursor-pointer text-[13px] font-semibold underline decoration-2 underline-offset-2 ' + claseTexto()"
+      (click)="linkClick.emit()"
+    >
+      {{ linkLabel() }} →
+    </button>
+  }
+</div>
+
+@if (closable()) {
+  <button
+    type="button"
+    (click)="closed.emit()"
+    aria-label="Cerrar alerta"
+    class="h-fit shrink-0 opacity-70 transition-opacity hover:opacity-100"
+  >
+    <app-icon name="x" [size]="16" />
+  </button>
+}

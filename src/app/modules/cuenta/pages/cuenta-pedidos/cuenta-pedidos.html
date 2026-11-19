@@ -20,19 +20,15 @@
         Cargando pedidos…
       </p>
     } @else if (pedidos.error(); as error) {
-      <div
-        role="alert"
-        class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-destructive/50 bg-surface p-5"
-      >
-        <p class="m-0 text-sm text-danger-700">{{ error }}</p>
+      <app-alert tone="error" [title]="error" [closable]="false">
         <button
           type="button"
-          class="min-h-9 cursor-pointer rounded-md border border-border px-3 text-xs focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          class="mt-2 min-h-9 w-fit cursor-pointer rounded-md border border-border px-3 text-xs focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           (click)="pedidos.cargar()"
         >
           Volver a intentar
         </button>
-      </div>
+      </app-alert>
     } @else {
       <ul aria-label="Mis pedidos" class="m-0 flex list-none flex-col gap-3.5 p-0">
         @for (pedido of pedidos.filas(); track pedido.resumen.id) {

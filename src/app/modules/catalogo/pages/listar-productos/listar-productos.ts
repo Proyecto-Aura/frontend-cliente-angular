@@ -2,6 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
 
+import { Alert } from '../../../../shared/ui/alert/alert';
 import { Icon } from '../../../../shared/ui/icon/icon';
 import { CarritoAgregar } from '../../../carrito/components/carrito-agregar/carrito-agregar';
 import { apiErrorMessage } from '../../../../shared/utils/api-error';
@@ -27,6 +28,7 @@ type Filtro = 'categoria' | 'orden';
   imports: [
     RouterLink,
     Icon,
+    Alert,
     CatalogoFilterDropdown,
     CatalogoProductCard,
     CatalogoProductDetail,
