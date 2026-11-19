@@ -10,6 +10,7 @@ import { CuentaPerfil } from './cuenta-perfil';
 
 describe('CuentaPerfil (HU-B-015 RF-B43, HU-B-016 RF-B44)', () => {
   const PERFIL_URL = `${environment.apiUrl}/perfil`;
+  const DEPARTAMENTOS_URL = `${environment.apiUrl}/ubigeo/departamentos`;
   const PERFIL: PerfilCliente = {
     nombres: 'Rosa Elena',
     apellido_paterno: 'Quispe',
@@ -52,6 +53,8 @@ describe('CuentaPerfil (HU-B-015 RF-B43, HU-B-016 RF-B44)', () => {
     fixture.detectChanges();
     httpMock.expectOne(PERFIL_URL).flush(PERFIL);
     fixture.detectChanges();
+    // La tarjeta de dirección (HU-B-018) pide el catálogo apenas aparece.
+    httpMock.expectOne(DEPARTAMENTOS_URL).flush([]);
   });
 
   afterEach(() => httpMock.verify());
@@ -64,6 +67,11 @@ describe('CuentaPerfil (HU-B-015 RF-B43, HU-B-016 RF-B44)', () => {
     expect(boton('Descartar')).toBeUndefined();
     guardar();
     httpMock.expectNone(PERFIL_URL);
+  });
+
+  it('shows the delivery address card below the personal data (HU-B-018)', () => {
+    expect(raiz().querySelector('app-cuenta-direccion-card')).not.toBeNull();
+    expect(campo('dir-direccion')).not.toBeNull();
   });
 
   it('offers changing the password below the personal data (HU-B-017)', () => {

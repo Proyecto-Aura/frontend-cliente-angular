@@ -1,0 +1,134 @@
+<section
+  class="rounded-xl border border-[#ececec] bg-white px-5 py-[18px]"
+  aria-labelledby="dir-titulo"
+>
+  <div class="flex flex-wrap items-center gap-3">
+    <span
+      class="flex size-[34px] shrink-0 items-center justify-center rounded-full bg-[#fde4e4] text-primary"
+    >
+      <app-icon name="map-pin" [size]="16" />
+    </span>
+    <div class="min-w-[180px] flex-1">
+      <h2 id="dir-titulo" class="m-0 font-heading text-sm font-extrabold text-[#1f1f1f]">
+        Dirección de entrega
+      </h2>
+      <div class="mt-px text-[11px] text-[#8a8a8a]">
+        Es la que te proponemos en tus próximos pedidos.
+      </div>
+    </div>
+  </div>
+
+  <form [formGroup]="form" novalidate (ngSubmit)="guardar()">
+    <div class="mt-4 flex flex-col gap-3.5">
+      <div class="flex flex-col gap-1.5">
+        <label for="dir-direccion" class="text-xs font-bold text-[#1f1f1f]">Dirección</label>
+        <input
+          id="dir-direccion"
+          type="text"
+          formControlName="direccion"
+          autocomplete="street-address"
+          [attr.maxlength]="direccionMaxima"
+          placeholder="Av. Los Girasoles 123, Mz B Lt 4"
+          class="h-9 w-full rounded-lg border bg-white px-3 text-[13px] text-foreground outline-none transition focus:border-primary focus:shadow-[0_0_0_3px_rgba(210,43,43,0.15)]"
+          [class]="error('direccion') ? 'border-destructive' : 'border-border'"
+          [attr.aria-invalid]="!!error('direccion')"
+          [attr.aria-describedby]="error('direccion') ? 'dir-direccion-error' : null"
+        />
+        @if (error('direccion'); as mensaje) {
+          <span id="dir-direccion-error" class="text-[11px] text-destructive">{{ mensaje }}</span>
+        }
+      </div>
+
+      <div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,200px),1fr))] gap-x-6 gap-y-3.5">
+        <div class="flex flex-col gap-1.5">
+          <label for="dir-departamento" class="text-xs font-bold text-[#1f1f1f]">
+            Departamento
+          </label>
+          <select
+            id="dir-departamento"
+            formControlName="departamento_id"
+            class="h-9 w-full rounded-lg border bg-white px-2.5 text-[13px] text-foreground outline-none transition focus:border-primary focus:shadow-[0_0_0_3px_rgba(210,43,43,0.15)]"
+            [class]="error('departamento_id') ? 'border-destructive' : 'border-border'"
+            [attr.aria-invalid]="!!error('departamento_id')"
+          >
+            <option value="">Selecciona</option>
+            @for (item of departamentos(); track item.id) {
+              <option [value]="item.id">{{ item.nombre }}</option>
+            }
+          </select>
+          @if (error('departamento_id'); as mensaje) {
+            <span class="text-[11px] text-destructive">{{ mensaje }}</span>
+          }
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="dir-provincia" class="text-xs font-bold text-[#1f1f1f]">Provincia</label>
+          <select
+            id="dir-provincia"
+            formControlName="provincia_id"
+            class="h-9 w-full rounded-lg border bg-white px-2.5 text-[13px] text-foreground outline-none transition focus:border-primary focus:shadow-[0_0_0_3px_rgba(210,43,43,0.15)]"
+            [class]="error('provincia_id') ? 'border-destructive' : 'border-border'"
+            [attr.aria-invalid]="!!error('provincia_id')"
+          >
+            <option value="">Selecciona</option>
+            @for (item of provincias(); track item.id) {
+              <option [value]="item.id">{{ item.nombre }}</option>
+            }
+          </select>
+          @if (error('provincia_id'); as mensaje) {
+            <span class="text-[11px] text-destructive">{{ mensaje }}</span>
+          }
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="dir-distrito" class="text-xs font-bold text-[#1f1f1f]">Distrito</label>
+          <select
+            id="dir-distrito"
+            formControlName="distrito_id"
+            class="h-9 w-full rounded-lg border bg-white px-2.5 text-[13px] text-foreground outline-none transition focus:border-primary focus:shadow-[0_0_0_3px_rgba(210,43,43,0.15)]"
+            [class]="error('distrito_id') ? 'border-destructive' : 'border-border'"
+            [attr.aria-invalid]="!!error('distrito_id')"
+          >
+            <option value="">Selecciona</option>
+            @for (item of distritos(); track item.id) {
+              <option [value]="item.id">{{ item.nombre }}</option>
+            }
+          </select>
+          @if (error('distrito_id'); as mensaje) {
+            <span class="text-[11px] text-destructive">{{ mensaje }}</span>
+          }
+        </div>
+      </div>
+    </div>
+
+    @if (errorCatalogo(); as mensaje) {
+      <div class="mt-4">
+        <app-alert tone="error" [title]="mensaje" [closable]="false" />
+      </div>
+    }
+
+    <div class="mt-4 flex items-center justify-end gap-3">
+      @if (form.dirty) {
+        <button
+          type="button"
+          class="h-8 cursor-pointer border-0 bg-transparent px-3 text-xs text-[#8a8a8a] hover:text-primary"
+          (click)="descartar()"
+        >
+          Descartar
+        </button>
+      }
+      <button
+        type="submit"
+        class="h-8 rounded-md border-0 px-4 text-xs font-bold whitespace-nowrap text-white transition"
+        [class]="
+          form.dirty && !guardando()
+            ? 'cursor-pointer bg-primary hover:brightness-95'
+            : 'cursor-not-allowed bg-[#e8a3a3]'
+        "
+        [attr.aria-disabled]="!form.dirty || guardando()"
+      >
+        {{ guardando() ? 'Guardando…' : 'Guardar Dirección' }}
+      </button>
+    </div>
+  </form>
+</section>
