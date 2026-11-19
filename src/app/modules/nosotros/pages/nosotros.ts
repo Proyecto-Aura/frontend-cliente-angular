@@ -59,9 +59,9 @@ export class Nosotros {
   ];
 
   protected readonly valores = [
-    { title: '100% Natural', desc: 'Sin conservantes ni colorantes artificiales. Solo ingredientes de la tierra peruana.' },
-    { title: 'Comercio justo', desc: 'Trabajamos directamente con agricultores de Piura, Lambayeque y Lima.' },
-    { title: 'Calidad artesanal', desc: 'Cada lote se elabora con técnicas tradicionales y control de calidad riguroso.' },
+    { icon: 'hoja', title: '100% Natural', desc: 'Sin conservantes ni colorantes artificiales. Solo ingredientes de la tierra peruana.' },
+    { icon: 'balanza', title: 'Comercio justo', desc: 'Trabajamos directamente con agricultores de Piura, Lambayeque y Lima.' },
+    { icon: 'medalla', title: 'Calidad artesanal', desc: 'Cada lote se elabora con técnicas tradicionales y control de calidad riguroso.' },
   ];
 
   protected readonly stats = [
@@ -105,7 +105,6 @@ export class Nosotros {
         });
 
         tl.to('.wordmark', { yPercent: -130, opacity: 0, ease: 'power2.in', duration: 1 }, 0)
-          .to('.scroll-hint', { opacity: 0, duration: 0.25 }, 0)
           .from('.bag-scene', { scale: 0.5, yPercent: 10, opacity: 0.4, duration: 1.1, ease: 'power2.out' }, 0)
           .to('.bag', { rotateY: -18, rotateX: 6, duration: 1.2, ease: 'sine.inOut' }, 0.35)
           // La bolsa sube y encoge para dejar sitio al texto de la historia.
