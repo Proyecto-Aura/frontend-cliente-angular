@@ -144,4 +144,8 @@
   }
 </section>
 
+@if (!cargando() && !errorCarga()) {
+  <app-cuenta-direccion-card />
+}
+
 <app-cuenta-password-card />

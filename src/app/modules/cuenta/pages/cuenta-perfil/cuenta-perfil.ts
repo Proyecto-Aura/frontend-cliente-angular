@@ -13,6 +13,7 @@ import {
 import { Alert } from '../../../../shared/ui/alert/alert';
 import { Avisos } from '../../../../shared/ui/aviso/aviso';
 import { Icon } from '../../../../shared/ui/icon/icon';
+import { CuentaDireccionCard } from '../../components/cuenta-direccion-card/cuenta-direccion-card';
 import { CuentaPasswordCard } from '../../components/cuenta-password-card/cuenta-password-card';
 import { apiErrorMessage } from '../../../../shared/utils/api-error';
 import { ActualizarPerfil, PerfilCliente } from '../../models/perfil.model';
@@ -28,12 +29,12 @@ function telefonoValido(control: AbstractControl<string>): ValidationErrors | nu
 /**
  * HU-B-015 (RF-B43): "Mi Perfil", donde el cliente edita su nombre, email y
  * teléfono. HU-B-016 (RF-B44): el email nuevo no se aplica hasta que el
- * cliente abre el enlace que le llega a esa dirección. Debajo, la tarjeta para
- * cambiar la contraseña (HU-B-017).
+ * cliente abre el enlace que le llega a esa dirección. Debajo, la tarjeta de
+ * dirección de entrega (HU-B-018) y la de cambiar la contraseña (HU-B-017).
  */
 @Component({
   selector: 'app-cuenta-perfil',
-  imports: [ReactiveFormsModule, Icon, Alert, CuentaPasswordCard],
+  imports: [ReactiveFormsModule, Icon, Alert, CuentaDireccionCard, CuentaPasswordCard],
   host: { class: 'flex flex-col gap-[18px]' },
   templateUrl: './cuenta-perfil.html',
 })
